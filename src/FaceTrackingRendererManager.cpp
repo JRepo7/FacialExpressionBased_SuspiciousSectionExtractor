@@ -435,14 +435,14 @@ void FaceTrackingRendererManager::DetermineExpression()
 		SetWindowTextW(text_emo, str );
 		SendDlgItemMessage(m_window, IDC_EMO, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
 	}
-	if (happy_count == 500)
+	if (happy_count == 100)
 	{
 		FILE *fp = fopen("data.txt", "a");
-		fprintf(fp, "坷弗率 官冰传界  : \t%f", arg / happy_count);
-		fprintf(fp, "哭率 官冰传界 :  \t%f", arg1 / happy_count);
-		fprintf(fp, "眶澜 沥档 :		\t\t%f", arg2 / happy_count);
-		fprintf(fp, "哭率 涝贱内呈   : \t%f", arg3 / happy_count);
-		fprintf(fp, "坷弗率 涝贱内呈  : \t%f", arg4 / happy_count);
+		fprintf(fp, "坷弗率 官冰传界  : \t%f\n", arg / happy_count);
+		fprintf(fp, "哭率 官冰传界 :  \t%f\n", arg1 / happy_count);
+		fprintf(fp, "眶澜 沥档 :\t%f\n", arg2 / happy_count);
+		fprintf(fp, "哭率 涝贱内呈   : \t%f\n", arg3 / happy_count);
+		fprintf(fp, "坷弗率 涝贱内呈  : \t%f\n", arg4 / happy_count);
 
 		happy_count = sad_count = surprise_count = fear_count = angry_count = disgust_count = 0;
 		arg = arg1 = arg2 = arg3 = arg4 = 0;
