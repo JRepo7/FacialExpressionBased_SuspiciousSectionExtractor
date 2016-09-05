@@ -46,8 +46,8 @@ public:
 	void PrepValue();
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
-	void DertermineExpression();
-	void SetAverage();
+	void DetermineExpression();
+	void CalcAvg();
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
@@ -63,13 +63,9 @@ private:
 	FaceTrackingRenderer3D* m_renderer3D;
 	FaceTrackingRenderer* m_currentRenderer;
 	HWND m_window;									// m
-
 	HANDLE m_rendererSignal;
 	OnFinishedRenderingCallback m_callback;
-	int Intensity[14];
-
 	Point FacialPoint[78];
-	
 	double thres_OuterBrowRaiserRight;
 	double thres_OuterBrowRaiserLeft;
 	double thres_EyeOpenRight;
@@ -77,7 +73,6 @@ private:
 	double thres_lipCornerRightDown;
 	double thres_lipCornerLeftDown;
 	double thres_UpperLipRaiser;
-
 	int prep_OuterBrowRaiserRight;
 	int prep_OuterBrowRaiserLeft;
 	int prep_EyeOpenRight;
@@ -85,7 +80,11 @@ private:
 	int prep_lipCornerRightDown;
 	int prep_lipCornerLeftDown;
 	int prep_UpperLipRaiser;
-
+	
+	
+	//14
+	int Intensity[14];
+	//11
 	double outerBrowRaiserLeft_I;
 	double outerBrowDepressorLeft_I;
 	double outerBrowRaiserRight_I;
@@ -107,19 +106,23 @@ private:
 	double max7;
 	double max8;
 	double max9;
+	double max10;
+	double max11;
 
 	int happy_count;
 	int sad_count;
 	int surprise_count;
 	int fear_count;
 	int angry_count;
-	int disgust_count;
+	int disgust_count;	
 
-	double outerBrowRaiserRight_I_sum;
-	double outerBrowRaiserLeft_I_sum;
-	double smile_sum;
-	double lipCornerLeftUp_I_sum;
-	double lipCornerRightUp_I_sum;
+public:
+	double arg;
+	double arg1;
+	double arg2;
+	double arg3;
+	double arg4;
+	double arg5;
 
 };
 

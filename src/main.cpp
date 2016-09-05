@@ -255,7 +255,6 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 		renderer->Render();
 		renderer->GetExpIntensity();
 		renderer->GetLandmarkPoint();
-		renderer->DertermineExpression();
 
 		if (ADJ_FLAG == TRUE)
 		{
@@ -271,6 +270,7 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 		if (ADJ_FLAG == FALSE)
 		{
 			renderer->CvtLandmarkToIntensity();
+			renderer->DetermineExpression();
 		}
 	}
 }
@@ -355,9 +355,8 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 
 			switch (LOWORD(wParam)) 
 			{
-			case ID_AVG:
-				renderer->SetAverage();
-
+			case IDC_TEXT_AVG:
+			//	renderer->CalcAvg();
 				return TRUE;
 
 			case ID_ADJUST:
