@@ -471,8 +471,7 @@ void FaceTrackingRendererManager::DetermineExpression()
 	{
 		HAPPY = TRUE;
 		double arg[]
-			= { 
-			outerBrowRaiserRight_I,
+			= { outerBrowRaiserRight_I,
 			outerBrowRaiserLeft_I,
 			Intensity[Smile],
 			lipCornerLeftUp_I,

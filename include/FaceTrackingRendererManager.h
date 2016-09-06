@@ -53,7 +53,6 @@ public:
 	void CreateTextFile(int cnt);
 	void DisplayExpressionUsingEmoji();
 	void DisplayAverage(int emoCnt);
-	double CalcAverage(double arg[], int cnt);
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
@@ -66,13 +65,6 @@ public:
 	BOOL HAPPY, SAD, SURPRISE, FEAR, ANGRY, DISGUST;
 
 	double pAvgValue[6];
-
-	double happy5[5];
-	double sad6[6];
-	double surprise5[5];
-	double fear4[4];
-	double angry2[2];
-	double disgust5[5];
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt;
 
