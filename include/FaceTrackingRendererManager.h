@@ -53,7 +53,8 @@ public:
 	static void SignalProcessor();
 	void SetActivateEyeCenterCalculations(bool bValue); 
 	void InitValue();
-
+	void DisplayExpressionI();
+	void DisplayLandmarkI();
 	int adj_frameCount;
 	//Ç¥Á¤
 	int expression[5];

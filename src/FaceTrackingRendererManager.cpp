@@ -196,22 +196,8 @@ void FaceTrackingRendererManager::SetThresValue()
 	thres_BrowLowerLeft = (double)prep_BrowLowerLeft /adj_frameCount;
 
 }
-
-void FaceTrackingRendererManager::CvtLandmarkToIntensity()
+void FaceTrackingRendererManager::DisplayExpressionI()
 {
-	// 11 
-	HWND text_I1 = GetDlgItem(m_window, IDC_TEXT_I1);
-	HWND text_I2 = GetDlgItem(m_window, IDC_TEXT_I2);
-	HWND text_I3 = GetDlgItem(m_window, IDC_TEXT_I3);
-	HWND text_I4 = GetDlgItem(m_window, IDC_TEXT_I4);
-	HWND text_I5 = GetDlgItem(m_window, IDC_TEXT_I5);
-	HWND text_I6 = GetDlgItem(m_window, IDC_TEXT_I6);
-	HWND text_I7 = GetDlgItem(m_window, IDC_TEXT_I7);
-	HWND text_I8 = GetDlgItem(m_window, IDC_TEXT_I8);
-	HWND text_I9 = GetDlgItem(m_window, IDC_TEXT_I9);
-	HWND text_I10 = GetDlgItem(m_window, IDC_TEXT_I10);
-	HWND text_I11 = GetDlgItem(m_window, IDC_TEXT_I11);
-
 	// 14
 	HWND text_Exp1 = GetDlgItem(m_window, IDC_TEXT_EXP1);
 	HWND text_Exp2 = GetDlgItem(m_window, IDC_TEXT_EXP2);
@@ -227,10 +213,95 @@ void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 	HWND text_Exp12 = GetDlgItem(m_window, IDC_TEXT_EXP12);
 	HWND text_Exp13 = GetDlgItem(m_window, IDC_TEXT_EXP13);
 
+	CString str;
+
+	str.Format(_T("BrowRaisedLeft: \t\t %d"), Intensity[0]);
+	SetWindowTextW(text_Exp1, str);
+
+	str.Format(_T("BrowRaisedRight: \t\t %d"), Intensity[1]);
+	SetWindowTextW(text_Exp2, str);
+
+	str.Format(_T("BrowLoweredLeft: \t\t %d"), Intensity[2]);
+	SetWindowTextW(text_Exp3, str);
+
+	str.Format(_T("BrowLoweredRight:\t\t %d"), Intensity[3]);
+	SetWindowTextW(text_Exp4, str);
+
+	str.Format(_T("Smile: \t\t\t %d"), Intensity[4]);
+	SetWindowTextW(text_Exp5, str);
+
+	str.Format(_T("Kiss: \t\t\t %d"), Intensity[5]);
+	SetWindowTextW(text_Exp6, str);
+
+	str.Format(_T("MouthOpen: \t\t %d"), Intensity[6]);
+	SetWindowTextW(text_Exp7, str);
+
+	str.Format(_T("ClosedEyeLeft: \t\t %d"), Intensity[7]);
+	SetWindowTextW(text_Exp8, str);
+
+	str.Format(_T("ClosedEyeRight: \t\t %d"), Intensity[8]);
+	SetWindowTextW(text_Exp9, str);
+
+	str.Format(_T("EyesTurnLeft: \t\t %d"), Intensity[9]);
+	SetWindowTextW(text_Exp10, str);
+
+	str.Format(_T("EyesTurnRight: \t\t %d"), Intensity[10]);
+	SetWindowTextW(text_Exp11, str);
+
+	str.Format(_T("EyesUp: \t\t\t %d"), Intensity[11]);
+	SetWindowTextW(text_Exp12, str);
+
+	str.Format(_T("EyesDown: \t\t %d"), Intensity[12]);
+	SetWindowTextW(text_Exp13, str);
+}
+void FaceTrackingRendererManager::DisplayLandmarkI()
+{
+	// 11 
+	HWND text_I1 = GetDlgItem(m_window, IDC_TEXT_I1);
+	HWND text_I2 = GetDlgItem(m_window, IDC_TEXT_I2);
+	HWND text_I3 = GetDlgItem(m_window, IDC_TEXT_I3);
+	HWND text_I4 = GetDlgItem(m_window, IDC_TEXT_I4);
+	HWND text_I5 = GetDlgItem(m_window, IDC_TEXT_I5);
+	HWND text_I6 = GetDlgItem(m_window, IDC_TEXT_I6);
+	HWND text_I7 = GetDlgItem(m_window, IDC_TEXT_I7);
+	HWND text_I8 = GetDlgItem(m_window, IDC_TEXT_I8);
+	HWND text_I9 = GetDlgItem(m_window, IDC_TEXT_I9);
+	HWND text_I10 = GetDlgItem(m_window, IDC_TEXT_I10);
+	HWND text_I11 = GetDlgItem(m_window, IDC_TEXT_I11);
 
 	CString str;
-	double ratio;
 
+	str.Format(_T("outerBrowRaiserLeft_I sad:\t\t  %f"), outerBrowRaiserLeft_I);
+	SetWindowTextW(text_I1, str);
+	str.Format(_T("outerBrowRaiserRight_I sad:\t  %f"), outerBrowRaiserRight_I);
+	SetWindowTextW(text_I2, str);
+
+	str.Format(_T("BrowLowerRight_I disgust:\t  %f"), BrowLowerRight_I);
+	SetWindowTextW(text_I3, str);
+	str.Format(_T("BrowLowerLeft_I disgust:\t  %f"), BrowLowerLeft_I);
+	SetWindowTextW(text_I4, str);
+
+	str.Format(_T("upperLipRaiser_I disgust:\t\t  %f"), upperLipRaiser_I);
+	SetWindowTextW(text_I5, str);
+
+	str.Format(_T("lipCornerRightDown_I disgust:\t\t  %f"), lipCornerRightDown_I);
+	SetWindowTextW(text_I6, str);
+	str.Format(_T("lipCornerLeftDown_I disgust:\t\t  %f"), lipCornerLeftDown_I);
+	SetWindowTextW(text_I7, str);
+
+	str.Format(_T("eyeOpenRight_I max8:\t\t   %f"), eyeOpenRight_I);
+	SetWindowTextW(text_I8, str);
+	str.Format(_T("eyeOpenLeft_I max9:\t\t   %f"), eyeOpenLeft_I);
+	SetWindowTextW(text_I9, str);
+
+	str.Format(_T("lipCornerRightUp_I max6:\t\t  %f"), lipCornerRightUp_I);
+	SetWindowTextW(text_I10, str);
+	str.Format(_T("lipCornerLeftUp_I max7:\t\t  %f"), lipCornerLeftUp_I);
+	SetWindowTextW(text_I11, str);
+}
+void FaceTrackingRendererManager::CvtLandmarkToIntensity()
+{
+	double ratio;
 	ratio = ((FacialPoint[14].y - FacialPoint[3].y) / thres_OuterBrowRaiserRight);
 	if (ratio > 1)
 	{
@@ -334,7 +405,8 @@ void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 	{
 		BrowLowerLeft_I = 100-(ratio * 100);
 	}
-
+	DisplayExpressionI();
+	DisplayLandmarkI();
 	//ratio = ((FacialPoint[70].y - FacialPoint[3].y) / thres_BrowDeclineRight);
 	//if (ratio > 1)
 	//{
@@ -354,76 +426,6 @@ void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 	//{
 	//	BrowDeclineLeft_I = 0;
 	//}
-
-	str.Format(_T("outerBrowRaiserLeft_I sad:\t\t  %f"), outerBrowRaiserLeft_I);
-	SetWindowTextW(text_I1, str);
-	str.Format(_T("outerBrowRaiserRight_I sad:\t  %f"), outerBrowRaiserRight_I);
-	SetWindowTextW(text_I2, str);
-
-	str.Format(_T("BrowLowerRight_I disgust:\t  %f"), BrowLowerRight_I);
-	SetWindowTextW(text_I3, str);
-	str.Format(_T("BrowLowerLeft_I disgust:\t  %f"), BrowLowerLeft_I);
-	SetWindowTextW(text_I4, str);
-
-	str.Format(_T("upperLipRaiser_I disgust:\t\t  %f"), upperLipRaiser_I);
-	SetWindowTextW(text_I5, str);
-
-	str.Format(_T("lipCornerRightDown_I disgust:\t\t  %f"), lipCornerRightDown_I);
-	SetWindowTextW(text_I6, str);
-	str.Format(_T("lipCornerLeftDown_I disgust:\t\t  %f"), lipCornerLeftDown_I);
-	SetWindowTextW(text_I7, str);
-
-	str.Format(_T("eyeOpenRight_I max8:\t\t   %f"), eyeOpenRight_I);
-	SetWindowTextW(text_I8, str);
-	str.Format(_T("eyeOpenLeft_I max9:\t\t   %f"), eyeOpenLeft_I);
-	SetWindowTextW(text_I9, str);
-
-	str.Format(_T("lipCornerRightUp_I max6:\t\t  %f"), lipCornerRightUp_I);
-	SetWindowTextW(text_I10, str);
-	str.Format(_T("lipCornerLeftUp_I max7:\t\t  %f"), lipCornerLeftUp_I);
-	SetWindowTextW(text_I11, str);
-
-
-
-	str.Format(_T("BrowRaisedLeft: \t\t %d"),  Intensity[0]);
-	SetWindowTextW(text_Exp1, str);
-
-	str.Format(_T("BrowRaisedRight: \t\t %d"),  Intensity[1]);
-	SetWindowTextW(text_Exp2, str);
-
-	str.Format(_T("BrowLoweredLeft: \t\t %d"),  Intensity[2]);
-	SetWindowTextW(text_Exp3, str);
-
-	str.Format(_T("BrowLoweredRight:\t\t %d"),  Intensity[3]);
-	SetWindowTextW(text_Exp4, str);
-
-	str.Format(_T("Smile: \t\t\t %d"),  Intensity[4]);
-	SetWindowTextW(text_Exp5, str);
-
-	str.Format(_T("Kiss: \t\t\t %d"),  Intensity[5]);
-	SetWindowTextW(text_Exp6, str);
-
-	str.Format(_T("MouthOpen: \t\t %d"),  Intensity[6]);
-	SetWindowTextW(text_Exp7, str);
-
-	str.Format(_T("ClosedEyeLeft: \t\t %d"),  Intensity[7]);
-	SetWindowTextW(text_Exp8, str);
-
-	str.Format(_T("ClosedEyeRight: \t\t %d"),  Intensity[8]);
-	SetWindowTextW(text_Exp9, str);
-
-	str.Format(_T("EyesTurnLeft: \t\t %d"),  Intensity[9]);
-	SetWindowTextW(text_Exp10, str);
-
-	str.Format(_T("EyesTurnRight: \t\t %d"),  Intensity[10]);
-	SetWindowTextW(text_Exp11, str);
-
-	str.Format(_T("EyesUp: \t\t\t %d"),  Intensity[11]);
-	SetWindowTextW(text_Exp12, str);
-
-	str.Format(_T("EyesDown: \t\t %d"),  Intensity[12]);
-	SetWindowTextW(text_Exp13, str);
-
 }
 
 void FaceTrackingRendererManager::DetermineExpression()
