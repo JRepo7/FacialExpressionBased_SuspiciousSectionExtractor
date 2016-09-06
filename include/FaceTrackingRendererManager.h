@@ -53,7 +53,7 @@ public:
 	void CreateTextFile(int cnt);
 	void DisplayExpressionUsingEmoji();
 	void DisplayAverage(int emoCnt);
-	void CalcAverage(double arg[], int cnt);
+	double CalcAverage(double arg[], int cnt);
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();

@@ -356,7 +356,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			switch (LOWORD(wParam)) 
 			{
 			case IDC_TEXT_AVG:
-				renderer->DisplayAverage(renderer->disgustCnt);
+				renderer->DisplayAverage(renderer->happyCnt);
 				renderer->InitValue();
 				return TRUE;
 

@@ -444,7 +444,7 @@ void FaceTrackingRendererManager::DetermineExpression()
 		}
 		HAPPY = FALSE;
 	}
-	
+	/*
 	if (( (outerBrowDepressorLeft_I + outerBrowDepressorRight_I >1) ||(Intensity[BrowLoweredLeft]>10 && Intensity[BrowLoweredRight] > 10) )&& 
 		(lipCornerRightDown_I + lipCornerLeftDown_I > 5))
 	{
@@ -524,7 +524,7 @@ void FaceTrackingRendererManager::DetermineExpression()
 			PValueInit();
 		}
 	}
-	//*/
+	
 
 	if ((BrowLowerRight_I>10 && BrowLowerLeft_I>10) &&
 		upperLipRaiser_I>1 &&
@@ -546,6 +546,7 @@ void FaceTrackingRendererManager::DetermineExpression()
 		}
 		DISGUST = FALSE;
 	}
+	//*/
 }
 void FaceTrackingRendererManager::PValueInit()
 {
@@ -729,34 +730,24 @@ void FaceTrackingRendererManager::DisplayAverage(int emoCnt)
 	
 	CString str;
 
-	CalcAverage(arg, emoCnt);
-
-	str.Format(_T("avg[0]: %f"), arg[0]);
-	SetWindowTextW(text_I1, str);
-	str.Format(_T("avg[1]: %f"), arg[1]);
-	SetWindowTextW(text_I2, str);
-	str.Format(_T("avg[2]: %f"), arg[2]);
-	SetWindowTextW(text_I3, str);
-	str.Format(_T("avg[3]: %f"), arg[3]);
-	SetWindowTextW(text_I4, str);
-	str.Format(_T("avg[4]: %f"), arg[4]);
-	SetWindowTextW(text_I5, str);
-	str.Format(_T("avg[5]: %f"), arg[5]);
-	SetWindowTextW(text_I6, str);
-
-
-	arg[0] = arg[1] = arg[2] = arg[3] = arg[4] = arg[5] = 0;
-}
-void FaceTrackingRendererManager::CalcAverage(double arg[], int cnt)
-{
-	
 	for (int i = 0; i < 6; i++)
 	{
 		if (arg[i] != 0)
 		{
-			arg[i] = pAvgValue[i] / cnt;
+			arg[i] = pAvgValue[i] / emoCnt;
 		}
 	}
 
-	//*/
+	str.Format(_T("arg[0]: %f"), arg[0]);
+	SetWindowTextW(text_I1, str);
+	str.Format(_T("arg[1]: %f"), arg[1]);
+	SetWindowTextW(text_I2, str);
+	str.Format(_T("arg[2]: %f"), arg[2]);
+	SetWindowTextW(text_I3, str);
+	str.Format(_T("arg[3]: %f"), arg[3]);
+	SetWindowTextW(text_I4, str);
+	str.Format(_T("arg[4]: %f"), arg[4]);
+	SetWindowTextW(text_I5, str);
+	str.Format(_T("arg[5]: %f"), arg[5]);
+	SetWindowTextW(text_I6, str);
 }
