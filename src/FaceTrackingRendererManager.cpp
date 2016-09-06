@@ -383,11 +383,6 @@ void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 	DisplayExpressionI();
 	DisplayLandmarkI();
 }
-/*BrowLowerRight_I,
-BrowLowerLeft_I,
-upperLipRaiser_I,
-lipCornerRightDown_I,
-lipCornerLeftDown_I*/
 void FaceTrackingRendererManager::SetExpressionArguments()
 {
 	happy5[0] = { outerBrowRaiserRight_I };
@@ -427,7 +422,6 @@ void FaceTrackingRendererManager::SetExpressionArguments()
 	disgust5[2] = { upperLipRaiser_I };
 	disgust5[3] = { lipCornerRightDown_I };
 	disgust5[4] = { lipCornerLeftDown_I };
-
 }
 void FaceTrackingRendererManager::DetermineExpression()
 {
@@ -721,11 +715,10 @@ void FaceTrackingRendererManager::DisplayExpressionUsingEmoji()
 	}
 }
 
-void FaceTrackingRendererManager::CalcAvg()
+void FaceTrackingRendererManager::DisplayAverage(int emoCnt)
 {
-	/*
-	double avg[6] = { 0, };
-	//outerBrowRaiserRight_A, outerBrowRaiserLeft_A, smile_A, lipCornerLeftUp_A, lipCornerRightUp_A=0;
+
+	double arg[6] = { 0, };
 
 	HWND text_I1 = GetDlgItem(m_window, IDC_TEXT_AVG1);
 	HWND text_I2 = GetDlgItem(m_window, IDC_TEXT_AVG2);
@@ -733,53 +726,37 @@ void FaceTrackingRendererManager::CalcAvg()
 	HWND text_I4 = GetDlgItem(m_window, IDC_TEXT_AVG4);
 	HWND text_I5 = GetDlgItem(m_window, IDC_TEXT_AVG5);
 	HWND text_I6 = GetDlgItem(m_window, IDC_TEXT_AVG6);
-
+	
 	CString str;
 
-	
-	PrepAvgValue(arg,sizeof(arg)/sizeof(arg[0]));
+	CalcAverage(arg, emoCnt);
 
-
-	if(avg[0]!=0)
-	{
-	avg[0] = arg / disgustCnt;
-	}
-	if (avg[1] != 0)
-	{
-		avg[1] = arg1 / disgustCnt;
-	}
-	if (avg[2] != 0)
-	{
-		avg[2] = arg2 / disgustCnt;
-	}
-	if (avg[3] != 0)
-	{
-		avg[3] = arg3 / disgustCnt;
-	}
-	if (avg[4] != 0)
-	{
-		avg[4] = arg4 / disgustCnt;
-	}
-	if (avg[5] != 0)
-	{
-		avg[5] = arg5 / disgustCnt;
-	}
-
-	str.Format(_T("avg[0]: %f"), avg[0]);
+	str.Format(_T("avg[0]: %f"), arg[0]);
 	SetWindowTextW(text_I1, str);
-	str.Format(_T("avg[1]: %f"), avg[1]);
+	str.Format(_T("avg[1]: %f"), arg[1]);
 	SetWindowTextW(text_I2, str);
-	str.Format(_T("avg[2]: %f"), avg[2]);
+	str.Format(_T("avg[2]: %f"), arg[2]);
 	SetWindowTextW(text_I3, str);
-	str.Format(_T("avg[3]: %f"), avg[3]);
+	str.Format(_T("avg[3]: %f"), arg[3]);
 	SetWindowTextW(text_I4, str);
-	str.Format(_T("avg[4]: %f"), avg[4]);
+	str.Format(_T("avg[4]: %f"), arg[4]);
 	SetWindowTextW(text_I5, str);
-	str.Format(_T("avg[5]: %f"), avg[5]);
+	str.Format(_T("avg[5]: %f"), arg[5]);
 	SetWindowTextW(text_I6, str);
+
+
+	arg[0] = arg[1] = arg[2] = arg[3] = arg[4] = arg[5] = 0;
+}
+void FaceTrackingRendererManager::CalcAverage(double arg[], int cnt)
+{
 	
-	disgustCnt = 0;
-	//happy_count = sad_count = surprise_count = fear_count = angry_count = disgust_count = 0;
-	avg[0] = avg[1] = avg[2] = avg[3] = avg[4] = avg[5]= 0;
+	for (int i = 0; i < 6; i++)
+	{
+		if (arg[i] != 0)
+		{
+			arg[i] = pAvgValue[i] / cnt;
+		}
+	}
+
 	//*/
 }

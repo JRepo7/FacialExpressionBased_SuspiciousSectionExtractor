@@ -52,7 +52,8 @@ public:
 	void PrepAvgValue(double arg[],int length);
 	void CreateTextFile(int cnt);
 	void DisplayExpressionUsingEmoji();
-	void CalcAvg();
+	void DisplayAverage(int emoCnt);
+	void CalcAverage(double arg[], int cnt);
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
@@ -72,6 +73,8 @@ public:
 	double fear4[4];
 	double angry2[2];
 	double disgust5[5];
+
+	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt;
 
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
@@ -127,7 +130,6 @@ private:
 	1. 변수추가
 	2. 
 	//*/
-	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt;
 	
 };
 
