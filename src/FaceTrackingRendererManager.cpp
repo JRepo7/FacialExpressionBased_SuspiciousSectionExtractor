@@ -357,15 +357,21 @@ void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 	str.Format(_T("upperLipRaiser_I max5:\t\t  %f"), upperLipRaiser_I);
 	SetWindowTextW(text_I5, str);
 
-	str.Format(_T("lipCornerRightUp_I max6:\t\t  %f"), lipCornerRightUp_I);
+	str.Format(_T("lipCornerRightDown_I max6:\t\t  %f"), lipCornerRightDown_I);
 	SetWindowTextW(text_I6, str);
-	str.Format(_T("lipCornerLeftUp_I max7:\t\t  %f"), lipCornerLeftUp_I);
+	str.Format(_T("lipCornerLeftDown_I max7:\t\t  %f"), lipCornerLeftDown_I);
 	SetWindowTextW(text_I7, str);
 
 	str.Format(_T("eyeOpenRight_I max8:\t\t   %f"), eyeOpenRight_I);
 	SetWindowTextW(text_I8, str);
 	str.Format(_T("eyeOpenLeft_I max9:\t\t   %f"), eyeOpenLeft_I);
 	SetWindowTextW(text_I9, str);
+
+	str.Format(_T("lipCornerRightUp_I max6:\t\t  %f"), lipCornerRightUp_I);
+	SetWindowTextW(text_I10, str);
+	str.Format(_T("lipCornerLeftUp_I max7:\t\t  %f"), lipCornerLeftUp_I);
+	SetWindowTextW(text_I11, str);
+
 
 
 	str.Format(_T("BrowRaisedLeft: \t\t %d"),  Intensity[0]);
@@ -413,11 +419,13 @@ void FaceTrackingRendererManager::DetermineExpression()
 {
 	HWND text_emo = GetDlgItem(m_window, IDC_TEXT_EMO);
 	HWND emo = GetDlgItem(m_window, IDC_EMO);
+	HWND text_I1 = GetDlgItem(m_window, IDC_TEXT_EXP14);
+
 	CString str;
 	HBITMAP hBmp;
 	//smile
-	if (outerBrowRaiserRight_I >10 && outerBrowRaiserLeft_I > 10 &&  
-		(Intensity[Smile] > 5 || (lipCornerLeftUp_I>10 && lipCornerRightUp_I>10 ))) 
+	if (outerBrowRaiserRight_I >5 && outerBrowRaiserLeft_I > 5 &&  
+		(Intensity[Smile] > 5 || (lipCornerLeftUp_I>5 && lipCornerRightUp_I>5 ))) 
 	{
 		happy_count++;
 		arg  += outerBrowRaiserRight_I;
@@ -433,9 +441,11 @@ void FaceTrackingRendererManager::DetermineExpression()
 		hBmp = (HBITMAP)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_HAPPY), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
 		str.Format(_TEXT("EXPRESSION: smile"));
 		SetWindowTextW(text_emo, str );
+		str.Format(_TEXT("%d"), happy_count);
+		SetWindowTextW(text_I1, str);
 		SendDlgItemMessage(m_window, IDC_EMO, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
 	}
-	if (happy_count == 100)
+	if (happy_count == 2000)
 	{
 		FILE *fp = fopen("data.txt", "a");
 		fprintf(fp, "¿À¸¥ÂÊ ¹Ù±ù´«½ç  : \t%f\n", arg / happy_count);
