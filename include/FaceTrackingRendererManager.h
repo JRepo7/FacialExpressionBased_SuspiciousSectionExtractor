@@ -74,8 +74,12 @@ private:
 	double thres_lipCornerRightDown;
 	double thres_lipCornerLeftDown;
 	double thres_UpperLipRaiser;
-	double thres_InnerBrowDepressorRight;
-	double thres_InnerBrowDepressorLeft;
+
+
+	double thres_BrowLowerRight;
+	double thres_BrowLowerLeft;
+
+
 	int prep_OuterBrowRaiserRight;
 	int prep_OuterBrowRaiserLeft;
 	int prep_EyeOpenRight;
@@ -83,37 +87,29 @@ private:
 	int prep_lipCornerRightDown;
 	int prep_lipCornerLeftDown;
 	int prep_UpperLipRaiser;
-	int prep_InnerBrowDepressorRight;
-	int prep_InnerBrowDepressorLeft;
-	
+
+	int prep_BrowLowerRight;
+	int prep_BrowLowerLeft;
+
+
 	//14
 	int Intensity[14];
 	//11
 	double outerBrowRaiserLeft_I;
 	double outerBrowDepressorLeft_I;
+
+	double BrowLowerRight_I;
+	double BrowLowerLeft_I;
+
 	double outerBrowRaiserRight_I;
 	double outerBrowDepressorRight_I;
 	double upperLipRaiser_I;
-	double lipCornerRightUp_I;
-	double lipCornerLeftUp_I;
 	double lipCornerRightDown_I;
 	double lipCornerLeftDown_I;
 	double eyeOpenRight_I;
 	double eyeOpenLeft_I;
-	double InnerBrowDepressorRight_I;
-	double InnerBrowDepressorLeft_I;
-
-	double max1;
-	double max2;
-	double max3;
-	double max4;
-	double max5;
-	double max6;
-	double max7;
-	double max8;
-	double max9;
-	double max10;
-	double max11;
+	double lipCornerRightUp_I;
+	double lipCornerLeftUp_I;
 
 	int happy_count;
 	int sad_count;

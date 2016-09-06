@@ -35,3 +35,23 @@
 坷弗率 官冰传界  : 	1.978626
 哭率 官冰传界  : 	13.628393
 
+InnerBrowDepressorRight_I  : 	20.484250
+InnerBrowDepressorLeft_I :  	29.567012
+eyeOpenLeft_I  : 	21.365868
+eyeOpenRight_I : 	16.395801
+InnerBrowDepressorRight_I  : 	15.832977
+InnerBrowDepressorLeft_I :  	1.761429
+eyeOpenLeft_I  : 	5.685826
+eyeOpenRight_I : 	5.929970
+InnerBrowDepressorRight_I  : 	16.015529
+InnerBrowDepressorLeft_I :  	0.000000
+eyeOpenLeft_I  : 	0.033679
+eyeOpenRight_I : 	0.035593
+InnerBrowDepressorRight_I  : 	36.171888
+InnerBrowDepressorLeft_I :  	0.000000
+eyeOpenLeft_I  : 	2.592388
+eyeOpenRight_I : 	2.994068
+InnerBrowDepressorRight_I  : 	41.304150
+InnerBrowDepressorLeft_I :  	0.000000
+eyeOpenLeft_I  : 	17.536678
+eyeOpenRight_I : 	23.374153
