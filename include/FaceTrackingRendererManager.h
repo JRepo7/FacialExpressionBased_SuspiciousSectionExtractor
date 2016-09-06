@@ -66,6 +66,7 @@ private:
 	HANDLE m_rendererSignal;
 	OnFinishedRenderingCallback m_callback;
 	Point FacialPoint[78];
+
 	double thres_OuterBrowRaiserRight;
 	double thres_OuterBrowRaiserLeft;
 	double thres_EyeOpenRight;
@@ -73,6 +74,8 @@ private:
 	double thres_lipCornerRightDown;
 	double thres_lipCornerLeftDown;
 	double thres_UpperLipRaiser;
+	double thres_InnerBrowDepressorRight;
+	double thres_InnerBrowDepressorLeft;
 	int prep_OuterBrowRaiserRight;
 	int prep_OuterBrowRaiserLeft;
 	int prep_EyeOpenRight;
@@ -80,7 +83,8 @@ private:
 	int prep_lipCornerRightDown;
 	int prep_lipCornerLeftDown;
 	int prep_UpperLipRaiser;
-	
+	int prep_InnerBrowDepressorRight;
+	int prep_InnerBrowDepressorLeft;
 	
 	//14
 	int Intensity[14];
@@ -96,6 +100,8 @@ private:
 	double lipCornerLeftDown_I;
 	double eyeOpenRight_I;
 	double eyeOpenLeft_I;
+	double InnerBrowDepressorRight_I;
+	double InnerBrowDepressorLeft_I;
 
 	double max1;
 	double max2;
