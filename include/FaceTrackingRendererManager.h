@@ -46,6 +46,7 @@ public:
 	void PrepValue();
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
+	void SetExpressionArguments();
 	void DetermineExpression();
 	void PValueInit();
 	void PrepAvgValue(double arg[],int length);
@@ -65,11 +66,18 @@ public:
 
 	double pAvgValue[6];
 
+	double happy5[5];
+	double sad6[6];
+	double surprise5[5];
+	double fear4[4];
+	double angry2[2];
+	double disgust5[5];
+
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
 	FaceTrackingRenderer3D* m_renderer3D;
 	FaceTrackingRenderer* m_currentRenderer;
-	HWND m_window;									// m
+	HWND m_window;							// m 						
 	HANDLE m_rendererSignal;
 	OnFinishedRenderingCallback m_callback;
 	Point FacialPoint[78];
@@ -101,12 +109,11 @@ private:
 	//14
 	int Intensity[14];
 	//11
+
 	double outerBrowRaiserLeft_I;
 	double outerBrowDepressorLeft_I;
-
 	double BrowLowerRight_I;
 	double BrowLowerLeft_I;
-
 	double outerBrowRaiserRight_I;
 	double outerBrowDepressorRight_I;
 	double upperLipRaiser_I;
@@ -116,7 +123,10 @@ private:
 	double eyeOpenLeft_I;
 	double lipCornerRightUp_I;
 	double lipCornerLeftUp_I;
-
+	/*
+	1. 변수추가
+	2. 
+	//*/
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt;
 	
 };
