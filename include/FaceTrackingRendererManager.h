@@ -47,6 +47,10 @@ public:
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
 	void DetermineExpression();
+	void PValueInit();
+	void PrepAvgValue(double arg[],int length);
+	void CreateTextFile(int cnt);
+	void DisplayExpressionUsingEmoji();
 	void CalcAvg();
 
 	static HANDLE& GetRenderingFinishedSignal();
@@ -56,8 +60,10 @@ public:
 	void DisplayExpressionI();
 	void DisplayLandmarkI();
 	int adj_frameCount;
-	//Ç¥Á¤
-	int expression[5];
+
+	BOOL HAPPY, SAD, SURPRISE, FEAR, ANGRY, DISGUST;
+
+	double pAvgValue[6];
 
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
@@ -68,30 +74,29 @@ private:
 	OnFinishedRenderingCallback m_callback;
 	Point FacialPoint[78];
 
-	double thres_OuterBrowRaiserRight;
-	double thres_OuterBrowRaiserLeft;
-	double thres_EyeOpenRight;
-	double thres_EyeOpenLeft;
-	double thres_lipCornerRightDown;
-	double thres_lipCornerLeftDown;
-	double thres_UpperLipRaiser;
+	double tOuterBrowRaiserRight;
+	double tOuterBrowRaiserLeft;
+	double tEyeOpenRight;
+	double tEyeOpenLeft;
+	double tlipCornerRightDown;
+	double tlipCornerLeftDown;
+	double tUpperLipRaiser;
 
 
-	double thres_BrowLowerRight;
-	double thres_BrowLowerLeft;
+	double tBrowLowerRight;
+	double tBrowLowerLeft;
 
 
-	int prep_OuterBrowRaiserRight;
-	int prep_OuterBrowRaiserLeft;
-	int prep_EyeOpenRight;
-	int prep_EyeOpenLeft;
-	int prep_lipCornerRightDown;
-	int prep_lipCornerLeftDown;
-	int prep_UpperLipRaiser;
+	int pOuterBrowRaiserRight;
+	int pOuterBrowRaiserLeft;
+	int pEyeOpenRight;
+	int pEyeOpenLeft;
+	int plipCornerRightDown;
+	int plipCornerLeftDown;
+	int pUpperLipRaiser;
 
-	int prep_BrowLowerRight;
-	int prep_BrowLowerLeft;
-
+	int pBrowLowerRight;
+	int pBrowLowerLeft;
 
 	//14
 	int Intensity[14];
@@ -112,20 +117,7 @@ private:
 	double lipCornerRightUp_I;
 	double lipCornerLeftUp_I;
 
-	int happy_count;
-	int sad_count;
-	int surprise_count;
-	int fear_count;
-	int angry_count;
-	int disgust_count;	
-
-public:
-	double arg;
-	double arg1;
-	double arg2;
-	double arg3;
-	double arg4;
-	double arg5;
-
+	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt;
+	
 };
 
