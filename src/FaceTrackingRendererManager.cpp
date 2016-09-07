@@ -609,9 +609,11 @@ void FaceTrackingRendererManager::DetermineExpression()
 		//DISGUST = FALSE;
 	}
 	else if (
-		(lipCornerRightDown_LM + lipCornerLeftDown_LM < 10) &&
+		(lipCornerRightDown_LM + lipCornerLeftDown_LM < 5) &&
 		(BrowLowerRight_LM + BrowLowerLeft_LM>10) &&
-		(eyeOpenLeft_LM + eyeOpenRight_LM>5))
+		(eyeOpenLeft_LM + eyeOpenRight_LM>5)&&
+	)
+
 		//&&(EXP_NEUTRAL==TRUE||EXP_FEAR==TRUE)) 
 		//outerBrowRaiserRight_LM >1 && outerBrowRaiserLeft_LM>1)
 	{
@@ -630,7 +632,8 @@ void FaceTrackingRendererManager::DetermineExpression()
 			PrepValue();
 		}
 	}
-	else if (BrowLowerLeft_LM>10 && BrowLowerRight_LM>10)
+	else if (BrowLowerLeft_LM>10 && BrowLowerRight_LM>10 && 
+		(lipCornerRightDown_LM + lipCornerLeftDown_LM < 5))
 		//Intensity[BrowLoweredLeft]>1 && Intensity[BrowLoweredRight]>10 && 
 		//outerBrowRaiserLeft_LM>10 && outerBrowRaiserRight_LM&&
 		//eyeOpenLeft_LM>10&&eyeOpenRight_LM>10)

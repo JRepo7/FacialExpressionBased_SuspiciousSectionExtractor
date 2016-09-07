@@ -77,6 +77,7 @@ private:
 	HWND m_window;							// m 						
 	HANDLE m_rendererSignal;
 	OnFinishedRenderingCallback m_callback;
+
 	Point FacialPoint[78];
 
 	int pOuterBrowRaiserRight;
