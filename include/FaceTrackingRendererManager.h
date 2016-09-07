@@ -46,27 +46,18 @@ public:
 	void PrepValue();
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
-	void SetExpressionArguments();
 	void DetermineExpression();
-	void PValueInit();
-	void PrepAvgValue(double arg[],int length);
-	void CreateTextFile(int cnt);
 	void DisplayExpressionUsingEmoji();
-	void DisplayAverage(int emoCnt);
 	void CaptuerExpression();
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
 	void SetActivateEyeCenterCalculations(bool bValue); 
 	void InitValue();
-	void DisplayExpressionI();
-	void DisplayLandmarkI();
 	int adj_frameCount;
 
 	BOOL HAPPY, SAD, SURPRISE, FEAR, ANGRY, DISGUST, NEUTRAL;
 	BOOL EXP_HAPPY, EXP_SAD, EXP_SURPRISE, EXP_FEAR, EXP_ANGRY, EXP_DISGUST, EXP_NEUTRAL;
-
-	double pAvgValue[6];
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
