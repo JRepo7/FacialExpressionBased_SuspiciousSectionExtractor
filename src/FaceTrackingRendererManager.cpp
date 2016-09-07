@@ -507,8 +507,11 @@ void FaceTrackingRendererManager::DetermineExpression()
 //	disgust5[3] = { lipCornerRightDown_LM };
 //	disgust5[4] = { lipCornerLeftDown_LM };
 
-	if (outerBrowRaiserRight_LM > 1 && outerBrowRaiserLeft_LM > 1 &&
-		(Intensity[Smile] > 10 || (lipCornerLeftUp_LM > 5 && lipCornerRightUp_LM > 5)))
+	if (
+		//outerBrowRaiserRight_LM > 1 && outerBrowRaiserLeft_LM > 1 &&
+		(Intensity[Smile] > 10 || (lipCornerLeftUp_LM > 5 && lipCornerRightUp_LM > 5)) && 
+		(eyeOpenRight_LM < 10 && eyeOpenLeft_LM < 10)
+		)
 	{
 		HAPPY = TRUE;
 		double arg[]
@@ -558,7 +561,7 @@ void FaceTrackingRendererManager::DetermineExpression()
 	//*/
 	
 	if (outerBrowRaiserLeft_LM > 1 && outerBrowRaiserRight_LM > 1 && eyeOpenRight_LM > 10 && eyeOpenLeft_LM > 10 &&
-		Intensity[MouthOpen] > 0)
+		mouthOpen_LM > 20)
 	{
 		SURPRISE = TRUE;
 		surpriseCnt++;
@@ -577,48 +580,7 @@ void FaceTrackingRendererManager::DetermineExpression()
 		//SURPRISE = FALSE;
 	}
 	//*/
-	
-	if (
-		(BrowLowerRight_LM>10 && BrowLowerLeft_LM>10) &&
-		(eyeOpenLeft_LM>1 && eyeOpenRight_LM>1))
-		//outerBrowRaiserRight_LM >1 && outerBrowRaiserLeft_LM>1)
-	{
-		FEAR = TRUE;
-		fearCnt++;
 
-		//PrepAvgValue(fear4, sizeof(fear4) / sizeof(fear4[0]));
-
-		if (fearCnt == 1000)
-		{
-			CreateTextFile(fearCnt);
-
-			fearCnt= 0;
-			PrepValue();
-		}
-		FEAR = FALSE;
-	}
-	//*/
-
-	
-	if (BrowLowerLeft_LM>10 && BrowLowerRight_LM>10)
-		//Intensity[BrowLoweredLeft]>1 && Intensity[BrowLoweredRight]>10 && 
-		//outerBrowRaiserLeft_LM>10 && outerBrowRaiserRight_LM&&
-		//eyeOpenLeft_LM>10&&eyeOpenRight_LM>10)
-	{
-		ANGRY = TRUE;
-		angryCnt++;
-
-		//PrepAvgValue(angry2, sizeof(angry2) / sizeof(angry2[0]));
-
-		DisplayExpressionUsingEmoji();
-
-		if (angryCnt == 1000)
-		{
-			CreateTextFile(angryCnt);
-			angryCnt= 0;
-			PValueInit();
-		}
-	}
 	if ((BrowLowerRight_LM + BrowLowerLeft_LM > 10) &&
 		(mouthOpen_LM>25 &&(lipCornerRightDown_LM + lipCornerLeftDown_LM>5))
 		)
@@ -646,6 +608,49 @@ void FaceTrackingRendererManager::DetermineExpression()
 		}
 		//DISGUST = FALSE;
 	}
+	else if (
+		(lipCornerRightDown_LM + lipCornerLeftDown_LM < 10) &&
+		(BrowLowerRight_LM + BrowLowerLeft_LM>10) &&
+		(eyeOpenLeft_LM + eyeOpenRight_LM>5))
+		//&&(EXP_NEUTRAL==TRUE||EXP_FEAR==TRUE)) 
+		//outerBrowRaiserRight_LM >1 && outerBrowRaiserLeft_LM>1)
+	{
+		FEAR = TRUE;
+		fearCnt++;
+
+		//PrepAvgValue(fear4, sizeof(fear4) / sizeof(fear4[0]));
+
+		DisplayExpressionUsingEmoji();
+
+		if (fearCnt == 1000)
+		{
+			CreateTextFile(fearCnt);
+
+			fearCnt = 0;
+			PrepValue();
+		}
+	}
+	else if (BrowLowerLeft_LM>10 && BrowLowerRight_LM>10)
+		//Intensity[BrowLoweredLeft]>1 && Intensity[BrowLoweredRight]>10 && 
+		//outerBrowRaiserLeft_LM>10 && outerBrowRaiserRight_LM&&
+		//eyeOpenLeft_LM>10&&eyeOpenRight_LM>10)
+	{
+		ANGRY = TRUE;
+		angryCnt++;
+
+		//PrepAvgValue(angry2, sizeof(angry2) / sizeof(angry2[0]));
+
+		DisplayExpressionUsingEmoji();
+
+		if (angryCnt == 1000)
+		{
+			CreateTextFile(angryCnt);
+			angryCnt = 0;
+			PValueInit();
+		}
+	}
+
+	//*/
 
 	//Áß¸³
 	if (HAPPY == FALSE && SAD == FALSE &&
