@@ -28,6 +28,7 @@ Copyright(c) 2012-2013 Intel Corporation. All Rights Reserved.
 #include "FaceTrackingProcessor.h"
 #define CAPTURE 8282
 #define ADJUST 5252
+#define EXP_TIMER 9292
 
 pxcCHAR fileName[1024] = { 0 };
 PXCSession* session = NULL;
@@ -44,8 +45,9 @@ volatile bool ADJ_FLAG = false;
 volatile bool RVS_ADJ_FLAG = false;
 
 static int controls[] = {ID_START, ID_STOP, ID_REGISTER, ID_UNREGISTER, IDC_DISTANCES
-						,ID_ADJUST, IDC_TEXT_I1, IDC_TEXT_I2 ,IDC_TEXT_I3 ,IDC_TEXT_I4 ,IDC_TEXT_I5 ,IDC_TEXT_I6 ,IDC_TEXT_I7,IDC_TEXT_I8,IDC_TEXT_I8,IDC_TEXT_I9,IDC_TEXT_I10,IDC_TEXT_I11,
-						IDC_TEXT_EXP1,IDC_TEXT_EXP2,IDC_TEXT_EXP3,IDC_TEXT_EXP4,IDC_TEXT_EXP5,IDC_TEXT_EXP6,IDC_TEXT_EXP7, IDC_TEXT_EXP8,IDC_TEXT_EXP9,IDC_TEXT_EXP10,IDC_TEXT_EXP11,IDC_TEXT_EXP12,IDC_TEXT_EXP13
+						,ID_ADJUST, IDC_TEXT_I1, IDC_TEXT_I2 ,IDC_TEXT_I3 ,IDC_TEXT_I4 ,IDC_TEXT_I5 ,IDC_TEXT_I6 ,IDC_TEXT_I7,IDC_TEXT_I8,IDC_TEXT_I8,IDC_TEXT_I9,IDC_TEXT_I10,IDC_TEXT_I11,IDC_TEXT_I12,
+						IDC_TEXT_EXP1,IDC_TEXT_EXP2,IDC_TEXT_EXP3,IDC_TEXT_EXP4,IDC_TEXT_EXP5,IDC_TEXT_EXP6,IDC_TEXT_EXP7, IDC_TEXT_EXP8,IDC_TEXT_EXP9,IDC_TEXT_EXP10,IDC_TEXT_EXP11,IDC_TEXT_EXP12,IDC_TEXT_EXP13,
+						IDC_CAP_EXP, IDC_EXP_CNT1, IDC_EXP_CNT2, IDC_EXP_CNT3, IDC_EXP_CNT4, IDC_EXP_CNT5, IDC_EXP_CNT6, IDC_EXP_CNT7
 };
 static RECT layout[3 + sizeof(controls) / sizeof(controls[0])];
 
@@ -306,6 +308,8 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			PopulateProfile(dialogWindow);
 			SaveLayout(dialogWindow);
 			ShowWindow(dialogWindow, SW_MAXIMIZE);
+			//감정측정시간간격
+			SetTimer(dialogWindow, EXP_TIMER, 200, NULL);//0.2s
 
 			return TRUE; 
 
@@ -315,6 +319,9 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				ADJ_FLAG = false;
 				KillTimer(dialogWindow, ADJUST);
 				break;
+
+			case EXP_TIMER:
+				renderer->CaptuerExpression();
 			}
 			return TRUE;
 
@@ -357,6 +364,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			case IDC_TEXT_AVG:
 				renderer->DisplayAverage(renderer->happyCnt);
 				renderer->InitValue();
+
 				return TRUE;
 
 			case ID_ADJUST:
@@ -403,6 +411,10 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				//	Button_Enable(GetDlgItem(dialogWindow, ID_REGISTER), true);
 				//	Button_Enable(GetDlgItem(dialogWindow, ID_UNREGISTER), true);
 				////}
+
+				renderer->InitValue();
+				ADJ_FLAG = TRUE;
+				SetTimer(dialogWindow, ADJUST, 2000, NULL);
 
 				Sleep(0); //TODO: remove
 				return TRUE;

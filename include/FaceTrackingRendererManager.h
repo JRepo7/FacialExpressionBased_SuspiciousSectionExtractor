@@ -53,6 +53,7 @@ public:
 	void CreateTextFile(int cnt);
 	void DisplayExpressionUsingEmoji();
 	void DisplayAverage(int emoCnt);
+	void CaptuerExpression();
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
@@ -62,11 +63,12 @@ public:
 	void DisplayLandmarkI();
 	int adj_frameCount;
 
-	BOOL HAPPY, SAD, SURPRISE, FEAR, ANGRY, DISGUST;
+	BOOL HAPPY, SAD, SURPRISE, FEAR, ANGRY, DISGUST, NEUTRAL;
+	BOOL EXP_HAPPY, EXP_SAD, EXP_SURPRISE, EXP_FEAR, EXP_ANGRY, EXP_DISGUST, EXP_NEUTRAL;
 
 	double pAvgValue[6];
 
-	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt;
+	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
@@ -77,19 +79,6 @@ private:
 	OnFinishedRenderingCallback m_callback;
 	Point FacialPoint[78];
 
-	double tOuterBrowRaiserRight;
-	double tOuterBrowRaiserLeft;
-	double tEyeOpenRight;
-	double tEyeOpenLeft;
-	double tlipCornerRightDown;
-	double tlipCornerLeftDown;
-	double tUpperLipRaiser;
-
-
-	double tBrowLowerRight;
-	double tBrowLowerLeft;
-
-
 	int pOuterBrowRaiserRight;
 	int pOuterBrowRaiserLeft;
 	int pEyeOpenRight;
@@ -97,27 +86,41 @@ private:
 	int plipCornerRightDown;
 	int plipCornerLeftDown;
 	int pUpperLipRaiser;
-
 	int pBrowLowerRight;
 	int pBrowLowerLeft;
-
 	//14
 	int Intensity[14];
-	//11
 
-	double outerBrowRaiserLeft_I;
-	double outerBrowDepressorLeft_I;
-	double BrowLowerRight_I;
-	double BrowLowerLeft_I;
-	double outerBrowRaiserRight_I;
-	double outerBrowDepressorRight_I;
-	double upperLipRaiser_I;
-	double lipCornerRightDown_I;
-	double lipCornerLeftDown_I;
-	double eyeOpenRight_I;
-	double eyeOpenLeft_I;
-	double lipCornerRightUp_I;
-	double lipCornerLeftUp_I;
+	// Threshold
+	double tOuterBrowRaiserLeft;
+	double tBrowLowerRight;
+	double tBrowLowerLeft;
+	double tOuterBrowRaiserRight;
+	double tOuterBrowDepressorRight;
+	double tUpperLipRaiser;
+	double tlipCornerRightDown;
+	double tlipCornerLeftDown;
+	double tEyeOpenRight;
+	double tEyeOpenLeft;
+	double tLipCornerRightUp;
+	//double tlipCornerLeftUp;
+	double tMouthOpen;
+
+	//12
+	double outerBrowRaiserLeft_LM;
+	double outerBrowDepressorLeft_LM;
+	double BrowLowerRight_LM;
+	double BrowLowerLeft_LM;
+	double outerBrowRaiserRight_LM;
+	double outerBrowDepressorRight_LM;
+	double upperLipRaiser_LM;
+	double lipCornerRightDown_LM;
+	double lipCornerLeftDown_LM;
+	double eyeOpenRight_LM;
+	double eyeOpenLeft_LM;
+	double lipCornerRightUp_LM;
+	double lipCornerLeftUp_LM;
+	double mouthOpen_LM;
 	/*
 	1. 변수추가
 	2. 

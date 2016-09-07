@@ -10,9 +10,10 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 {
 	m_rendererSignal = CreateEvent(NULL, FALSE, FALSE, NULL);
 	adj_frameCount = 0;
-	happyCnt = sadCnt = surpriseCnt = fearCnt = angryCnt = disgustCnt = 0;
+	happyCnt = sadCnt = surpriseCnt = fearCnt = angryCnt = disgustCnt = neutralCnt= 0;
 	PValueInit();
-	HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST= FALSE;
+	HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST= NEUTRAL= FALSE;
+	EXP_HAPPY= EXP_SAD= EXP_SURPRISE= EXP_FEAR= EXP_ANGRY= EXP_DISGUST= EXP_NEUTRAL=FALSE;
 	SetExpressionArguments();
 }
 
@@ -134,6 +135,7 @@ void FaceTrackingRendererManager::GetLandmarkPoint()
 	}
 
 }
+
 void FaceTrackingRendererManager::InitValue()
 {
 	adj_frameCount = 0;
@@ -144,15 +146,25 @@ void FaceTrackingRendererManager::InitValue()
 	//add 
 	pBrowLowerRight = pBrowLowerLeft = 0;
 	//13
-	outerBrowRaiserLeft_I = outerBrowDepressorLeft_I = outerBrowRaiserRight_I = outerBrowDepressorRight_I = 0;
-	upperLipRaiser_I = 0;
-	lipCornerRightUp_I = lipCornerRightDown_I = lipCornerLeftUp_I = lipCornerLeftDown_I= 0;
-	eyeOpenRight_I =eyeOpenLeft_I = 0;
-	BrowLowerRight_I =BrowLowerLeft_I = 0;
+	outerBrowRaiserLeft_LM = outerBrowDepressorLeft_LM = outerBrowRaiserRight_LM = outerBrowDepressorRight_LM = 0;
+	upperLipRaiser_LM = 0;
+	eyeOpenRight_LM =eyeOpenLeft_LM = 0;
+	BrowLowerRight_LM =BrowLowerLeft_LM = 0;
+	lipCornerRightUp_LM = lipCornerRightDown_LM = lipCornerLeftUp_LM = lipCornerLeftDown_LM= 0;
+	mouthOpen_LM = 0;
 
-	happyCnt = sadCnt = surpriseCnt = fearCnt = angryCnt = disgustCnt = 0; 
+	happyCnt = sadCnt = surpriseCnt = fearCnt = angryCnt = disgustCnt = neutralCnt= 0;
 	PValueInit();
 }
+
+void FaceTrackingRendererManager::PValueInit()
+{
+	for (int i = 0; i < 6; i++)
+	{
+		pAvgValue[i] = 0;
+	}
+}
+
 void FaceTrackingRendererManager::PrepValue()
 {
 	adj_frameCount++;
@@ -172,6 +184,7 @@ void FaceTrackingRendererManager::PrepValue()
 	pBrowLowerLeft += (FacialPoint[20].y - FacialPoint[74].y);
 
 }
+
 void FaceTrackingRendererManager::SetThresValue()
 {
 	tOuterBrowRaiserRight = (double)pOuterBrowRaiserRight/adj_frameCount;
@@ -183,7 +196,9 @@ void FaceTrackingRendererManager::SetThresValue()
 	tUpperLipRaiser = (double)pUpperLipRaiser/adj_frameCount;
 	tBrowLowerRight = (double)pBrowLowerRight /adj_frameCount;
 	tBrowLowerLeft = (double)pBrowLowerLeft /adj_frameCount;
+	tMouthOpen = 45;//maxVal=45
 }
+
 void FaceTrackingRendererManager::DisplayExpressionI()
 {
 	// 14
@@ -230,6 +245,7 @@ void FaceTrackingRendererManager::DisplayExpressionI()
 	str.Format(_T("EyesDown: \t\t %d"), Intensity[12]);
 	SetWindowTextW(text_Exp13, str);
 }
+
 void FaceTrackingRendererManager::DisplayLandmarkI()
 {
 	// 11 
@@ -244,37 +260,42 @@ void FaceTrackingRendererManager::DisplayLandmarkI()
 	HWND text_I9 = GetDlgItem(m_window, IDC_TEXT_I9);
 	HWND text_I10 = GetDlgItem(m_window, IDC_TEXT_I10);
 	HWND text_I11 = GetDlgItem(m_window, IDC_TEXT_I11);
+	HWND text_I12 = GetDlgItem(m_window, IDC_TEXT_I12);
 
 	CString str;
 
-	str.Format(_T("outerBrowRaiserLeft_I :\t\t  %f"), outerBrowRaiserLeft_I);
+	str.Format(_T("outerBrowRaiserLeft_LM :\t\t  %f"), outerBrowRaiserLeft_LM);
 	SetWindowTextW(text_I1, str);
-	str.Format(_T("outerBrowRaiserRight_I :\t\t  %f"), outerBrowRaiserRight_I);
+	str.Format(_T("outerBrowRaiserRight_LM :\t\t  %f"), outerBrowRaiserRight_LM);
 	SetWindowTextW(text_I2, str);
 
-	str.Format(_T("BrowLowerRight_I :\t\t  %f"), BrowLowerRight_I);
+	str.Format(_T("BrowLowerRight_LM :\t\t\t  %f"), BrowLowerRight_LM);
 	SetWindowTextW(text_I3, str);
-	str.Format(_T("BrowLowerLeft_I :\t\t  %f"), BrowLowerLeft_I);
+	str.Format(_T("BrowLowerLeft_LM :\t\t\t  %f"), BrowLowerLeft_LM);
 	SetWindowTextW(text_I4, str);
 
-	str.Format(_T("upperLipRaiser_I:\t\t  %f"), upperLipRaiser_I);
+	str.Format(_T("upperLipRaiser_LM:\t\t\t  %f"), upperLipRaiser_LM);
 	SetWindowTextW(text_I5, str);
 
-	str.Format(_T("lipCornerRightDown_I:\t  %f"), lipCornerRightDown_I);
+	str.Format(_T("lipCornerRightDown_LM:\t  %f"), lipCornerRightDown_LM);
 	SetWindowTextW(text_I6, str);
-	str.Format(_T("lipCornerLeftDown_I:\t\t  %f"), lipCornerLeftDown_I);
+	str.Format(_T("lipCornerLeftDown_LM:\t\t  %f"), lipCornerLeftDown_LM);
 	SetWindowTextW(text_I7, str);
 
-	str.Format(_T("eyeOpenRight_I:\t\t   %f"), eyeOpenRight_I);
+	str.Format(_T("eyeOpenRight_LM:\t\t\t   %f"), eyeOpenRight_LM);
 	SetWindowTextW(text_I8, str);
-	str.Format(_T("eyeOpenLeft_I:\t\t   %f"), eyeOpenLeft_I);
+	str.Format(_T("eyeOpenLeft_LM:\t\t\t   %f"), eyeOpenLeft_LM);
 	SetWindowTextW(text_I9, str);
 
-	str.Format(_T("lipCornerRightUp_I:\t\t  %f"), lipCornerRightUp_I);
+	str.Format(_T("lipCornerRightUp_LM:\t\t  %f"), lipCornerRightUp_LM);
 	SetWindowTextW(text_I10, str);
-	str.Format(_T("lipCornerLeftUp_I:\t\t  %f"), lipCornerLeftUp_I);
+	str.Format(_T("lipCornerLeftUp_LM:\t\t  %f"), lipCornerLeftUp_LM);
 	SetWindowTextW(text_I11, str);
+
+	str.Format(_T("mouthOpen_LM:\t\t\t  %f"), mouthOpen_LM);
+	SetWindowTextW(text_I12, str);
 }
+
 void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 {
 	double ratio;
@@ -282,25 +303,25 @@ void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 	ratio = (FacialPoint[14].y - FacialPoint[3].y) / tOuterBrowRaiserRight;
 	if (ratio > 1)
 	{
-		outerBrowRaiserRight_I = (ratio * 100) - 100;
-		outerBrowDepressorRight_I = 0;//반대 조건의 변수인 outerBrowDepressorRight_I가 이전 값을 갖는경우가 있으므로 0으로 set해줌
+		outerBrowRaiserRight_LM = (ratio * 100) - 100;
+		outerBrowDepressorRight_LM = 0;//반대 조건의 변수인 outerBrowDepressorRight_LM가 이전 값을 갖는경우가 있으므로 0으로 set해줌
 	}
 	else
 	{
-		outerBrowDepressorRight_I = 100 - (ratio * 100);
-		outerBrowRaiserRight_I = 0;
+		outerBrowDepressorRight_LM = 100 - (ratio * 100);
+		outerBrowRaiserRight_LM = 0;
 	}
 	
 	ratio = ((FacialPoint[22].y - FacialPoint[8].y) / tOuterBrowRaiserLeft);
 	if (ratio > 1)
 	{
-		outerBrowRaiserLeft_I = (ratio * 100) - 100;
-		outerBrowDepressorLeft_I = 0;
+		outerBrowRaiserLeft_LM = (ratio * 100) - 100;
+		outerBrowDepressorLeft_LM = 0;
 	}
 	else
 	{
-		outerBrowDepressorLeft_I = 100 - (ratio * 100);
-		outerBrowRaiserLeft_I = 0;
+		outerBrowDepressorLeft_LM = 100 - (ratio * 100);
+		outerBrowRaiserLeft_LM = 0;
 	}
 
 	//fp36(윗입술)의 위치가 올라가면 기준점 fp31(인중)과 fp36(윗입술) 간의 높이차는 줄어듬 즉 if(ratio < 1) 가 적절
@@ -308,175 +329,195 @@ void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 	ratio = ((FacialPoint[36].y - FacialPoint[26].y) / tUpperLipRaiser);
 	if (ratio < 1)
 	{
-		upperLipRaiser_I = 100 - (ratio * 100);
+		upperLipRaiser_LM = 100 - (ratio * 100);
 
 	}
 	else
 	{
-		upperLipRaiser_I = 0;
+		upperLipRaiser_LM = 0;
 	}
 
 	ratio = ((FacialPoint[33].y - FacialPoint[30].y) / tlipCornerRightDown);
 	if (ratio > 1)
 	{
-		lipCornerRightDown_I = (ratio * 100)-100;
-		lipCornerRightUp_I = 0;
+		lipCornerRightDown_LM = (ratio * 100)-100;
+		lipCornerRightUp_LM = 0;
 	}
 	else
 	{
-		lipCornerRightUp_I = 100 - (ratio * 100);
-		lipCornerRightDown_I = 0;
+		lipCornerRightUp_LM = 100 - (ratio * 100);
+		lipCornerRightDown_LM = 0;
 	}
 
 	ratio = ((FacialPoint[39].y - FacialPoint[32].y) / tlipCornerLeftDown);
 	if (ratio > 1)
 	{
-		lipCornerLeftDown_I = (ratio * 100)-100;
-		lipCornerLeftUp_I = 0;
+		lipCornerLeftDown_LM = (ratio * 100)-100;
+		lipCornerLeftUp_LM = 0;
 	}
 	else
 	{
-		lipCornerLeftUp_I = 100 - (ratio * 100);
-		lipCornerLeftDown_I = 0;
+		lipCornerLeftUp_LM = 100 - (ratio * 100);
+		lipCornerLeftDown_LM = 0;
 	}
 
 	ratio = ((FacialPoint[24].y - FacialPoint[20].y) / tEyeOpenLeft);
 	if (ratio >1)
 	{
-		eyeOpenLeft_I = (ratio * 100)-100;
+		eyeOpenLeft_LM = (ratio * 100)-100;
 	}
 	else
 	{
-		eyeOpenLeft_I = 0;
+		eyeOpenLeft_LM = 0;
 	}
 
 	ratio = ((FacialPoint[16].y - FacialPoint[12].y) / tEyeOpenRight);
 	if (ratio > 1)
 	{
-		eyeOpenRight_I = (ratio * 100)-100;
+		eyeOpenRight_LM = (ratio * 100)-100;
 	}
 	else
 	{
-		eyeOpenRight_I = 0;
+		eyeOpenRight_LM = 0;
 	}
 
 	ratio = ((FacialPoint[12].y - FacialPoint[70].y)/ tBrowLowerRight);
 
 	if (ratio > 1)
 	{
-		BrowLowerRight_I = 0;
+		BrowLowerRight_LM = 0;
 	}
 	else
 	{
-		BrowLowerRight_I = 100-(ratio * 100);
+		BrowLowerRight_LM = 100-(ratio * 100);
 	}
 
 	ratio = ((FacialPoint[20].y - FacialPoint[74].y)/ tBrowLowerLeft);
 	if (ratio > 1)
 	{
-		BrowLowerLeft_I = 0;
+		BrowLowerLeft_LM = 0;
 	}
 	else
 	{
-		BrowLowerLeft_I = 100-(ratio * 100);
+		BrowLowerLeft_LM = 100-(ratio * 100);
 	}
+
+	ratio = ((FacialPoint[51].y - FacialPoint[47].y) /tMouthOpen );
+	if (ratio > 1)
+	{
+		mouthOpen_LM = 100;
+	}
+	else
+	{
+		if (ratio < 0) 
+		{
+			mouthOpen_LM = 0;
+		}
+		else
+		{
+			mouthOpen_LM = ratio * 100;
+		}
+	}
+
 	DisplayExpressionI();
 	DisplayLandmarkI();
 }
+
 void FaceTrackingRendererManager::SetExpressionArguments()
 {
 //	double happy5[5], sad6[5], surprise5[5], fear4;
-//	happy5[0] = { outerBrowRaiserRight_I };
-//	happy5[1] = { outerBrowRaiserLeft_I };
+//	happy5[0] = { outerBrowRaiserRight_LM };
+//	happy5[1] = { outerBrowRaiserLeft_LM };
 //	happy5[2] = { (double)Intensity[Smile] };
-//	happy5[3] = { lipCornerLeftUp_I };
-//	happy5[4] = { lipCornerRightUp_I };
+//	happy5[3] = { lipCornerLeftUp_LM };
+//	happy5[4] = { lipCornerRightUp_LM };
 //
 //	sad6[0] = { (double)Intensity[BrowLoweredLeft] };
 //	sad6[1] = { (double)Intensity[BrowLoweredRight] };
-//	sad6[2] = { lipCornerRightDown_I };
-//	sad6[3] = { lipCornerLeftDown_I };
-//	sad6[4] = { outerBrowDepressorRight_I };
-//	sad6[5] = { outerBrowDepressorLeft_I };
+//	sad6[2] = { lipCornerRightDown_LM };
+//	sad6[3] = { lipCornerLeftDown_LM };
+//	sad6[4] = { outerBrowDepressorRight_LM };
+//	sad6[5] = { outerBrowDepressorLeft_LM };
 //
-//	surprise5[0] = { outerBrowRaiserLeft_I };
-//	surprise5[1] = { outerBrowRaiserRight_I };
-//	surprise5[2] = { eyeOpenRight_I };
-//	surprise5[3] = { eyeOpenLeft_I };
+//	surprise5[0] = { outerBrowRaiserLeft_LM };
+//	surprise5[1] = { outerBrowRaiserRight_LM };
+//	surprise5[2] = { eyeOpenRight_LM };
+//	surprise5[3] = { eyeOpenLeft_LM };
 //	surprise5[4] = { (double)Intensity[MouthOpen] };
 //
-//	fear4[0] = { BrowLowerRight_I };
-//	fear4[1] = { BrowLowerLeft_I };
-//	fear4[2] = { upperLipRaiser_I };
-//	fear4[3] = { lipCornerRightDown_I };
-//	//arg4 += outerBrowRaiserRight_I;
-//	//arg5 += outerBrowRaiserLeft_I;
+//	fear4[0] = { BrowLowerRight_LM };
+//	fear4[1] = { BrowLowerLeft_LM };
+//	fear4[2] = { upperLipRaiser_LM };
+//	fear4[3] = { lipCornerRightDown_LM };
+//	//arg4 += outerBrowRaiserRight_LM;
+//	//arg5 += outerBrowRaiserLeft_LM;
 //
-//	angry2[0] = { BrowLowerLeft_I };
-//	angry2[1] = { BrowLowerRight_I };
-//	//eyeOpenRight_I,
-//	//outerBrowRaiserRight_I,
-//	//outerBrowRaiserLeft_I
+//	angry2[0] = { BrowLowerLeft_LM };
+//	angry2[1] = { BrowLowerRight_LM };
+//	//eyeOpenRight_LM,
+//	//outerBrowRaiserRight_LM,
+//	//outerBrowRaiserLeft_LM
 //
-//	disgust5[0] = { BrowLowerRight_I };
-//	disgust5[1] = { BrowLowerLeft_I };
-//	disgust5[2] = { upperLipRaiser_I };
-//	disgust5[3] = { lipCornerRightDown_I };
-//	disgust5[4] = { lipCornerLeftDown_I };
+//	disgust5[0] = { BrowLowerRight_LM };
+//	disgust5[1] = { BrowLowerLeft_LM };
+//	disgust5[2] = { upperLipRaiser_LM };
+//	disgust5[3] = { lipCornerRightDown_LM };
+//	disgust5[4] = { lipCornerLeftDown_LM };
 }
+
 void FaceTrackingRendererManager::DetermineExpression()
 {
 //	double happy5[5], sad6[5], surprise5[5], fear4[4], angry2[2], disgust5[5];
 //
-//	happy5[0] = { outerBrowRaiserRight_I };
-//	happy5[1] = { outerBrowRaiserLeft_I };
+//	happy5[0] = { outerBrowRaiserRight_LM };
+//	happy5[1] = { outerBrowRaiserLeft_LM };
 //	happy5[2] = { (double)Intensity[Smile] };
-//	happy5[3] = { lipCornerLeftUp_I };
-//	happy5[4] = { lipCornerRightUp_I };
+//	happy5[3] = { lipCornerLeftUp_LM };
+//	happy5[4] = { lipCornerRightUp_LM };
 //
 //	sad6[0] = { (double)Intensity[BrowLoweredLeft] };
 //	sad6[1] = { (double)Intensity[BrowLoweredRight] };
-//	sad6[2] = { lipCornerRightDown_I };
-//	sad6[3] = { lipCornerLeftDown_I };
-//	sad6[4] = { outerBrowDepressorRight_I };
-//	sad6[5] = { outerBrowDepressorLeft_I };
+//	sad6[2] = { lipCornerRightDown_LM };
+//	sad6[3] = { lipCornerLeftDown_LM };
+//	sad6[4] = { outerBrowDepressorRight_LM };
+//	sad6[5] = { outerBrowDepressorLeft_LM };
 //
-//	surprise5[0] = { outerBrowRaiserLeft_I };
-//	surprise5[1] = { outerBrowRaiserRight_I };
-//	surprise5[2] = { eyeOpenRight_I };
-//	surprise5[3] = { eyeOpenLeft_I };
+//	surprise5[0] = { outerBrowRaiserLeft_LM };
+//	surprise5[1] = { outerBrowRaiserRight_LM };
+//	surprise5[2] = { eyeOpenRight_LM };
+//	surprise5[3] = { eyeOpenLeft_LM };
 //	surprise5[4] = { (double)Intensity[MouthOpen] };
 //
-//	fear4[0] = { BrowLowerRight_I };
-//	fear4[1] = { BrowLowerLeft_I };
-//	fear4[2] = { upperLipRaiser_I };
-//	fear4[3] = { lipCornerRightDown_I };
-//	//arg4 += outerBrowRaiserRight_I;
-//	//arg5 += outerBrowRaiserLeft_I;
+//	fear4[0] = { BrowLowerRight_LM };
+//	fear4[1] = { BrowLowerLeft_LM };
+//	fear4[2] = { upperLipRaiser_LM };
+//	fear4[3] = { lipCornerRightDown_LM };
+//	//arg4 += outerBrowRaiserRight_LM;
+//	//arg5 += outerBrowRaiserLeft_LM;
 //
-//	angry2[0] = { BrowLowerLeft_I };
-//	angry2[1] = { BrowLowerRight_I };
-//	//eyeOpenRight_I,
-//	//outerBrowRaiserRight_I,
-//	//outerBrowRaiserLeft_I
+//	angry2[0] = { BrowLowerLeft_LM };
+//	angry2[1] = { BrowLowerRight_LM };
+//	//eyeOpenRight_LM,
+//	//outerBrowRaiserRight_LM,
+//	//outerBrowRaiserLeft_LM
 //
-//	disgust5[0] = { BrowLowerRight_I };
-//	disgust5[1] = { BrowLowerLeft_I };
-//	disgust5[2] = { upperLipRaiser_I };
-//	disgust5[3] = { lipCornerRightDown_I };
-//	disgust5[4] = { lipCornerLeftDown_I };
+//	disgust5[0] = { BrowLowerRight_LM };
+//	disgust5[1] = { BrowLowerLeft_LM };
+//	disgust5[2] = { upperLipRaiser_LM };
+//	disgust5[3] = { lipCornerRightDown_LM };
+//	disgust5[4] = { lipCornerLeftDown_LM };
 
-	if (outerBrowRaiserRight_I > 1 && outerBrowRaiserLeft_I > 1 &&
-		(Intensity[Smile] > 10 || (lipCornerLeftUp_I > 5 && lipCornerRightUp_I > 5)))
+	if (outerBrowRaiserRight_LM > 1 && outerBrowRaiserLeft_LM > 1 &&
+		(Intensity[Smile] > 10 || (lipCornerLeftUp_LM > 5 && lipCornerRightUp_LM > 5)))
 	{
 		HAPPY = TRUE;
 		double arg[]
 			= { 
-			outerBrowRaiserRight_I,
-			outerBrowRaiserLeft_I,
+			outerBrowRaiserRight_LM,
+			outerBrowRaiserLeft_LM,
 			Intensity[Smile],
-			lipCornerLeftUp_I,
-			lipCornerRightUp_I
+			lipCornerLeftUp_LM,
+			lipCornerRightUp_LM
 		};
 
 		happyCnt++;
@@ -491,16 +532,17 @@ void FaceTrackingRendererManager::DetermineExpression()
 			happyCnt = 0;
 			PValueInit();
 		}
-		HAPPY = FALSE;
+		//HAPPY = FALSE;
 	}
-	/*
-	if (( (outerBrowDepressorLeft_I + outerBrowDepressorRight_I >1) ||(Intensity[BrowLoweredLeft]>10 && Intensity[BrowLoweredRight] > 10) )&& 
-		(lipCornerRightDown_I + lipCornerLeftDown_I > 5))
+	//*/
+
+	if (( (outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM >1) ||(Intensity[BrowLoweredLeft]>10 && Intensity[BrowLoweredRight] > 10) )&& 
+		(lipCornerRightDown_LM + lipCornerLeftDown_LM > 5) && mouthOpen_LM<25)
 	{
 		SAD = TRUE;
 		sadCnt++;
 		
-		PrepAvgValue(sad6, sizeof(sad6) / sizeof(sad6[0]));
+		//PrepAvgValue(arg, sizeof(arg) / sizeof(arg[0]));
 
 		DisplayExpressionUsingEmoji();
 
@@ -511,16 +553,17 @@ void FaceTrackingRendererManager::DetermineExpression()
 			PValueInit();
 		}
 
-		SAD = FALSE;
+		//SAD = FALSE;
 	}
-
-	if (outerBrowRaiserLeft_I > 1 && outerBrowRaiserRight_I > 1 && eyeOpenRight_I > 10 && eyeOpenLeft_I > 10 &&
+	//*/
+	
+	if (outerBrowRaiserLeft_LM > 1 && outerBrowRaiserRight_LM > 1 && eyeOpenRight_LM > 10 && eyeOpenLeft_LM > 10 &&
 		Intensity[MouthOpen] > 0)
 	{
 		SURPRISE = TRUE;
 		surpriseCnt++;
 
-		PrepAvgValue(surprise5, sizeof(surprise5) / sizeof(surprise5[0]));
+		//PrepAvgValue(surprise5, sizeof(surprise5) / sizeof(surprise5[0]));
 
 		DisplayExpressionUsingEmoji();
 
@@ -531,18 +574,19 @@ void FaceTrackingRendererManager::DetermineExpression()
 			surpriseCnt= 0;
 			PValueInit();
 		}
-		SURPRISE = FALSE;
+		//SURPRISE = FALSE;
 	}
-
+	//*/
+	
 	if (
-		(BrowLowerRight_I>10 && BrowLowerLeft_I>10) &&
-		(eyeOpenLeft_I>1 && eyeOpenRight_I>1))
-		//outerBrowRaiserRight_I >1 && outerBrowRaiserLeft_I>1)
+		(BrowLowerRight_LM>10 && BrowLowerLeft_LM>10) &&
+		(eyeOpenLeft_LM>1 && eyeOpenRight_LM>1))
+		//outerBrowRaiserRight_LM >1 && outerBrowRaiserLeft_LM>1)
 	{
 		FEAR = TRUE;
 		fearCnt++;
 
-		PrepAvgValue(fear4, sizeof(fear4) / sizeof(fear4[0]));
+		//PrepAvgValue(fear4, sizeof(fear4) / sizeof(fear4[0]));
 
 		if (fearCnt == 1000)
 		{
@@ -553,16 +597,18 @@ void FaceTrackingRendererManager::DetermineExpression()
 		}
 		FEAR = FALSE;
 	}
+	//*/
+
 	
-	if ((BrowLowerLeft_I + BrowLowerRight_I)>1)
+	if (BrowLowerLeft_LM>10 && BrowLowerRight_LM>10)
 		//Intensity[BrowLoweredLeft]>1 && Intensity[BrowLoweredRight]>10 && 
-		//outerBrowRaiserLeft_I>10 && outerBrowRaiserRight_I&&
-		//eyeOpenLeft_I>10&&eyeOpenRight_I>10)
+		//outerBrowRaiserLeft_LM>10 && outerBrowRaiserRight_LM&&
+		//eyeOpenLeft_LM>10&&eyeOpenRight_LM>10)
 	{
 		ANGRY = TRUE;
 		angryCnt++;
 
-		PrepAvgValue(angry2, sizeof(angry2) / sizeof(angry2[0]));
+		//PrepAvgValue(angry2, sizeof(angry2) / sizeof(angry2[0]));
 
 		DisplayExpressionUsingEmoji();
 
@@ -573,37 +619,138 @@ void FaceTrackingRendererManager::DetermineExpression()
 			PValueInit();
 		}
 	}
-	
-
-	if ((BrowLowerRight_I>10 && BrowLowerLeft_I>10) &&
-		upperLipRaiser_I>1 &&
-		(lipCornerRightDown_I + lipCornerLeftDown_I>5))
+	if ((BrowLowerRight_LM + BrowLowerLeft_LM > 10) &&
+		(mouthOpen_LM>25 &&(lipCornerRightDown_LM + lipCornerLeftDown_LM>5))
+		)
 	{
 		DISGUST = TRUE;
 		disgustCnt++;
-
-		PrepAvgValue(disgust5, sizeof(disgust5) / sizeof(disgust5[0]));
+		double arg[]=
+		{
+			BrowLowerRight_LM,
+			BrowLowerLeft_LM,
+			Intensity[MouthOpen],
+			lipCornerRightDown_LM,
+			lipCornerLeftDown_LM
+		};
+		PrepAvgValue(arg, sizeof(arg) / sizeof(arg[0]));
 
 		DisplayExpressionUsingEmoji();
 
-		if (disgustCnt == 1000)
+		if (disgustCnt == 500)
 		{
 			CreateTextFile(disgustCnt);
 
 			disgustCnt = 0;
 			PValueInit();
 		}
-		DISGUST = FALSE;
+		//DISGUST = FALSE;
+	}
+
+	//중립
+	if (HAPPY == FALSE && SAD == FALSE &&
+		SURPRISE == FALSE && FEAR == FALSE &&
+		ANGRY == FALSE && DISGUST == FALSE)
+	{
+		NEUTRAL = TRUE;
+		neutralCnt++;
+
+		DisplayExpressionUsingEmoji();
 	}
 	//*/
+
+	HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST = NEUTRAL = NEUTRAL = FALSE;
 }
-void FaceTrackingRendererManager::PValueInit()
-{
-	for (int i = 0; i < 6; i++)
+
+void FaceTrackingRendererManager::CaptuerExpression() {
+
+	HWND text = GetDlgItem(m_window, IDC_CAP_EXP);
+	HWND text1 = GetDlgItem(m_window, IDC_EXP_CNT1);
+	HWND text2 = GetDlgItem(m_window, IDC_EXP_CNT2);
+	HWND text3 = GetDlgItem(m_window, IDC_EXP_CNT3);
+	HWND text4 = GetDlgItem(m_window, IDC_EXP_CNT4);
+	HWND text5 = GetDlgItem(m_window, IDC_EXP_CNT5);
+	HWND text6 = GetDlgItem(m_window, IDC_EXP_CNT6);
+	HWND text7 = GetDlgItem(m_window, IDC_EXP_CNT7);
+
+	CString str;
+
+	int i;
+	i=max(happyCnt, 
+		max(sadCnt, 
+			max(surpriseCnt, 
+				max(fearCnt, 
+					max(angryCnt, 
+						max(disgustCnt,neutralCnt))))));
+	
+	if (i == neutralCnt)
 	{
-		pAvgValue[i] = 0;
+		EXP_NEUTRAL = TRUE;
+		EXP_SAD = EXP_HAPPY = EXP_FEAR = EXP_ANGRY = EXP_SURPRISE = EXP_DISGUST = FALSE;
+		str.Format(_T("N E U T R A L"));
+		SetWindowTextW(text, str);
 	}
+	else if (i==happyCnt) 
+	{
+		EXP_HAPPY = TRUE;
+		EXP_SAD = EXP_SURPRISE = EXP_FEAR = EXP_ANGRY = EXP_DISGUST = EXP_NEUTRAL = FALSE;
+		str.Format(_T("H A P P Y"));
+		SetWindowTextW(text, str);
+	}
+	else if (i == sadCnt)
+	{
+		EXP_SAD = TRUE;
+		EXP_HAPPY = EXP_SURPRISE = EXP_FEAR = EXP_ANGRY = EXP_DISGUST = EXP_NEUTRAL = FALSE;
+		str.Format(_T("S  A  D"));
+		SetWindowTextW(text, str);
+	}
+	else if (i == surpriseCnt)
+	{
+		EXP_SURPRISE = TRUE;
+		EXP_SAD = EXP_HAPPY = EXP_FEAR = EXP_ANGRY = EXP_DISGUST = EXP_NEUTRAL=FALSE;
+		str.Format(_T("S U R P R I S E"));
+		SetWindowTextW(text, str);
+	}
+	else if (i == fearCnt)
+	{
+		EXP_FEAR = TRUE;
+		EXP_SAD = EXP_HAPPY = EXP_SURPRISE = EXP_ANGRY = EXP_DISGUST = EXP_NEUTRAL=FALSE;
+		str.Format(_T("F  E  A  R"));
+		SetWindowTextW(text, str);
+	}
+	else if (i == angryCnt)
+	{
+		EXP_ANGRY = TRUE;
+		EXP_SAD = EXP_HAPPY = EXP_FEAR = EXP_SURPRISE = EXP_DISGUST = EXP_NEUTRAL=FALSE;
+		str.Format(_T("A N G R Y"));
+		SetWindowTextW(text, str);
+	}
+	else if (i == disgustCnt)
+	{
+		EXP_DISGUST = TRUE;
+		EXP_SAD = EXP_HAPPY = EXP_FEAR = EXP_ANGRY = EXP_SURPRISE = EXP_NEUTRAL=FALSE;
+		str.Format(_T("D I S G U S T"));
+		SetWindowTextW(text, str);
+	}
+
+	str.Format(_T("happyCnt:    %d"), happyCnt);
+	SetWindowTextW(text1, str);
+	str.Format(_T("sadCnt:      %d"), sadCnt);
+	SetWindowTextW(text2, str);
+	str.Format(_T("surpriseCnt: %d"), surpriseCnt);
+	SetWindowTextW(text3, str);
+	str.Format(_T("fearCnt:     %d"), fearCnt);
+	SetWindowTextW(text4, str);
+	str.Format(_T("angryCnt:    %d"), angryCnt);
+	SetWindowTextW(text5, str);
+	str.Format(_T("disgustCnt:  %d"), disgustCnt);
+	SetWindowTextW(text6, str);
+	str.Format(_T("neutralCnt:  %d"), neutralCnt);
+	SetWindowTextW(text7, str);
+
+	happyCnt= sadCnt= surpriseCnt= fearCnt= angryCnt= disgustCnt= neutralCnt=0;
 }
+
 void FaceTrackingRendererManager::PrepAvgValue(double arg[], int length)
 {
 	for (int i = 0; i < length; i++)
@@ -611,6 +758,7 @@ void FaceTrackingRendererManager::PrepAvgValue(double arg[], int length)
 		pAvgValue[i] += arg[i];
 	}
 }
+
 void FaceTrackingRendererManager::CreateTextFile(int cnt)
 {
 	FILE *fp = fopen("data.txt", "a");
@@ -642,33 +790,42 @@ void FaceTrackingRendererManager::CreateTextFile(int cnt)
 	}
 	if (ANGRY)
 	{
-		fprintf(fp, "BrowDeclineRight_I  : \t%f\n", pAvgValue[0]/ fearCnt);
-		fprintf(fp, "BrowDeclineLeft_I :  \t%f\n", pAvgValue[1]/ fearCnt);
-		//fprintf(fp, "eyeOpenLeft_I  : \t%f\n", arg2 / fear_count);
-		//fprintf(fp, "eyeOpenRight_I : \t%f\n", arg3 / fear_count);
-		//fprintf(fp, "outerBrowRaiserRight_I  : \t%f\n", arg4 / fear_count);
-		//fprintf(fp, "outerBrowRaiserLeft_I  : \t%f\n", arg5 / fear_count);
+		fprintf(fp, "BrowDeclineRight_LM  : \t%f\n", pAvgValue[0]/ fearCnt);
+		fprintf(fp, "BrowDeclineLeft_LM :  \t%f\n", pAvgValue[1]/ fearCnt);
+		//fprintf(fp, "eyeOpenLeft_LM  : \t%f\n", arg2 / fear_count);
+		//fprintf(fp, "eyeOpenRight_LM : \t%f\n", arg3 / fear_count);
+		//fprintf(fp, "outerBrowRaiserRight_LM  : \t%f\n", arg4 / fear_count);
+		//fprintf(fp, "outerBrowRaiserLeft_LM  : \t%f\n", arg5 / fear_count);
 	}
 	if (FEAR)
 	{
-		fprintf(fp, "InnerBrowDepressorRight_I  : \t%f\n", pAvgValue[0]/ cnt);
-		fprintf(fp, "InnerBrowDepressorLeft_I :  \t%f\n", pAvgValue[1]/ cnt);
-		fprintf(fp, "eyeOpenLeft_I  : \t%f\n", pAvgValue[2]/ cnt);
-		fprintf(fp, "eyeOpenRight_I : \t%f\n", pAvgValue[3]/ cnt);
-		//fprintf(fp, "outerBrowRaiserRight_I  : \t%f\n", arg4 / fear_count);
-		//fprintf(fp, "outerBrowRaiserLeft_I  : \t%f\n", arg5 / fear_count);
+		fprintf(fp, "InnerBrowDepressorRight_LM  : \t%f\n", pAvgValue[0]/ cnt);
+		fprintf(fp, "InnerBrowDepressorLeft_LM :  \t%f\n", pAvgValue[1]/ cnt);
+		fprintf(fp, "eyeOpenLeft_LM  : \t%f\n", pAvgValue[2]/ cnt);
+		fprintf(fp, "eyeOpenRight_LM : \t%f\n", pAvgValue[3]/ cnt);
+		//fprintf(fp, "outerBrowRaiserRight_LM  : \t%f\n", arg4 / fear_count);
+		//fprintf(fp, "outerBrowRaiserLeft_LM  : \t%f\n", arg5 / fear_count);
 	}
 	if (DISGUST)
 	{
 		fprintf(fp, "BrowLower_R  : \t%f\n", pAvgValue[0]/ cnt);
 		fprintf(fp, "BrowLower_L  :  \t%f\n", pAvgValue[1]/ cnt);
-		fprintf(fp, "upperLip_Raiser  : \t%f\n", pAvgValue[2]/ cnt);
+		fprintf(fp, "MouthOpen  : \t%f\n", pAvgValue[2]/ cnt);
 		fprintf(fp, "lipCorner_R_Down : \t%f\n", pAvgValue[3]/ cnt);
 		fprintf(fp, "lipCorner_L_Down  : \t%f\n", pAvgValue[4]/ cnt);
+	}
+	if (NEUTRAL)
+	{
+		fprintf(fp, "BrowLower_R  : \t%f\n", pAvgValue[0] / cnt);
+		fprintf(fp, "BrowLower_L  :  \t%f\n", pAvgValue[1] / cnt);
+		fprintf(fp, "MouthOpen  : \t%f\n", pAvgValue[2] / cnt);
+		fprintf(fp, "lipCorner_R_Down : \t%f\n", pAvgValue[3] / cnt);
+		fprintf(fp, "lipCorner_L_Down  : \t%f\n", pAvgValue[4] / cnt);
 	}
 	fprintf(fp, "\n");
 	fclose(fp);
 }
+
 void FaceTrackingRendererManager::DisplayExpressionUsingEmoji()
 {
 	HWND text_emo = GetDlgItem(m_window, IDC_TEXT_EMO);
@@ -760,6 +917,19 @@ void FaceTrackingRendererManager::DisplayExpressionUsingEmoji()
 		str.Format(_T("EXPRESSION: disgust"));
 		SetWindowTextW(text_emo, str);
 		str.Format(_TEXT("%d"), disgustCnt);
+		SetWindowTextW(text_I1, str);
+		SendDlgItemMessage(m_window, IDC_EMO, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
+	}
+	if (NEUTRAL)
+	{
+		if (emo != NULL)
+		{
+			DeleteObject(emo);
+		}
+		hBmp = (HBITMAP)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_NEUTRAL), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
+		str.Format(_T("EXPRESSION: neutral"));
+		SetWindowTextW(text_emo, str);
+		str.Format(_TEXT("%d"), neutralCnt);
 		SetWindowTextW(text_I1, str);
 		SendDlgItemMessage(m_window, IDC_EMO, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
 	}
