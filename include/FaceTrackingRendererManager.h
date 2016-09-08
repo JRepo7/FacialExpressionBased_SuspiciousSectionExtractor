@@ -54,12 +54,13 @@ public:
 	void CaptureSubtleExpression();
 	//
 
+	double GetDuration(int frame);
 	int GetFrameSize(double second);
-	void SetValueInsideSlidingWindowSizeIs();
+	void SetValueInsideSlidingWindowSizeIs(int windowSize);
 
 	int VotingUsingSlidingWindow(int duration);
 
-	BOOL IsChanged();
+	double IsChanged();
 
 	void CaptureSuspiciousExpression();
 	void CaptureSuspiciousSmile();
@@ -81,6 +82,7 @@ public:
 
 	int *slidingWindow;
 	int cursor;
+	int numOfFrame;
 
 private:
 	FaceTrackingRenderer2D* m_renderer2D;

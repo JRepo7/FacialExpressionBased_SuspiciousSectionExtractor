@@ -594,14 +594,16 @@ void FaceTrackingRendererManager::DisplayExpressionUsingEmoji(BOOL EXP_EMO[])
 	}
 }
 
-
+double FaceTrackingRendererManager::GetDuration(int frame)
+{
+	return (double)frame / 30;
+}
 int FaceTrackingRendererManager::GetFrameSize(double second)
 {
 	return second * 30;			//60초 들어옴
 }
-void FaceTrackingRendererManager::SetValueInsideSlidingWindowSizeIs()
+void FaceTrackingRendererManager::SetValueInsideSlidingWindowSizeIs(int windowSize)
 {
-	int size=GetFrameSize(60);
 	enum
 	{
 		happy,
@@ -612,11 +614,11 @@ void FaceTrackingRendererManager::SetValueInsideSlidingWindowSizeIs()
 		disgust,
 		neutral
 	};
-	this->slidingWindow = new int[size];		//1800개 
+	this->slidingWindow = new int[windowSize];		//1800개 
 	
-	for (this->cursor = 0; cursor<size; cursor++)
+	for (this->cursor = 0; cursor<windowSize; cursor++)
 	{
-		if (cursor == size)
+		if (cursor == windowSize)
 		{
 			cursor = 0;
 		}
@@ -772,8 +774,9 @@ int FaceTrackingRendererManager::VotingUsingSlidingWindow(int duration)
 	}
 
 }
-BOOL FaceTrackingRendererManager::IsChanged()
+double FaceTrackingRendererManager::IsChanged()
 {
+
 	enum
 	{
 		happy,
@@ -784,10 +787,41 @@ BOOL FaceTrackingRendererManager::IsChanged()
 		disgust,
 		neutral
 	}; 
-	int second;
-	VotingUsingSlidingWindow(1);
+	int constant;
 
-	return second;
+	int WhatEmo = VotingUsingSlidingWindow(1);// 1 프레임
+	numOfFrame++;
+
+	if (happy == WhatEmo)
+	{
+		constant = happy;
+	}
+	else if (sad == WhatEmo)
+	{
+		constant = sad;
+	}
+	else if (surprise == WhatEmo)
+	{
+		constant = surprise;
+	}
+	else if (fear == WhatEmo)
+	{
+		constant = fear;
+	}
+	else if (angry == WhatEmo)
+	{
+		constant = angry;
+	}
+	else if (disgust == WhatEmo)
+	{
+		constant = disgust;
+	}
+	else
+	{
+		constant = neutral;
+	}
+
+	return numOfFrame;
 }
 
 

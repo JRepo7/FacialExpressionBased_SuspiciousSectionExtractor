@@ -271,7 +271,7 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 		{
 			renderer->CvtLandmarkToIntensity();
 			renderer->DetermineExpression();
-			renderer->SetValueInsideSlidingWindowSizeIs();
+			renderer->SetValueInsideSlidingWindowSizeIs(renderer->GetFrameSize(60));
 			//renderer->set
 		}
 	}
