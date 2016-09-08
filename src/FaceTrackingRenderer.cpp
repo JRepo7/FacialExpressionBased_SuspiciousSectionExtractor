@@ -158,3 +158,4 @@ void FaceTrackingRenderer::SetNumberOfLandmarks(int numLandmarks)
 		delete[] m_landmarkPoints;
 	m_landmarkPoints = new PXCFaceData::LandmarkPoint[numLandmarks];
 }
+

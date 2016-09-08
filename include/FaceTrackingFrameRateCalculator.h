@@ -17,6 +17,5 @@ public:
 	bool IsFrameRateReady();
 	int GetFrameRate();
 	void Tick();
-	int currTime;
 
 };

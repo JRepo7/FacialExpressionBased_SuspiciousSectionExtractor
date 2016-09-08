@@ -6,9 +6,6 @@ FaceTrackingFrameRateCalculator::FaceTrackingFrameRateCalculator() :
 	currentTime(), 
 	isFrameRateReady(false)
 {
-	QueryPerformanceCounter(&previousTime);
-	QueryPerformanceFrequency(&frequency);// 1ms 
-	currTime = frequency.QuadPart - previousTime.QuadPart;
 }
 
 bool FaceTrackingFrameRateCalculator::IsFrameRateReady()

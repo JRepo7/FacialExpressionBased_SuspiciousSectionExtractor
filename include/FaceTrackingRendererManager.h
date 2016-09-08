@@ -43,6 +43,8 @@ public:
 	void Reset();
 	void GetExpIntensity();
 	void GetLandmarkPoint();
+
+
 	void PrepValue();
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
@@ -51,12 +53,18 @@ public:
 	void SetTextEmoCount();
 	void CaptureSubtleExpression();
 	//
+
+	int GetFrameSize(int second);
+	void SetValueInsideWindowSlideSizeIs();
+
+	int VotingUsingWindowSlide(int duration);
+	BOOL IsChanged(BOOL PREV, BOOL NOW);
+
 	void CaptureSuspiciousExpression();
 	void CaptureSuspiciousSmile();
 	void CaptureSuspiciousEyeMovement();
 	void CaptureSuspiciousEyeBlink();
 	void CaptureSuspiciousHeadMovement();
-
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
@@ -68,6 +76,8 @@ public:
 	BOOL EXP_HAPPY, EXP_SAD, EXP_SURPRISE, EXP_FEAR, EXP_ANGRY, EXP_DISGUST, EXP_NEUTRAL;
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
+
+	int *windowSlide;
 
 private:
 	FaceTrackingRenderer2D* m_renderer2D;

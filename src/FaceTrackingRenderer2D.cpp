@@ -217,10 +217,10 @@ void FaceTrackingRenderer2D::DrawExpressions(PXCFaceData::Face* trackedFace, con
 	HDC dc1 = GetDC(panelWindow);
 	HDC dc2 = CreateCompatibleDC(dc1);
 
-	HWND timer = GetDlgItem(m_window, IDC_TIMER);
-	CString str;
-	str.Format(_T("%d"), m_frameRateCalcuator.currTime);
-	SetWindowTextW(timer, str);
+	//HWND timer = GetDlgItem(m_window, IDC_TIMER);
+	//CString str;
+	//str.Format(_T("%d"), m_frameRateCalcuator.currTime);
+	//SetWindowTextW(timer, str);
 
 	if (!dc2) 
 	{
