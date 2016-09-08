@@ -1,11 +1,12 @@
 #pragma once
 
 #include <windows.h>
+#include "resource.h"
 
-class graphManager
+class GraphManager
 {
 public:
-	graphManager(HWND panel);
+	GraphManager(HWND window, HWND graph);
 	void DrawGraph();
 	void DrawPoint();
 
@@ -13,6 +14,7 @@ public:
 	int y;
 
 private:
-	HWND m_panel;
+	HWND m_graph;
+	HWND m_window;
 
 };

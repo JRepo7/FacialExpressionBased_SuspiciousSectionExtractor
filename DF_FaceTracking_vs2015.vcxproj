@@ -231,9 +231,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="graph.cpp" />
     <ClCompile Include="src\FaceTrackingProcessor.cpp" />
     <ClCompile Include="src\FaceTrackingAlertHandler.cpp" />
+    <ClCompile Include="src\Graph.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\FaceTrackingFrameRateCalculator.cpp" />
     <ClCompile Include="src\FaceTrackingRendererManager.cpp" />
@@ -243,8 +243,8 @@
     <ClCompile Include="src\FaceTrackingRenderer2D.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="graph.h" />
     <ClInclude Include="include\FaceTrackingRendererManager.h" />
+    <ClInclude Include="include\Graph.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="include\FaceTrackingProcessor.h" />
     <ClInclude Include="include\FaceTrackingRenderer.h" />

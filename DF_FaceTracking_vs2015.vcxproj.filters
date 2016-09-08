@@ -39,7 +39,7 @@
     <ClCompile Include="src\FaceTrackingRenderer2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graph.cpp">
+    <ClCompile Include="src\Graph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,7 +71,7 @@
     <ClInclude Include="include\FaceTrackingRenderer3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graph.h">
+    <ClInclude Include="include\Graph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
