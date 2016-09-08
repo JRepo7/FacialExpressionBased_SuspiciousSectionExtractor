@@ -320,7 +320,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				break;
 
 			case EXP_TIMER:
-				renderer->CaptuerExpression();
+				renderer->CaptureSubtleExpression();
 				renderer->DisplayExpressionUsingEmoji();
 			}
 			return TRUE;
