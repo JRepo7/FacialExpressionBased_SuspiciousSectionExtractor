@@ -14,7 +14,7 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 	HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST= FALSE;
 	EXP_HAPPY= EXP_SAD= EXP_SURPRISE= EXP_FEAR= EXP_ANGRY= EXP_DISGUST= EXP_NEUTRAL=FALSE;
 
-	windowSlide = NULL;
+	slidingWindow = NULL;
 }
 
 FaceTrackingRendererManager::~FaceTrackingRendererManager(void)
@@ -154,7 +154,7 @@ void FaceTrackingRendererManager::InitValue()
 	mouthOpen_LM = 0;
 
 	happyCnt = sadCnt = surpriseCnt = fearCnt = angryCnt = disgustCnt = neutralCnt= 0;
-	windowSlide = NULL;
+	slidingWindow = NULL;
 }
 
 void FaceTrackingRendererManager::PrepValue()
@@ -565,11 +565,11 @@ void FaceTrackingRendererManager::DisplayExpressionUsingEmoji()
 }
 
 
-int FaceTrackingRendererManager::GetFrameSize(int second)
+int FaceTrackingRendererManager::GetFrameSize(double second)
 {
 	return second * 30;			//60초 들어옴
 }
-void FaceTrackingRendererManager::SetValueInsideWindowSlideSizeIs()
+void FaceTrackingRendererManager::SetValueInsideSlidingWindowSizeIs()
 {
 	int size=GetFrameSize(60);
 	enum
@@ -582,7 +582,7 @@ void FaceTrackingRendererManager::SetValueInsideWindowSlideSizeIs()
 		disgust,
 		neutral
 	};
-	FaceTrackingRendererManager::windowSlide = new int[size];		//1800개 
+	FaceTrackingRendererManager::slidingWindow = new int[size];		//1800개 
 
 	for (int i = 0; i<size; i++)
 	{
@@ -597,7 +597,7 @@ void FaceTrackingRendererManager::SetValueInsideWindowSlideSizeIs()
 				(eyeOpenRight_LM < 10 && eyeOpenLeft_LM < 10))
 		{
 			HAPPY = TRUE;
-			windowSlide[i] = happy;
+			slidingWindow[i] = happy;
 		}
 
 		if (((outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM >1) ||
@@ -606,7 +606,7 @@ void FaceTrackingRendererManager::SetValueInsideWindowSlideSizeIs()
 			mouthOpen_LM<25)
 		{
 			SAD = TRUE;
-			windowSlide[i] = sad;
+			slidingWindow[i] = sad;
 		}
 
 		if (outerBrowRaiserLeft_LM > 1 && outerBrowRaiserRight_LM > 1 &&
@@ -614,7 +614,7 @@ void FaceTrackingRendererManager::SetValueInsideWindowSlideSizeIs()
 			mouthOpen_LM > 20)
 		{
 			SURPRISE = TRUE;
-			windowSlide[i] = surprise;
+			slidingWindow[i] = surprise;
 		}
 
 		if ((BrowLowerRight_LM + BrowLowerLeft_LM > 10) &&
@@ -622,27 +622,27 @@ void FaceTrackingRendererManager::SetValueInsideWindowSlideSizeIs()
 			(lipCornerRightDown_LM + lipCornerLeftDown_LM>5)))
 		{
 			DISGUST = TRUE;
-			windowSlide[i] = disgust;
+			slidingWindow[i] = disgust;
 		}
 		else if ((lipCornerRightDown_LM + lipCornerLeftDown_LM < 5) &&
 			(BrowLowerRight_LM + BrowLowerLeft_LM>10) &&
 			(eyeOpenLeft_LM + eyeOpenRight_LM>5))
 		{
 			FEAR = TRUE;
-			windowSlide[i] = fear;
+			slidingWindow[i] = fear;
 		}
 		else if (BrowLowerLeft_LM>10 && BrowLowerRight_LM>10 &&
 			(lipCornerRightDown_LM + lipCornerLeftDown_LM < 5))
 		{
 			ANGRY = TRUE;
-			windowSlide[i] = angry;
+			slidingWindow[i] = angry;
 		}
 
 		if (HAPPY == FALSE && SAD == FALSE &&
 			SURPRISE == FALSE && FEAR == FALSE &&
 			ANGRY == FALSE && DISGUST == FALSE)
 		{
-			windowSlide[i] = neutral;
+			slidingWindow[i] = neutral;
 		}
 
 		HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST = FALSE;
@@ -650,7 +650,7 @@ void FaceTrackingRendererManager::SetValueInsideWindowSlideSizeIs()
 	}
 
 }
-int FaceTrackingRendererManager::VotingUsingWindowSlide(int duration)
+int FaceTrackingRendererManager::VotingUsingSlidingWindow(int duration)
 {
 	enum
 	{
@@ -668,27 +668,27 @@ int FaceTrackingRendererManager::VotingUsingWindowSlide(int duration)
 	//voting
 	for (int i = 0; i < duration; i++)
 	{
-		if (windowSlide[i] == happy)
+		if (slidingWindow[i] == happy)
 		{
 			candidateEmo[happy]++;
 		}
-		else if (windowSlide[i] == sad)
+		else if (slidingWindow[i] == sad)
 		{
 			candidateEmo[sad]++;
 		}
-		else if (windowSlide[i] == surprise)
+		else if (slidingWindow[i] == surprise)
 		{
 			candidateEmo[surprise]++;
 		}
-		else if (windowSlide[i] == fear)
+		else if (slidingWindow[i] == fear)
 		{
 			candidateEmo[fear]++;
 		}
-		else if (windowSlide[i] == angry)
+		else if (slidingWindow[i] == angry)
 		{
 			candidateEmo[angry]++;
 		}
-		else if (windowSlide[i] == disgust)
+		else if (slidingWindow[i] == disgust)
 		{
 			candidateEmo[disgust]++;
 		}

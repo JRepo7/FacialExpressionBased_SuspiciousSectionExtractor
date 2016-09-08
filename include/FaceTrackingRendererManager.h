@@ -54,10 +54,10 @@ public:
 	void CaptureSubtleExpression();
 	//
 
-	int GetFrameSize(int second);
-	void SetValueInsideWindowSlideSizeIs();
+	int GetFrameSize(double second);
+	void SetValueInsideSlidingWindowSizeIs();
 
-	int VotingUsingWindowSlide(int duration);
+	int VotingUsingSlidingWindow(int duration);
 	BOOL IsChanged(BOOL PREV, BOOL NOW);
 
 	void CaptureSuspiciousExpression();
@@ -77,7 +77,7 @@ public:
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
-	int *windowSlide;
+	int *slidingWindow;
 
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
