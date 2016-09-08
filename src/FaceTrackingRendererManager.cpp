@@ -8,13 +8,22 @@ extern HANDLE ghMutex;
 FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D* renderer2D, FaceTrackingRenderer3D* renderer3D, HWND window) :
 	m_window(window), m_renderer2D(renderer2D), m_renderer3D(renderer3D), m_currentRenderer(NULL)
 {
+	enum {
+		happy,
+		sad,
+		surprise,
+		fear,
+		angry,
+		disgust,
+		neutral
+	};
 	m_rendererSignal = CreateEvent(NULL, FALSE, FALSE, NULL);
 	adj_frameCount = 0;
 	happyCnt = sadCnt = surpriseCnt = fearCnt = angryCnt = disgustCnt = neutralCnt= 0;
 	HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST= FALSE;
-	EXP_HAPPY= EXP_SAD= EXP_SURPRISE= EXP_FEAR= EXP_ANGRY= EXP_DISGUST= EXP_NEUTRAL=FALSE;
-
+	EXP_EMO[happy]= EXP_EMO[sad] = EXP_EMO[surprise] = EXP_EMO[fear] = EXP_EMO[angry] = EXP_EMO[disgust] = EXP_EMO[neutral] =FALSE;
 	slidingWindow = NULL;
+	cursor = 0;
 }
 
 FaceTrackingRendererManager::~FaceTrackingRendererManager(void)
@@ -153,8 +162,10 @@ void FaceTrackingRendererManager::InitValue()
 	lipCornerRightUp_LM = lipCornerRightDown_LM = lipCornerLeftUp_LM = lipCornerLeftDown_LM= 0;
 	mouthOpen_LM = 0;
 
+	EXP_EMO[0] = EXP_EMO[1] = EXP_EMO[2] = EXP_EMO[3] = EXP_EMO[4] = EXP_EMO[5] = EXP_EMO[6] = FALSE;
 	happyCnt = sadCnt = surpriseCnt = fearCnt = angryCnt = disgustCnt = neutralCnt= 0;
 	slidingWindow = NULL;
+	cursor = 0;
 }
 
 void FaceTrackingRendererManager::PrepValue()
@@ -403,7 +414,17 @@ void FaceTrackingRendererManager::SetTextEmoCount()
 	SetWindowTextW(text7, str);
 }
 void FaceTrackingRendererManager::CaptureSubtleExpression() {
+	enum
+	{
+		happy,
+		sad,
+		surprise,
+		fear,
+		angry,
+		disgust,
+		neutral
 
+	};
 	int Winner =max(happyCnt,
 					max(sadCnt, 
 						max(surpriseCnt, 
@@ -413,70 +434,79 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 	
 	if (Winner == neutralCnt)
 	{
-		EXP_NEUTRAL = TRUE;
+		EXP_EMO[neutral] = TRUE;
 
-		DisplayExpressionUsingEmoji();
+		DisplayExpressionUsingEmoji(EXP_EMO);
 
-		EXP_NEUTRAL = FALSE;
+		EXP_EMO[neutral] = FALSE;
 	}
 	else if (Winner ==happyCnt)
 	{
-		EXP_HAPPY = TRUE;
+		EXP_EMO[happy] = TRUE;
 
-		DisplayExpressionUsingEmoji();
+		DisplayExpressionUsingEmoji(EXP_EMO);
 
-		EXP_HAPPY = FALSE;
+		EXP_EMO[happy] = FALSE;
 	}
 	else if (Winner == sadCnt)
 	{
-		EXP_SAD = TRUE;
+		EXP_EMO[sad] = TRUE;
 
-		DisplayExpressionUsingEmoji();
+		DisplayExpressionUsingEmoji(EXP_EMO);
 
-		EXP_SAD = FALSE;
+		EXP_EMO[sad] = FALSE;
 	}
 	else if (Winner == surpriseCnt)
 	{
-		EXP_SURPRISE = TRUE;
+		EXP_EMO[surprise] = TRUE;
 
-		DisplayExpressionUsingEmoji();
+		DisplayExpressionUsingEmoji(EXP_EMO);
 
-		EXP_SURPRISE = FALSE;
+		EXP_EMO[surprise] = FALSE;
 	}
 	else if (Winner == fearCnt)
 	{
-		EXP_FEAR = TRUE;
+		EXP_EMO[fear] = TRUE;
 
-		DisplayExpressionUsingEmoji();
+		DisplayExpressionUsingEmoji(EXP_EMO);
 
-		EXP_FEAR = FALSE;
+		EXP_EMO[fear] = FALSE;
 	}
 	else if (Winner == angryCnt)
 	{
-		EXP_ANGRY = TRUE;
+		EXP_EMO[angry] = TRUE;
 
-		DisplayExpressionUsingEmoji();
+		DisplayExpressionUsingEmoji(EXP_EMO);
 
-		EXP_ANGRY = FALSE;
+		EXP_EMO[angry] = FALSE;
 	}
 	else if (Winner == disgustCnt)
 	{
-		EXP_DISGUST = TRUE;
+		EXP_EMO[disgust] = TRUE;
 
-		DisplayExpressionUsingEmoji();
+		DisplayExpressionUsingEmoji(EXP_EMO);
 
-		EXP_DISGUST = FALSE;
+		EXP_EMO[disgust] = FALSE;
 	}
 
 	happyCnt= sadCnt= surpriseCnt= fearCnt= angryCnt= disgustCnt= neutralCnt=0;
 }
-void FaceTrackingRendererManager::DisplayExpressionUsingEmoji()
+void FaceTrackingRendererManager::DisplayExpressionUsingEmoji(BOOL EXP_EMO[])
 {
+	enum {
+		happy,
+		sad,
+		surprise,
+		fear,
+		angry,
+		disgust,
+		neutral
+	};
 	HWND text_emo = GetDlgItem(m_window, IDC_TEXT_EMO);
 	HWND emo = GetDlgItem(m_window, IDC_EMO);
 	CString str;
 	HBITMAP hBmp;
-	if (EXP_HAPPY)
+	if (EXP_EMO[happy])
 	{
 		if (emo != NULL)
 		{
@@ -488,7 +518,7 @@ void FaceTrackingRendererManager::DisplayExpressionUsingEmoji()
 		SendDlgItemMessage(m_window, IDC_EMO, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
 	}
 
-	if (EXP_SAD)
+	if (EXP_EMO[sad])
 	{
 		if (emo != NULL)
 		{
@@ -501,7 +531,7 @@ void FaceTrackingRendererManager::DisplayExpressionUsingEmoji()
 		SendDlgItemMessage(m_window, IDC_EMO, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
 	}
 
-	if (EXP_SURPRISE)
+	if (EXP_EMO[surprise])
 	{
 		if (emo != NULL)
 		{
@@ -515,7 +545,7 @@ void FaceTrackingRendererManager::DisplayExpressionUsingEmoji()
 
 	}
 
-	if (EXP_FEAR)
+	if (EXP_EMO[fear])
 	{
 		if (emo != NULL)
 		{
@@ -528,7 +558,7 @@ void FaceTrackingRendererManager::DisplayExpressionUsingEmoji()
 		SendDlgItemMessage(m_window, IDC_EMO, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
 	}
 
-	if (EXP_ANGRY)
+	if (EXP_EMO[angry])
 	{
 		if (emo)
 		{
@@ -540,7 +570,7 @@ void FaceTrackingRendererManager::DisplayExpressionUsingEmoji()
 		SendDlgItemMessage(m_window, IDC_EMO, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
 
 	}
-	if (EXP_DISGUST)
+	if (EXP_EMO[disgust])
 	{
 		if (emo != NULL)
 		{
@@ -551,7 +581,7 @@ void FaceTrackingRendererManager::DisplayExpressionUsingEmoji()
 		SetWindowTextW(text_emo, str);
 		SendDlgItemMessage(m_window, IDC_EMO, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
 	}
-	if (EXP_NEUTRAL)
+	if (EXP_EMO[neutral])
 	{
 		if (emo != NULL)
 		{
@@ -582,13 +612,13 @@ void FaceTrackingRendererManager::SetValueInsideSlidingWindowSizeIs()
 		disgust,
 		neutral
 	};
-	FaceTrackingRendererManager::slidingWindow = new int[size];		//1800°³ 
-
-	for (int i = 0; i<size; i++)
+	this->slidingWindow = new int[size];		//1800°³ 
+	
+	for (this->cursor = 0; cursor<size; cursor++)
 	{
-		if (i == size)
+		if (cursor == size)
 		{
-			i = 0;
+			cursor = 0;
 		}
 		if (
 			(outerBrowRaiserLeft_LM + outerBrowRaiserRight_LM > 1) &&
@@ -597,7 +627,7 @@ void FaceTrackingRendererManager::SetValueInsideSlidingWindowSizeIs()
 				(eyeOpenRight_LM < 10 && eyeOpenLeft_LM < 10))
 		{
 			HAPPY = TRUE;
-			slidingWindow[i] = happy;
+			slidingWindow[cursor] = happy;
 		}
 
 		if (((outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM >1) ||
@@ -606,7 +636,7 @@ void FaceTrackingRendererManager::SetValueInsideSlidingWindowSizeIs()
 			mouthOpen_LM<25)
 		{
 			SAD = TRUE;
-			slidingWindow[i] = sad;
+			slidingWindow[cursor] = sad;
 		}
 
 		if (outerBrowRaiserLeft_LM > 1 && outerBrowRaiserRight_LM > 1 &&
@@ -614,7 +644,7 @@ void FaceTrackingRendererManager::SetValueInsideSlidingWindowSizeIs()
 			mouthOpen_LM > 20)
 		{
 			SURPRISE = TRUE;
-			slidingWindow[i] = surprise;
+			slidingWindow[cursor] = surprise;
 		}
 
 		if ((BrowLowerRight_LM + BrowLowerLeft_LM > 10) &&
@@ -622,27 +652,27 @@ void FaceTrackingRendererManager::SetValueInsideSlidingWindowSizeIs()
 			(lipCornerRightDown_LM + lipCornerLeftDown_LM>5)))
 		{
 			DISGUST = TRUE;
-			slidingWindow[i] = disgust;
+			slidingWindow[cursor] = disgust;
 		}
 		else if ((lipCornerRightDown_LM + lipCornerLeftDown_LM < 5) &&
 			(BrowLowerRight_LM + BrowLowerLeft_LM>10) &&
 			(eyeOpenLeft_LM + eyeOpenRight_LM>5))
 		{
 			FEAR = TRUE;
-			slidingWindow[i] = fear;
+			slidingWindow[cursor] = fear;
 		}
 		else if (BrowLowerLeft_LM>10 && BrowLowerRight_LM>10 &&
 			(lipCornerRightDown_LM + lipCornerLeftDown_LM < 5))
 		{
 			ANGRY = TRUE;
-			slidingWindow[i] = angry;
+			slidingWindow[cursor] = angry;
 		}
 
 		if (HAPPY == FALSE && SAD == FALSE &&
 			SURPRISE == FALSE && FEAR == FALSE &&
 			ANGRY == FALSE && DISGUST == FALSE)
 		{
-			slidingWindow[i] = neutral;
+			slidingWindow[cursor] = neutral;
 		}
 
 		HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST = FALSE;
@@ -664,10 +694,17 @@ int FaceTrackingRendererManager::VotingUsingSlidingWindow(int duration)
 	};
 	//candidates
 	int candidateEmo[7] = { 0, };
+	int start = cursor;
+	int cond = duration + start;
 
 	//voting
-	for (int i = 0; i < duration; i++)
+	for (int i = start; i < cond; i++)
 	{
+		if (i == cond)
+		{
+			i = 0 ;
+			cond = duration;
+		}
 		if (slidingWindow[i] == happy)
 		{
 			candidateEmo[happy]++;
@@ -735,17 +772,23 @@ int FaceTrackingRendererManager::VotingUsingSlidingWindow(int duration)
 	}
 
 }
-BOOL FaceTrackingRendererManager::IsChanged(BOOL PREV, BOOL NOW)
+BOOL FaceTrackingRendererManager::IsChanged()
 {
-	if (PREV == NOW) return 1; 
-}
-	/*
-	for (int i = 0; i < GetFrmaeSize(5); i++)
+	enum
 	{
-		if (IsChanged(slideWindow[i], slideWindow[i + 1])) return 1;
-		else 0;
-	}
-	//*/
+		happy,
+		sad,
+		surprise,
+		fear,
+		angry,
+		disgust,
+		neutral
+	}; 
+	int second;
+	VotingUsingSlidingWindow(1);
+
+	return second;
+}
 
 
 void FaceTrackingRendererManager::CaptureSuspiciousExpression()

@@ -49,7 +49,7 @@ public:
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
 	void DetermineExpression();
-	void DisplayExpressionUsingEmoji();
+	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
 	void SetTextEmoCount();
 	void CaptureSubtleExpression();
 	//
@@ -58,7 +58,8 @@ public:
 	void SetValueInsideSlidingWindowSizeIs();
 
 	int VotingUsingSlidingWindow(int duration);
-	BOOL IsChanged(BOOL PREV, BOOL NOW);
+
+	BOOL IsChanged();
 
 	void CaptureSuspiciousExpression();
 	void CaptureSuspiciousSmile();
@@ -73,11 +74,13 @@ public:
 	int adj_frameCount;
 
 	BOOL HAPPY, SAD, SURPRISE, FEAR, ANGRY, DISGUST;		//for Neutral
-	BOOL EXP_HAPPY, EXP_SAD, EXP_SURPRISE, EXP_FEAR, EXP_ANGRY, EXP_DISGUST, EXP_NEUTRAL;
+	BOOL EXP_EMO[7];
+	//BOOL EXP_HAPPY, EXP_SAD, EXP_SURPRISE, EXP_FEAR, EXP_ANGRY, EXP_DISGUST, EXP_NEUTRAL;
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
 	int *slidingWindow;
+	int cursor;
 
 private:
 	FaceTrackingRenderer2D* m_renderer2D;

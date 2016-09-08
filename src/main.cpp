@@ -272,6 +272,7 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 			renderer->CvtLandmarkToIntensity();
 			renderer->DetermineExpression();
 			renderer->SetValueInsideSlidingWindowSizeIs();
+			//renderer->set
 		}
 	}
 }
@@ -322,7 +323,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 
 			case EXP_TIMER:
 				renderer->CaptureSubtleExpression();
-				renderer->DisplayExpressionUsingEmoji();
+				//renderer->DisplayExpressionUsingEmoji(renderer->EXP_EMO);
 			}
 			return TRUE;
 
