@@ -56,9 +56,12 @@ public:
 
 	double GetDuration(int frame);
 	int GetFrameSize(double second);
-	void SetValueInsideSlidingWindowSizeIs(int windowSize);
+
+	void SetValueInsideSlidingWindows();
 
 	int VotingUsingSlidingWindow(int duration);
+
+	void Func();
 
 	double IsChanged();
 
@@ -80,10 +83,13 @@ public:
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
-	int *slidingWindow;
+	int slidingWindow[1800];
+	int slidingWindow_d[400];
+	int SizeOfWindow;
 	int cursor;
 	int numOfFrame;
-
+	int candidEmo[7];	// for voting
+	
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
 	FaceTrackingRenderer3D* m_renderer3D;

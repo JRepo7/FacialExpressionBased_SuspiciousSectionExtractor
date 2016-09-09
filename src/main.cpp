@@ -271,7 +271,11 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 		{
 			renderer->CvtLandmarkToIntensity();
 			renderer->DetermineExpression();
-			renderer->SetValueInsideSlidingWindowSizeIs(renderer->GetFrameSize(60));
+			renderer->SetValueInsideSlidingWindows();
+			if (renderer->cursor == renderer->GetDuration(20))
+			{
+				renderer->Func();
+			}
 			//renderer->set
 		}
 	}
@@ -312,6 +316,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			//감정측정시간간격
 			SetTimer(dialogWindow, EXP_TIMER, 200, NULL);//0.2s
 
+
 			return TRUE; 
 
 		case WM_TIMER:
@@ -321,8 +326,8 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				KillTimer(dialogWindow, ADJUST);
 				break;
 
-			case EXP_TIMER:
-				renderer->CaptureSubtleExpression();
+			//case EXP_TIMER:
+			//	renderer->CaptureSubtleExpression();
 				//renderer->DisplayExpressionUsingEmoji(renderer->EXP_EMO);
 			}
 			return TRUE;
