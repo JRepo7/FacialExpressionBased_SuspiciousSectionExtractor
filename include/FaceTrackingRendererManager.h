@@ -61,16 +61,11 @@ public:
 	int VotingUsingSlidingWindow(int duration);
 	void DetermineExpression();
 	void DetermineSmileExpression();
-	void Func();
 
 	int IsChanged();
 
-	void CaptureSuspiciousExpression();
-
 	void CaptureSuspiciousSmile();
-	void CaptureSuspiciousEyeMovement();
-	void CaptureSuspiciousEyeBlink();
-	void CaptureSuspiciousHeadMovement();
+
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();

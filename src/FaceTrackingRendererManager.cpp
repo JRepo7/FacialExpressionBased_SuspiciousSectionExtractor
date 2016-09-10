@@ -638,28 +638,11 @@ int FaceTrackingRendererManager::VotingUsingSlidingWindow(int duration)
 
 void FaceTrackingRendererManager::DetermineSmileExpression()
 {
-	enum
-	{
-		happy,
-		sad,
-		surprise,
-		fear,
-		angry,
-		disgust,
-		neutral
-	};
-
+	
 }
 int FaceTrackingRendererManager::IsChanged()
 {
-	if (ws_smile[cursor - 1] == ws_smile[cursor])
-	{
-		return 0;
-	}
-	else
-	{
-		return 1;
-	}
+	return 0;
 }
 void FaceTrackingRendererManager::CaptureSuspiciousSmile()
 {
@@ -792,20 +775,4 @@ void FaceTrackingRendererManager::DetermineExpression()
 void FaceTrackingRendererManager::LastingSmileInfo()
 {
 	recordSmile++;
-}
-void FaceTrackingRendererManager::CaptureSuspiciousExpression()
-{
-	
-}
-void CaptureSuspiciousEyeBlink()
-{
-
-}
-void FaceTrackingRendererManager::CaptureSuspiciousEyeMovement()
-{
-
-}
-void FaceTrackingRendererManager::CaptureSuspiciousHeadMovement()
-{
-
 }

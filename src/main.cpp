@@ -271,7 +271,6 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 		{
 			renderer->CvtLandmarkToIntensity();
 			renderer->DetermineExpression();
-			renderer->Func();
 		}
 	}
 }
@@ -321,8 +320,8 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				KillTimer(dialogWindow, ADJUST);
 				break;
 
-			//case EXP_TIMER:
-			//	renderer->CaptureSubtleExpression();
+			case EXP_TIMER:
+				renderer->CaptureSubtleExpression();
 				//renderer->DisplayExpressionUsingEmoji(renderer->EXP_EMO);
 			}
 			return TRUE;
