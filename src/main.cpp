@@ -271,12 +271,7 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 		{
 			renderer->CvtLandmarkToIntensity();
 			renderer->DetermineExpression();
-			
-			if (renderer->cursor == renderer->GetDuration(20))
-			{
-				renderer->Func();
-			}
-			//renderer->set
+			renderer->Func();
 		}
 	}
 }

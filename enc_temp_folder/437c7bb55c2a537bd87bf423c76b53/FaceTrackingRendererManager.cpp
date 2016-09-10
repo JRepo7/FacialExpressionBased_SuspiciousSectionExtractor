@@ -675,7 +675,6 @@ int FaceTrackingRendererManager::VotingUsingSlidingWindow(int duration)
 			candidEmo[surprise]++;
 		}
 		else if (slidingWindow_d[cursor_d] == fear)
-
 		{
 			candidEmo[fear]++;
 		}

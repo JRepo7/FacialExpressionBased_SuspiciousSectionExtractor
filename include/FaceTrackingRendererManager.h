@@ -84,13 +84,16 @@ public:
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
 	int slidingWindow[1800] = { 0, };
-	int slidingWindow_d[400] = {0,};
+	int slidingWindow_d[180] = {0,};
 
-	int SizeOfWindow;
+	int sizeOfWindow;
+	int sizeOfWindow_d;
+
 	int cursor;
 	int cursor_d;
 	int numOfFrame;
 	int candidEmo[7];	// for voting
+	int mayor;
 	
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
