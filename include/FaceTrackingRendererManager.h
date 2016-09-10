@@ -48,7 +48,6 @@ public:
 	void PrepValue();
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
-	void DetermineExpression();
 	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
 	void SetTextEmoCount();
 	void CaptureSubtleExpression();
@@ -57,7 +56,8 @@ public:
 	double GetDuration(int frame);
 	int GetFrameSize(double second);
 
-	void SetValueInsideSlidingWindows();
+	void DetermineExpression();
+
 
 	int VotingUsingSlidingWindow(int duration);
 
@@ -83,10 +83,12 @@ public:
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
-	int slidingWindow[1800];
-	int slidingWindow_d[400];
+	int slidingWindow[1800] = { 0, };
+	int slidingWindow_d[400] = {0,};
+
 	int SizeOfWindow;
 	int cursor;
+	int cursor_d;
 	int numOfFrame;
 	int candidEmo[7];	// for voting
 	
