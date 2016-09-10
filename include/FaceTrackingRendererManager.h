@@ -56,16 +56,17 @@ public:
 	double GetDuration(int frame);
 	int GetFrameSize(double second);
 
-	void DetermineExpression();
-
+	void LastingSmileInfo();
 
 	int VotingUsingSlidingWindow(int duration);
-
+	void DetermineExpression();
+	void DetermineSmileExpression();
 	void Func();
 
-	double IsChanged();
+	int IsChanged();
 
 	void CaptureSuspiciousExpression();
+
 	void CaptureSuspiciousSmile();
 	void CaptureSuspiciousEyeMovement();
 	void CaptureSuspiciousEyeBlink();
@@ -83,8 +84,9 @@ public:
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
-	int slidingWindow[1800] = { 0, };
-	int slidingWindow_d[180] = {0,};
+	int slidingWindow[1800] = {0,};
+	BOOL ws_smile[1800] = { 0, };
+	int slidingWindow_d[180] = { 0, };
 
 	int sizeOfWindow;
 	int sizeOfWindow_d;
@@ -94,7 +96,8 @@ public:
 	int numOfFrame;
 	int candidEmo[7];	// for voting
 	int mayor;
-	
+	int recordSmile;
+	BOOL STATEOFSMILE=FALSE;
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
 	FaceTrackingRenderer3D* m_renderer3D;
