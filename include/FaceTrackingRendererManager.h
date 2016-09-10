@@ -48,15 +48,7 @@ public:
 	void CvtLandmarkToIntensity();
 	void DetermineExpression();
 	void DisplayExpressionUsingEmoji();
-	void SetTextEmoCount();
-	void CaptureSubtleExpression();
-	//
-	void CaptureSuspiciousExpression();
-	void CaptureSuspiciousSmile();
-	void CaptureSuspiciousEyeMovement();
-	void CaptureSuspiciousEyeBlink();
-	void CaptureSuspiciousHeadMovement();
-
+	void CaptuerExpression();
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
@@ -64,7 +56,7 @@ public:
 	void InitValue();
 	int adj_frameCount;
 
-	BOOL HAPPY, SAD, SURPRISE, FEAR, ANGRY, DISGUST;		//for Neutral
+	BOOL HAPPY, SAD, SURPRISE, FEAR, ANGRY, DISGUST, NEUTRAL;
 	BOOL EXP_HAPPY, EXP_SAD, EXP_SURPRISE, EXP_FEAR, EXP_ANGRY, EXP_DISGUST, EXP_NEUTRAL;
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;

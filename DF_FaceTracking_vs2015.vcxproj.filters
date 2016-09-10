@@ -39,7 +39,13 @@
     <ClCompile Include="src\FaceTrackingRenderer2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graph.cpp">
+    <ClCompile Include="src\MLineChartConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MLineChartCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MLineChartData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,7 +77,13 @@
     <ClInclude Include="include\FaceTrackingRenderer3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graph.h">
+    <ClInclude Include="include\MLineChartConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MLineChartCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MLineChartData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

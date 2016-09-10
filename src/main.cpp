@@ -26,7 +26,6 @@ Copyright(c) 2012-2013 Intel Corporation. All Rights Reserved.
 #include "FaceTrackingRenderer3D.h"
 #include "FaceTrackingUtilities.h"
 #include "FaceTrackingProcessor.h"
-#include "graph.h"
 #define CAPTURE 8282
 #define ADJUST 5252
 #define EXP_TIMER 9292
@@ -35,7 +34,6 @@ pxcCHAR fileName[1024] = { 0 };
 PXCSession* session = NULL;
 FaceTrackingRendererManager* renderer = NULL;
 FaceTrackingProcessor* processor = NULL;
-GraphManager* graph = NULL;
 
 HANDLE ghMutex;
 
@@ -308,14 +306,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			PopulateModule(menu1);
 			PopulateProfile(dialogWindow);
 			SaveLayout(dialogWindow);
-
 			ShowWindow(dialogWindow, SW_MAXIMIZE);
-
-
-			graph = new GraphManager(dialogWindow, GetDlgItem(dialogWindow, IDC_GRAPH));
-			graph->DrawGraph();
-
-
 			//감정측정시간간격
 			SetTimer(dialogWindow, EXP_TIMER, 200, NULL);//0.2s
 
@@ -329,7 +320,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				break;
 
 			case EXP_TIMER:
-				renderer->CaptureSubtleExpression();
+				renderer->CaptuerExpression();
 				renderer->DisplayExpressionUsingEmoji();
 			}
 			return TRUE;
@@ -586,7 +577,6 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR, int) {
 		delete renderer3D;
 		return 1;
 	}
-
 
 	ghMutex = CreateMutex(NULL, FALSE, NULL);
 	if (ghMutex == NULL) 
