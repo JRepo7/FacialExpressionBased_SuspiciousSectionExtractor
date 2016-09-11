@@ -660,6 +660,7 @@ int FaceTrackingRendererManager::VotingUsingSlidingWindow(int duration)
 
 	// voting
 	// make a histogram
+
 	for (int i = 1; i++; duration)				
 	{
 		if (slidingWindow_d[cursor_d] == happy)
