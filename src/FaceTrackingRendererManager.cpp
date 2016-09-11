@@ -23,11 +23,13 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 	HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST= FALSE;
 	EXP_EMO[happy]= EXP_EMO[sad] = EXP_EMO[surprise] = EXP_EMO[fear] = EXP_EMO[angry] = EXP_EMO[disgust] = EXP_EMO[neutral] =FALSE;
 	//slidingWindow = NULL;
-	cursor = cursor_d=0 ;
-	sizeOfWindow = GetFrameSize(60);
+	cursor = cursor_d=1 ;
+	sizeOfWindow = GetFrameSize(6);
 	sizeOfWindow_d = GetFrameSize(6);
 	candidEmo[happy] = candidEmo[sad] = candidEmo[surprise] = candidEmo[fear] = candidEmo[angry] = candidEmo[disgust] = candidEmo[neutral] = 0;
 	//memset(slidingWindow, 0, SizeOfWindow);
+	InitSlidingWindowArray();
+	record = 0;
 }
 
 FaceTrackingRendererManager::~FaceTrackingRendererManager(void)
@@ -170,8 +172,9 @@ void FaceTrackingRendererManager::InitValue()
 	EXP_EMO[0] = EXP_EMO[1] = EXP_EMO[2] = EXP_EMO[3] = EXP_EMO[4] = EXP_EMO[5] = EXP_EMO[6] = FALSE;
 	happyCnt = sadCnt = surpriseCnt = fearCnt = angryCnt = disgustCnt = neutralCnt= 0;
 
-	cursor = cursor_d = 0;
+	cursor = cursor_d = 1;
 	sizeOfWindow = sizeOfWindow_d = 0;
+	record = 0;
 }
 
 void FaceTrackingRendererManager::PrepValue()
@@ -333,6 +336,7 @@ void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 }
 void FaceTrackingRendererManager::SetTextEmoCount()
 {
+
 	HWND text1 = GetDlgItem(m_window, IDC_EXP_CNT1);
 	HWND text2 = GetDlgItem(m_window, IDC_EXP_CNT2);
 	HWND text3 = GetDlgItem(m_window, IDC_EXP_CNT3);
@@ -635,45 +639,6 @@ int FaceTrackingRendererManager::VotingUsingSlidingWindow(int duration)
 		}
 
 }
-
-void FaceTrackingRendererManager::DetermineSmileExpression()
-{
-	
-}
-int FaceTrackingRendererManager::IsChanged()
-{
-	return 0;
-}
-void FaceTrackingRendererManager::CaptureSuspiciousSmile()
-{
-	if (IsChanged())
-	{
-		if (ws_smile[cursor] == FALSE)
-		{
-			ws_smile[cursor] = TRUE;
-
-		}
-		else
-		{
-			ws_smile[cursor] = FALSE;
-		}
-	}
-
-	if (mouthOpen_LM > 30 && Intensity[MouthOpen] > 30)
-	{
-		STATEOFSMILE = TRUE;
-		//return 3;
-	}
-	else if ( Intensity[MouthOpen]> 20 && (lipCornerLeftUp_LM + lipCornerRightUp_LM) > 1)
-	{
-		STATEOFSMILE = TRUE;
-	}
-	else
-	{
-		STATEOFSMILE = FALSE;
-	}
-	
-}
 void FaceTrackingRendererManager::DetermineExpression()
 {
 	enum
@@ -690,7 +655,6 @@ void FaceTrackingRendererManager::DetermineExpression()
 	if (cursor == sizeOfWindow)
 	{
 		cursor = 0;
-		recordSmile = 0;
 	}
 
 	if (
@@ -702,7 +666,37 @@ void FaceTrackingRendererManager::DetermineExpression()
 		HAPPY = TRUE;
 		happyCnt++;
 		slidingWindow[cursor] = happy;
+
+		ws_smile[cursor] = TRUE;
+
+		if (mouthOpen_LM > 10 && Intensity[MouthOpen] > 5)
+		{
+			//ws_smile[cursor] = TRUE;
+		}
+		else if (Intensity[MouthOpen]> 3 && (lipCornerLeftUp_LM + lipCornerRightUp_LM) > 1)
+		{
+			//ws_smile[cursor] = TRUE;
+		}
 	}
+	else
+	{
+		ws_smile[cursor] = FALSE;
+	}
+
+	/*
+	if (mouthOpen_LM > 10 && Intensity[MouthOpen] > 5)
+	{
+		ws_smile[cursor] = TRUE;
+	}
+	else if (Intensity[MouthOpen]> 3 && (lipCornerLeftUp_LM + lipCornerRightUp_LM) > 1)
+	{
+		ws_smile[cursor] = TRUE;
+	}
+	else
+	{
+		ws_smile[cursor] = FALSE;
+	}
+	*/
 
 	if (((outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM >1) ||
 		(Intensity[BrowLoweredLeft]>10 && Intensity[BrowLoweredRight] > 10)) &&
@@ -757,7 +751,7 @@ void FaceTrackingRendererManager::DetermineExpression()
 
 	if (cursor_d >= sizeOfWindow_d)
 	{
-		cursor_d = 0;
+		cursor_d = 1;
 	}
 
 	slidingWindow_d[cursor_d] = slidingWindow[cursor];//start circular-queing... 
@@ -768,11 +762,56 @@ void FaceTrackingRendererManager::DetermineExpression()
 	//mayor = VotingUsingSlidingWindow(sizeOfWindow_d);
 
 	SetTextEmoCount();
+	Func1();
 
 	HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST = FALSE;
 }
-
-void FaceTrackingRendererManager::LastingSmileInfo()
+void FaceTrackingRendererManager::Func1()
 {
-	recordSmile++;
+	/*
+	if (mouthOpen_LM > 10 && Intensity[MouthOpen] > 5)
+	{
+		ws_smile[cursor] = TRUE;
+	}
+	else if (Intensity[MouthOpen]> 3 && (lipCornerLeftUp_LM + lipCornerRightUp_LM) > 1)
+	{
+		ws_smile[cursor] = TRUE;
+	}
+	else
+	{
+		ws_smile[cursor] = FALSE;
+	}
+//	*/
+	front.curr = ws_smile[cursor];
+	front.prev = ws_smile[cursor - 1];
+	rear.curr = ws_smile[((sizeOfWindow - 1) + cursor)];
+	rear.prev = ws_smile[((sizeOfWindow - 1) + cursor - 1)];
+
+	if (front.prev == TRUE && front.curr == FALSE)
+	{
+			if (record >= 1)
+		{
+			record--;
+		}
+	}
+
+	if (rear.prev == FALSE && rear.curr == TRUE)
+	{
+		record++;
+	}
+	SubFunc();
+}
+void FaceTrackingRendererManager::SubFunc()
+{
+	HWND text = GetDlgItem(m_window, IDC_CAP_EXP);
+	CString str;
+	str.Format(_T("%d"), record);
+	SetWindowTextW(text, str);
+}
+void FaceTrackingRendererManager::InitSlidingWindowArray()
+{
+	for (int i = 0; i < sizeOfWindow; i++)
+	{
+		ws_smile[i] = TRUE;
+	}
 }

@@ -6,6 +6,12 @@
 
 class FaceTrackingRendererManager
 {
+	struct list
+	{
+		int prev;
+		int curr;
+	}front, rear;
+
 	enum {
 		BrowRaisedLeft,
 		BrowRaisedRight,
@@ -44,28 +50,20 @@ public:
 	void GetExpIntensity();
 	void GetLandmarkPoint();
 
-
 	void PrepValue();
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
 	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
 	void SetTextEmoCount();
 	void CaptureSubtleExpression();
-	//
 
 	double GetDuration(int frame);
 	int GetFrameSize(double second);
-
-	void LastingSmileInfo();
-
 	int VotingUsingSlidingWindow(int duration);
 	void DetermineExpression();
-	void DetermineSmileExpression();
-
-	int IsChanged();
-
-	void CaptureSuspiciousSmile();
-
+	void Func1();
+	void SubFunc();
+	void InitSlidingWindowArray();
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
@@ -79,10 +77,10 @@ public:
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
-	int slidingWindow[1800] = {0,};
-	BOOL ws_smile[1800] = { 0, };
-	int slidingWindow_d[180] = { 0, };
-
+	int slidingWindow[180] = {0,};
+	BOOL ws_smile[180] = { 0, };
+	int slidingWindow_d[180] = {0,};
+	BOOL INITSTATE = FALSE;
 	int sizeOfWindow;
 	int sizeOfWindow_d;
 
@@ -91,7 +89,8 @@ public:
 	int numOfFrame;
 	int candidEmo[7];	// for voting
 	int mayor;
-	int recordSmile;
+	int record;
+
 	BOOL STATEOFSMILE=FALSE;
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
