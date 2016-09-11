@@ -552,7 +552,6 @@ int FaceTrackingRendererManager::GetFrameSize(double second)
 	return second * 30;			//60ÃÊ µé¾î¿È
 }
 
-
 int FaceTrackingRendererManager::VotingUsingSlidingWindow(int duration)
 {
 	enum
@@ -639,6 +638,8 @@ int FaceTrackingRendererManager::VotingUsingSlidingWindow(int duration)
 		}
 
 }
+
+
 void FaceTrackingRendererManager::DetermineExpression()
 {
 	enum
@@ -682,21 +683,6 @@ void FaceTrackingRendererManager::DetermineExpression()
 	{
 		ws_smile[cursor] = FALSE;
 	}
-
-	/*
-	if (mouthOpen_LM > 10 && Intensity[MouthOpen] > 5)
-	{
-		ws_smile[cursor] = TRUE;
-	}
-	else if (Intensity[MouthOpen]> 3 && (lipCornerLeftUp_LM + lipCornerRightUp_LM) > 1)
-	{
-		ws_smile[cursor] = TRUE;
-	}
-	else
-	{
-		ws_smile[cursor] = FALSE;
-	}
-	*/
 
 	if (((outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM >1) ||
 		(Intensity[BrowLoweredLeft]>10 && Intensity[BrowLoweredRight] > 10)) &&
