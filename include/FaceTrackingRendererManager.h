@@ -6,12 +6,6 @@
 
 class FaceTrackingRendererManager
 {
-	struct list
-	{
-		int prev;
-		int curr;
-	}front, rear;
-
 	enum {
 		BrowRaisedLeft,
 		BrowRaisedRight,
@@ -62,8 +56,8 @@ public:
 	int VotingUsingSlidingWindow(int duration);
 	void DetermineExpression();
 	void Func1();
+	int IsChanged();
 	void SubFunc();
-	void InitSlidingWindowArray();
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
@@ -78,7 +72,7 @@ public:
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
 	int slidingWindow[180] = {0,};
-	BOOL ws_smile[180] = { 0, };
+	BOOL ws_smile[180] = { 1, };
 	int slidingWindow_d[180] = {0,};
 	BOOL INITSTATE = FALSE;
 	int sizeOfWindow;
@@ -90,6 +84,8 @@ public:
 	int candidEmo[7];	// for voting
 	int mayor;
 	int record;
+	int front;
+	bool initFront;
 
 	BOOL STATEOFSMILE=FALSE;
 private:
