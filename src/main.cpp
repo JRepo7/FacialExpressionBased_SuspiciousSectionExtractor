@@ -68,8 +68,7 @@ volatile bool MICROEXP_FLAG = false;
 volatile bool EXPRESSION_FLAG = false;
 
 static int controls[] = {ID_START, ID_STOP, ID_REGISTER, ID_UNREGISTER, IDC_DISTANCES,
-						ID_ADJUST,IDC_TEXT_I10,IDC_TEXT_I11,IDC_TEXT_I12, IDC_CAP_EXP, 
-						IDC_EXP_CNT1, IDC_EXP_CNT2, IDC_EXP_CNT3, IDC_EXP_CNT4, IDC_EXP_CNT5, IDC_EXP_CNT6, IDC_EXP_CNT7
+						ID_ADJUST, IDC_CAP_EXP, IDC_EXP_CNT1, IDC_EXP_CNT2, IDC_EXP_CNT3, IDC_EXP_CNT4, IDC_EXP_CNT5, IDC_EXP_CNT6, IDC_EXP_CNT7
 };
 static RECT layout[3 + sizeof(controls) / sizeof(controls[0])];
 
@@ -389,6 +388,18 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 
 			switch (LOWORD(wParam)) 
 			{
+			case IDC_UP:
+				
+				return TRUE;
+			case IDC_DOWN:
+				
+				return TRUE;
+			case IDC_RIGHT:
+				
+				return TRUE;
+			case IDC_LEFT:
+				
+				return TRUE;
 			case ID_ADJUST:
 				renderer->InitValue();
 				ADJ_FLAG = TRUE;

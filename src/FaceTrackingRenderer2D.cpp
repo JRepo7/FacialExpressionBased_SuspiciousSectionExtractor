@@ -448,10 +448,10 @@ void FaceTrackingRenderer2D::DrawLandmark(PXCFaceData::Face* trackedFace)
 		str.Format(_T("%d"), i);
 		if (m_landmarkPoints[i].confidenceImage)
 		{
-			SetTextColor(dc2, RGB(255, 255, 255));
-			TextOut(dc2, x, y, str, 2);
+			//SetTextColor(dc2, RGB(255, 255, 255));
+			//TextOut(dc2, x, y, str, 2);
 			//SetPixel(dc2, x, y, RGB(255, 255, 255));
-			//landmarkPoint(dc2, RGB(255, 255, 255),x, y,2);
+			landmarkPoint(dc2, RGB(255, 255, 255),x+5, y+5,2);
 		}
 		else
 		{
