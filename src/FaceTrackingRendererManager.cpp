@@ -30,7 +30,7 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 	//memset(slidingWindow, 0, SizeOfWindow);
 	record = rear = front = 0;
 	initFront = false;
-	curr = prev = next= now = false;
+	curr_r = prev_r = next_f = curr_f = false;
 }
 
 FaceTrackingRendererManager::~FaceTrackingRendererManager(void)
@@ -736,92 +736,31 @@ void FaceTrackingRendererManager::Func1()
 		rear = 0;
 		initFront = true;
 	}
+
 	// update value...
 	if (mouthOpen_LM > 10 && Intensity[MouthOpen] > 5)
 	{
-		if (!initFront)
-		{
-			if (rear==0)
-			{
-					ws_smile[rear] = TRUE;
-					record++;
-			}
-			else
-			{
-				ws_smile[rear] = TRUE;
-				if (ws_smile[rear - 1] != ws_smile[rear])
-				{
-					record++;
-				}
-			}
-		}
-		else
-		{
-			if (rear == 0)
-			{
-				if (ws_smile[sizeOfWindow-1] != ws_smile[rear])
-				{
-					record++;
-					ws_smile[rear] = TRUE;
-				}
-			}
-			else
-			{
+		ws_smile[rear]= TRUE;
 
-				if (ws_smile[rear - 1] != ws_smile[rear])
-				{
-						record++;
-				}
-			}
-		}
+		QueuingFunc();
+
 		rear++;
 	}
 	else if (Intensity[MouthOpen]> 3 && (lipCornerLeftUp_LM + lipCornerRightUp_LM) > 1)
 	{
-
 		ws_smile[rear] = TRUE;
 
-		if (ws_smile[rear - 1] != ws_smile[rear])
-		{
-			if (!initFront)
-			{
-				if (ws_smile[0] == TRUE)
-				{
-					record++;
-				}
-			}
-			else if (ws_smile[rear] == TRUE && ws_smile[rear - 1] == FALSE)
-			{
-				record++;
-			}
-		}
+		QueuingFunc();
+
 		rear++;
 		//*/
 	}
 	else
 	{
-		if (initFront)
-		{
-			if (ws_smile[rear] == TRUE)
-			{
-				if (ws_smile[rear + 1] == FALSE)
-				{
-					if (record >=1)
-					{
-						record--;
-					}
-				}
-				ws_smile[rear] = FALSE;
-			}
-			else
-			{
-				ws_smile[rear] = FALSE;
-			}
-		}
-		else
-		{
-			ws_smile[rear] = FALSE;
-		}
+		ws_smile[rear] = FALSE;
+
+		QueuingFunc();
+
 		rear++;
 	}
 
@@ -829,13 +768,84 @@ void FaceTrackingRendererManager::Func1()
 	SubFunc();
 }
 
-
-
-int FaceTrackingRendererManager::IsChanged_front()
+void FaceTrackingRendererManager::QueuingFunc()
 {
-	now = ws_smile[front];
-	next = ws_smile[front+1];	//init? ws[front] : false 
-	if (now == next)
+
+	if (!initFront)
+	{
+		if (rear == 0)
+		{
+			if (ws_smile[rear] == TRUE)
+			{
+				record++;
+			}
+		}
+		else
+		{
+			if (IsChanged_r())
+			{
+				if (ws_smile[rear] == TRUE)
+				{
+					record++;
+				}
+			}
+		}
+	}
+	else
+	{
+		if (rear == 0)
+		{
+			if (ws_smile[sizeOfWindow - 1] == FALSE && ws_smile[0] == TRUE)
+			{
+				if (ws_smile[rear] == TRUE)
+				{
+					record++;
+				}
+			}
+		}
+		else
+		{
+			if (IsChanged_r())
+			{
+				if (ws_smile[rear] == TRUE)
+				{
+					record++;
+				}
+			}
+		}
+
+		// front init
+		if (IsChanged_f())
+		{
+			if (next_f == FALSE)
+			{
+				if (record > 0)
+				{
+					record--;
+				}
+			}
+		}
+	}
+}
+int FaceTrackingRendererManager::IsChanged_r()
+{
+	curr_r = ws_smile[rear];
+	prev_r = ws_smile[rear-1];	//init? ws[front] : false 
+	if (curr_r == prev_r)
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+}
+
+int FaceTrackingRendererManager::IsChanged_f()
+{
+	curr_f = ws_smile[rear+1];
+	next_f = ws_smile[rear+2];
+	if (curr_f == next_f)
 	{
 		return 0;
 	}

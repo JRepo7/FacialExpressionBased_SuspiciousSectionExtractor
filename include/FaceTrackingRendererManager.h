@@ -56,8 +56,9 @@ public:
 	int VotingUsingSlidingWindow(int duration);
 	void DetermineExpression();
 	void Func1();
-	int IsChanged_rear();
-	int IsChanged_front();
+	void QueuingFunc();
+	int IsChanged_r();
+	int IsChanged_f();
 
 	void SubFunc();
 
@@ -87,7 +88,7 @@ public:
 	int candidEmo[7];	// for voting
 	int mayor;
 	int rear, front, record;
-	bool curr, prev, next, now;
+	bool curr_r, prev_r, next_f,curr_f;
 	bool initFront;
 
 	BOOL STATEOFSMILE=FALSE;
