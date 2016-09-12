@@ -56,7 +56,9 @@ public:
 	int VotingUsingSlidingWindow(int duration);
 	void DetermineExpression();
 	void Func1();
-	int IsChanged();
+	int IsChanged_rear();
+	int IsChanged_front();
+
 	void SubFunc();
 
 	static HANDLE& GetRenderingFinishedSignal();
@@ -71,8 +73,8 @@ public:
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
-	int slidingWindow[180] = {0,};
-	BOOL ws_smile[180] = { 1, };
+	int slidingWindow[180] = {1,};
+	BOOL ws_smile[180] = { FALSE, };
 	int slidingWindow_d[180] = {0,};
 	BOOL INITSTATE = FALSE;
 	int sizeOfWindow;
@@ -80,11 +82,12 @@ public:
 
 	int cursor;
 	int cursor_d;
+
 	int numOfFrame;
 	int candidEmo[7];	// for voting
 	int mayor;
-	int record;
-	int front;
+	int rear, front, record;
+	bool curr, prev, next, now;
 	bool initFront;
 
 	BOOL STATEOFSMILE=FALSE;
