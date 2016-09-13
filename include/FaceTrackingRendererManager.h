@@ -55,11 +55,12 @@ public:
 	int GetFrameSize(double second);
 	int VotingUsingSlidingWindow(int duration);
 	void DetermineExpression();
-	void SmileFrequencyCounter();
+	void GetFreqCounter();
+	void GetSmileFreqCounter();
 	void QueuingFunc();
 	int IsChanged_r();
 	int IsChanged_f();
-
+	void Func1();
 	void SubFunc();
 
 	static HANDLE& GetRenderingFinishedSignal();
@@ -77,12 +78,15 @@ public:
 	int slidingWindow[180] = {1,};
 	BOOL ws_smile[180] = { FALSE, };
 	int slidingWindow_d[180] = {0,};
+	BOOL ws_subtleSmile[30] = {FALSE};
+
 	BOOL INITSTATE = FALSE;
 	int sizeOfWindow;
 	int sizeOfWindow_d;
-
+	int sizeOfWindow_s;
 	int cursor;
 	int cursor_d;
+	int cursor_s;
 
 	int numOfFrame;
 	int candidEmo[7];	// for voting
@@ -90,7 +94,10 @@ public:
 	int rear, front, record;
 	bool curr_r, prev_r, next_f,curr_f;
 	bool initFront;
-
+	bool initFront_s;
+	
+	int frequency[2] = {0,};
+	int winner;
 	BOOL STATEOFSMILE=FALSE;
 
 

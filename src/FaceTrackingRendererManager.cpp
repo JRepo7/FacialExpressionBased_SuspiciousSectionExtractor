@@ -1,4 +1,6 @@
+#include "stdafx.h"
 #include "FaceTrackingRendererManager.h"
+#include "stdafx.h"
 #include <string.h>
 #include <cstring>
 #include <atlstr.h>
@@ -24,14 +26,16 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 	HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST= FALSE;
 	EXP_EMO[happy]= EXP_EMO[sad] = EXP_EMO[surprise] = EXP_EMO[fear] = EXP_EMO[angry] = EXP_EMO[disgust] = EXP_EMO[neutral] =FALSE;
 	//slidingWindow = NULL;
-	cursor = cursor_d=0 ;
+	cursor = cursor_d=cursor_s=0 ;
 	sizeOfWindow = GetFrameSize(6);
 	sizeOfWindow_d = GetFrameSize(6);
+	sizeOfWindow_s = GetFrameSize(0.2);
 	candidEmo[happy] = candidEmo[sad] = candidEmo[surprise] = candidEmo[fear] = candidEmo[angry] = candidEmo[disgust] = candidEmo[neutral] = 0;
 	//memset(slidingWindow, 0, SizeOfWindow);
 	record = rear = front = 0;
-	initFront = false;
+	initFront =initFront_s= false;
 	curr_r = prev_r = next_f = curr_f = false;
+	winner = 0;
 }
 
 FaceTrackingRendererManager::~FaceTrackingRendererManager(void)
@@ -174,9 +178,9 @@ void FaceTrackingRendererManager::InitValue()
 	EXP_EMO[0] = EXP_EMO[1] = EXP_EMO[2] = EXP_EMO[3] = EXP_EMO[4] = EXP_EMO[5] = EXP_EMO[6] = FALSE;
 	happyCnt = sadCnt = surpriseCnt = fearCnt = angryCnt = disgustCnt = neutralCnt= 0;
 
-	cursor = rear = 0;
+	cursor =cursor_s= rear = 0;
 //	sizeOfWindow = sizeOfWindow_d = 0;
-	record = 0;
+	record = winner = 0;
 }
 
 void FaceTrackingRendererManager::PrepValue()
@@ -730,53 +734,130 @@ void FaceTrackingRendererManager::DetermineExpression()
 	HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST = FALSE;
 }
 
-void FaceTrackingRendererManager::SmileFrequencyCounter()
+void FaceTrackingRendererManager::GetSmileFreqCounter()
 {
-	if (rear == sizeOfWindow)
+	enum {
+		smile,
+		notsmile
+	};
+	if (cursor_s == sizeOfWindow)
 	{
-		rear = 0;
-		initFront = true;
+		cursor_s = 0;
+		//initFront = true;
 	}
 
 	// update value...
 	if (mouthOpen_LM > 10 && Intensity[MouthOpen] > 5)
 	{
-		ws_smile[rear]= TRUE;
-
-		QueuingFunc();
-
-		rear++;
+		if (cursor_s % 6 == 0)
+		{
+			if (frequency[smile] > frequency[notsmile])
+			{
+				winner = 1;								// 0.2ÃÊ¸¶´Ù smile? winner = 1 else winner = 0
+			}
+			else
+			{
+				winner = 0;
+			}
+			frequency[0] = frequency[1] = 0;
+		}
+		else
+		{
+			frequency[smile]++;		
+									
+		}
+		ws_smile[cursor_s] = TRUE;
+		//QueuingFunc();
+		cursor_s++;
 	}
 	else if (Intensity[MouthOpen]> 3 && (lipCornerLeftUp_LM + lipCornerRightUp_LM) > 1)
 	{
-		ws_smile[rear] = TRUE;
-
-		QueuingFunc();
-
-		rear++;
-		//*/
+		if (cursor_s % 6 == 0)
+		{
+			if (frequency[smile] > frequency[notsmile])
+			{
+				winner = 1;
+			}
+			else
+			{
+				winner = 0;
+			}
+			frequency[0] = frequency[1] = 0;
+		}
+		else
+		{
+			frequency[smile]++;
+		}
+		ws_smile[cursor_s] = TRUE;
+		//QueuingFunc();
+		cursor_s++;
 	}
 	else
 	{
-		ws_smile[rear] = FALSE;
-
-		QueuingFunc();
-
-		rear++;
+		if (cursor_s % 6 == 0)
+		{
+			if (frequency[smile] > frequency[notsmile])
+			{
+				winner = 1;
+			}
+			else
+			{
+				winner = 0;
+			}
+			frequency[0] = frequency[1] = 0;
+		}
+		else
+		{
+			frequency[notsmile]++;
+		}
+		ws_smile[cursor_s] = FALSE;
+		//QueuingFunc();
+		cursor_s++;
 	}
 
+	//SubFunc();
+
+}
+/*
+void FaceTrackingRendererManager::SubtleValueOfSmile()
+{
+	if (cursor_s % 6 == 0)
+	{
+		ws_subtleSmile[cursor_s++] = winner;
+	}
+	SubFunc();
+}
+//*/
+void FaceTrackingRendererManager::Func1()
+{
+
+	enum {
+		smile,
+		notsmile
+	};
+	if (rear == sizeOfWindow_s)
+	{
+		rear = 0;
+		initFront_s = true;
+	}
+
+	if (cursor_s % 6 == 0)
+	{
+		ws_subtleSmile[rear]= winner;
+		QueuingFunc();
+		rear++;
+	}
 
 	SubFunc();
 }
 
 void FaceTrackingRendererManager::QueuingFunc()
 {
-
-	if (!initFront)
+	if (!initFront_s)
 	{
 		if (rear == 0)
 		{
-			if (ws_smile[rear] == TRUE)
+			if (ws_subtleSmile[rear] == TRUE)
 			{
 				record++;
 			}
@@ -785,7 +866,7 @@ void FaceTrackingRendererManager::QueuingFunc()
 		{
 			if (IsChanged_r())
 			{
-				if (ws_smile[rear] == TRUE)
+				if (ws_subtleSmile[rear] == TRUE)
 				{
 					record++;
 				}
@@ -796,9 +877,9 @@ void FaceTrackingRendererManager::QueuingFunc()
 	{
 		if (rear == 0)
 		{
-			if (ws_smile[sizeOfWindow - 1] == FALSE && ws_smile[0] == TRUE)
+			if (ws_subtleSmile[sizeOfWindow - 1] == FALSE && ws_subtleSmile[0] == TRUE)
 			{
-				if (ws_smile[rear] == TRUE)
+				if (ws_subtleSmile[rear] == TRUE)
 				{
 					record++;
 				}
@@ -808,7 +889,7 @@ void FaceTrackingRendererManager::QueuingFunc()
 		{
 			if (IsChanged_r())
 			{
-				if (ws_smile[rear] == TRUE)
+				if (ws_subtleSmile[rear] == TRUE)
 				{
 					record++;
 				}
@@ -827,11 +908,13 @@ void FaceTrackingRendererManager::QueuingFunc()
 			}
 		}
 	}
+
 }
+
 int FaceTrackingRendererManager::IsChanged_r()
 {
-	curr_r = ws_smile[rear];
-	prev_r = ws_smile[rear-1];	//init? ws[front] : false 
+	curr_r = ws_subtleSmile[rear];
+	prev_r = ws_subtleSmile[rear-1];	//init? ws[front] : false 
 	if (curr_r == prev_r)
 	{
 		return 0;
@@ -844,8 +927,8 @@ int FaceTrackingRendererManager::IsChanged_r()
 
 int FaceTrackingRendererManager::IsChanged_f()
 {
-	curr_f = ws_smile[rear+1];
-	next_f = ws_smile[rear+2];
+	curr_f = ws_subtleSmile[rear+1];
+	next_f = ws_subtleSmile[rear+2];
 	if (curr_f == next_f)
 	{
 		return 0;

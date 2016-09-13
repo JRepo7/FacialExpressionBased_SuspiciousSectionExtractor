@@ -294,7 +294,8 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 			renderer->CvtLandmarkToIntensity();
 			renderer->DetermineExpression();
 			renderer->cursor++;
-			renderer->Func1();
+			renderer->SmileFrequencyCounter();
+			
 		}
 	}
 }
