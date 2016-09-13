@@ -55,7 +55,7 @@ public:
 	int GetFrameSize(double second);
 	int VotingUsingSlidingWindow(int duration);
 	void DetermineExpression();
-	void Func1();
+	void SmileFrequencyCounter();
 	void QueuingFunc();
 	int IsChanged_r();
 	int IsChanged_f();

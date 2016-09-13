@@ -101,9 +101,9 @@ void FaceTrackingRenderer::RefreshUserInterface()
 
 	//RECT rc1; //화면 확대
 	rc1 = GetResizeRect(rc, bm);
-	StretchBlt(dc2, -rc1.left-900, -rc1.top-280, rc1.right*3, rc1.bottom*3, dc3, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
+	//StretchBlt(dc2, -rc1.left-900, -rc1.top-280, rc1.right*3, rc1.bottom*3, dc3, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
 	//StretchBlt(dc2, rc1.left, rc1.top, rc1.right, rc1.bottom, dc3, 0, 0,bm.bmWidth, bm.bmHeight, SRCCOPY);
-	//BitBlt(dc2, -rc1.left-300, -rc1.top, rc.right*3, rc.bottom *3, dc3, 0, 0, SRCCOPY);
+	BitBlt(dc2, -rc1.left-300, -rc1.top, rc.right*3, rc.bottom *3, dc3, 0, 0, SRCCOPY);
 
 	DeleteDC(dc3);
 	DeleteDC(dc2);

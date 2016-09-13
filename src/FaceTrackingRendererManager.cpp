@@ -729,7 +729,7 @@ void FaceTrackingRendererManager::DetermineExpression()
 	HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST = FALSE;
 }
 
-void FaceTrackingRendererManager::Func1()
+void FaceTrackingRendererManager::SmileFrequencyCounter()
 {
 	if (rear == sizeOfWindow)
 	{
