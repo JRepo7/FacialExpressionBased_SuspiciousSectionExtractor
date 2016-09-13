@@ -92,6 +92,8 @@ public:
 	bool initFront;
 
 	BOOL STATEOFSMILE=FALSE;
+
+
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
 	FaceTrackingRenderer3D* m_renderer3D;

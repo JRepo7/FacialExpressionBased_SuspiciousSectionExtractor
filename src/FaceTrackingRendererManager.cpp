@@ -17,6 +17,7 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 		disgust,
 		neutral
 	};
+
 	m_rendererSignal = CreateEvent(NULL, FALSE, FALSE, NULL);
 	adj_frameCount = 0;
 	happyCnt = sadCnt = surpriseCnt = fearCnt = angryCnt = disgustCnt = neutralCnt= 0;
