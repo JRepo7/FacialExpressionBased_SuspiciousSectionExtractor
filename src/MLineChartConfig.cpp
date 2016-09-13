@@ -2,6 +2,7 @@
 #include <afxwin.h>         // MFC 핵심 및 표준 구성 요소입니다.
 #include <windows.h>
 #include "MLineChartConfig.h"
+////등록
 
 MLineChartConfig::MLineChartConfig(void)
 {
