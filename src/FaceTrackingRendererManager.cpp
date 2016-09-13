@@ -29,7 +29,7 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 	cursor = cursor_d=cursor_s=0 ;
 	sizeOfWindow = GetFrameSize(6);
 	sizeOfWindow_d = GetFrameSize(6);
-	sizeOfWindow_s = GetFrameSize(0.2);
+	sizeOfWindow_s = GetFrameSize(1);
 	candidEmo[happy] = candidEmo[sad] = candidEmo[surprise] = candidEmo[fear] = candidEmo[angry] = candidEmo[disgust] = candidEmo[neutral] = 0;
 	//memset(slidingWindow, 0, SizeOfWindow);
 	record = rear = front = 0;
@@ -734,7 +734,7 @@ void FaceTrackingRendererManager::DetermineExpression()
 	HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST = FALSE;
 }
 
-void FaceTrackingRendererManager::GetSmileFreqCounter()
+void FaceTrackingRendererManager::CircularQueue1800()
 {
 	enum {
 		smile,
@@ -828,30 +828,24 @@ void FaceTrackingRendererManager::SubtleValueOfSmile()
 	SubFunc();
 }
 //*/
-void FaceTrackingRendererManager::Func1()
+void FaceTrackingRendererManager::CircularQueue300()
 {
-
-	enum {
-		smile,
-		notsmile
-	};
+	CircularQueue1800();
 	if (rear == sizeOfWindow_s)
 	{
 		rear = 0;
 		initFront_s = true;
 	}
-
-	if (cursor_s % 6 == 0)
+	if (cursor_s % 6 == 0) // per 0.2 second. 
 	{
 		ws_subtleSmile[rear]= winner;
-		QueuingFunc();
+		Recording();
 		rear++;
 	}
-
 	SubFunc();
 }
 
-void FaceTrackingRendererManager::QueuingFunc()
+void FaceTrackingRendererManager::Recording()
 {
 	if (!initFront_s)
 	{
@@ -877,7 +871,7 @@ void FaceTrackingRendererManager::QueuingFunc()
 	{
 		if (rear == 0)
 		{
-			if (ws_subtleSmile[sizeOfWindow - 1] == FALSE && ws_subtleSmile[0] == TRUE)
+			if (ws_subtleSmile[sizeOfWindow_s - 1] == FALSE && ws_subtleSmile[0] == TRUE)
 			{
 				if (ws_subtleSmile[rear] == TRUE)
 				{

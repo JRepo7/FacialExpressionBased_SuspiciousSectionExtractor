@@ -55,12 +55,11 @@ public:
 	int GetFrameSize(double second);
 	int VotingUsingSlidingWindow(int duration);
 	void DetermineExpression();
-	void GetFreqCounter();
-	void GetSmileFreqCounter();
-	void QueuingFunc();
+	void CircularQueue1800();
+	void CircularQueue300();
+	void Recording();
 	int IsChanged_r();
 	int IsChanged_f();
-	void Func1();
 	void SubFunc();
 
 	static HANDLE& GetRenderingFinishedSignal();
@@ -75,8 +74,8 @@ public:
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
-	int slidingWindow[180] = {1,};
-	BOOL ws_smile[180] = { FALSE, };
+	int slidingWindow[1800] = {1,};
+	BOOL ws_smile[1800] = { FALSE, };
 	int slidingWindow_d[180] = {0,};
 	BOOL ws_subtleSmile[30] = {FALSE};
 
