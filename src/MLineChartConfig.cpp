@@ -2,7 +2,6 @@
 #include <afxwin.h>         // MFC 핵심 및 표준 구성 요소입니다.
 #include <windows.h>
 #include "MLineChartConfig.h"
-////등록
 
 MLineChartConfig::MLineChartConfig(void)
 {
@@ -10,7 +9,7 @@ MLineChartConfig::MLineChartConfig(void)
 	nWidthExtent = 10;
 
 	crDot = RGB(255, 0, 0);
-	crDataLine = RGB(255, 200, 200);
+	crDataLine = RGB(255, 100, 100);
 	crBG = RGB(255, 255, 255);
 	crGuideLine = RGB(128, 128, 128);
 	crAxis = 0;
@@ -27,7 +26,7 @@ MLineChartConfig::MLineChartConfig(void)
 	nMarginBottom = 40;
 	nMarginRight = 20;
 
-	szAxisXNM = "시간";
+	szAxisXNM = "시간(1초)";
 	szAxisYNM = "거짓말정도";
 }
 

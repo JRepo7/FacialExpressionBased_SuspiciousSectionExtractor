@@ -87,7 +87,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.;include;res;../common/include;../../include;$(RSSDK_DIR)/include;$(RSSDK_DIR)/sample/common/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0602;_AFXDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0602;;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -244,12 +244,14 @@
     <ClCompile Include="src\MLineChartConfig.cpp" />
     <ClCompile Include="src\MLineChartCtrl.cpp" />
     <ClCompile Include="src\MLineChartData.cpp" />
+    <ClCompile Include="src\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\FaceTrackingRendererManager.h" />
     <ClInclude Include="include\MLineChartConfig.h" />
     <ClInclude Include="include\MLineChartCtrl.h" />
     <ClInclude Include="include\MLineChartData.h" />
+    <ClInclude Include="include\stdafx.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="include\FaceTrackingProcessor.h" />
     <ClInclude Include="include\FaceTrackingRenderer.h" />

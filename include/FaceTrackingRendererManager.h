@@ -43,12 +43,28 @@ public:
 	void Reset();
 	void GetExpIntensity();
 	void GetLandmarkPoint();
+	void Getheadandpulse();
+	void Heartbeat();
+
 	void PrepValue();
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
+	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
+	void SetTextEmoCount();
+	void CaptureSubtleExpression();
+
+	double GetDuration(int frame);
+	int GetFrameSize(double second);
+	int VotingUsingSlidingWindow(int duration);
 	void DetermineExpression();
-	void DisplayExpressionUsingEmoji();
-	void CaptuerExpression();
+	void Func1();
+	void QueuingFunc();
+	int IsChanged_r();
+	int IsChanged_f();
+
+	void SubFunc();
+	void Blinkdetector();
+	void Avoidgaze();
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
@@ -56,16 +72,37 @@ public:
 	void InitValue();
 	int adj_frameCount;
 
-	BOOL HAPPY, SAD, SURPRISE, FEAR, ANGRY, DISGUST, NEUTRAL;
-	BOOL EXP_HAPPY, EXP_SAD, EXP_SURPRISE, EXP_FEAR, EXP_ANGRY, EXP_DISGUST, EXP_NEUTRAL;
+	BOOL HAPPY, SAD, SURPRISE, FEAR, ANGRY, DISGUST;		//for Neutral
+	BOOL EXP_EMO[7];
+	//BOOL EXP_HAPPY, EXP_SAD, EXP_SURPRISE, EXP_FEAR, EXP_ANGRY, EXP_DISGUST, EXP_NEUTRAL;
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
+
+	int slidingWindow[180] = {1,};
+	BOOL ws_smile[180] = { FALSE, };
+	int slidingWindow_d[180] = {0,};
+	BOOL INITSTATE = FALSE;
+	int sizeOfWindow;
+	int sizeOfWindow_d;
+
+	int cursor;
+	int cursor_d;
+
+	int numOfFrame;
+	int candidEmo[7];	// for voting
+	int mayor;
+	int rear, front, record;
+	bool curr_r, prev_r, next_f,curr_f;
+	bool initFront;
+
+	BOOL STATEOFSMILE=FALSE;
+
 
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
 	FaceTrackingRenderer3D* m_renderer3D;
 	FaceTrackingRenderer* m_currentRenderer;
-	HWND m_window;							// m 						
+	HWND m_window;						
 	HANDLE m_rendererSignal;
 	OnFinishedRenderingCallback m_callback;
 
@@ -82,6 +119,10 @@ private:
 	int pBrowLowerLeft;
 	//14
 	int Intensity[14];
+	//Headpose
+	pxcF32 yaw;//ÁÂ¿ì
+	pxcF32 pitch;//»óÇÏ
+	pxcF32 hr;
 
 	// Threshold
 	double tOuterBrowRaiserLeft;

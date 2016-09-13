@@ -148,7 +148,7 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
     if (FaceTrackingUtilities::GetCheckedModule(dialogWindow))
     {
 		//detection ¹Ì»ç¿ë
-        config->detection.isEnabled = false;
+        config->detection.isEnabled = true;
 
         config->landmarks.isEnabled = true;
         config->pose.isEnabled = true;

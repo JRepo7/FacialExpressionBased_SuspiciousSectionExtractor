@@ -2,9 +2,7 @@
 //
 
 #include <afx.h>
-#include <afxwin.h>         // MFC 핵심 및 표준 구성 요소입니다.
-
-#include <windows.h>
+#include <afxwin.h>  
 #include "MLineChartCtrl.h"
 
 
@@ -22,18 +20,23 @@ MLineChartCtrl::~MLineChartCtrl()
 {
 }
 
+
 BEGIN_MESSAGE_MAP(MLineChartCtrl, CWnd)
 	ON_WM_PAINT()
 	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
+
+
 // MLineChartCtrl 메시지 처리기입니다.
+
+
 
 void MLineChartCtrl::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
 	HDC hDC = dc.m_hDC;
-
+	
 	GetClientRect(rcWindow);
 
 	DrawChart(m_hMemDC);
@@ -52,7 +55,7 @@ void MLineChartCtrl::DrawChart(HDC hDC)
 		//strcpy(lf.lfFaceName, "Verdana");
 		//lf.lfHeight = 13;
 		//hFont = CreateFontIndirect(&lf);
-		//hFont = CreateFont(8, 0, 0, 0, FW_LIGHT, 0, 0, 0, 0, 0, 0, 2, 0, L"MONOSPACE");
+		HFONT hFont = CreateFont(15, 0, 0, 0, FW_LIGHT, 0, 0, 0, 0, 0, 0, 5, 0, L"MONOSPACE");
 		hOldFont = (HFONT)SelectObject(hDC, hFont);
 	}
 
@@ -160,17 +163,17 @@ void MLineChartCtrl::DrawAxisX(HDC hDC)
 			MoveToEx(hDC, rcData.left + dblXIntv*i, rcData.bottom, NULL);
 			LineTo(hDC, rcData.left + dblXIntv*i, rcData.bottom+5);
 
-			szText.Format(_T("%d"), i+1);
+			//szText.Format(_T("%d"), i+1);
 
-			if(i == 0 || nAxisRight+5 < rcData.left + dblXIntv*i)
-			{
-				TextOut(hDC, rcData.left + dblXIntv*i, rcData.bottom +5, szText, szText.GetLength());
+			//if(i == 0 || nAxisRight+5 < rcData.left + dblXIntv*i)
+			//{
+			//	TextOut(hDC, rcData.left + dblXIntv*i, rcData.bottom +5, szText, szText.GetLength());
 
-				SIZE size;
-				GetTextExtentPoint32(hDC, szText, szText.GetLength(), &size);
+			//	SIZE size;
+			//	GetTextExtentPoint32(hDC, szText, szText.GetLength(), &size);
 
-				nAxisRight = rcData.left + dblXIntv*i + size.cx;
-			}
+			//	nAxisRight = rcData.left + dblXIntv*i + size.cx;
+			//}
 		}
 
 		SIZE sizeText;
@@ -252,9 +255,9 @@ void MLineChartCtrl::DrawData(HDC hDC)
 
 		for(int i=0; i<m_ChartData.lstData.GetSize(); i++)
 		{
-			y = rcData.bottom+ 385-(m_ChartData.lstData.GetAt(i)->fDest) * 55;
+			y = rcData.bottom+ 295-(m_ChartData.lstData.GetAt(i)->fDest) * 42;
 			//y = 720 - (m_ChartData.lstData.GetAt(i)->fDest) * 50;
-			x = rcData.left + dblXIntv*(i+1);
+			x = rcData.left + dblXIntv*(i);
 
 			DrawDotRect(hDC, x, y, 2, 2);
 		}
@@ -265,9 +268,9 @@ void MLineChartCtrl::DrawData(HDC hDC)
 		{
 			for(int i=0; i<m_ChartData.lstData.GetSize(); i++)
 			{
-				y = rcData.bottom + 385 - (m_ChartData.lstData.GetAt(i)->fDest) * 55;
+				y = rcData.bottom + 295 - (m_ChartData.lstData.GetAt(i)->fDest) * 42;
 				//y = 720 - (m_ChartData.lstData.GetAt(i)->fDest) * 50;
-				x = rcData.left + dblXIntv*(i+1);
+				x = rcData.left + dblXIntv*(i);
 
 				if(i == 0)
 					MoveToEx(hDC, x, y, NULL);

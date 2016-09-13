@@ -42,6 +42,13 @@ public:
 	int Intensity[14];
 	Point FacialPoint[78];
 
+	PXCFaceData::PoseEulerAngles angles;
+	pxcF32 hr;
+
+	int prex;
+	int prey;
+	int refreshcount;
+
 
 protected:
 	static const int sizeData    = 100;
@@ -51,7 +58,7 @@ private:
 	void DrawDistances();
 	void DrawGraphics(PXCFaceData* faceOutput);
 	void DrawLandmark(PXCFaceData::Face* trackedFace);
-	//void DrawLocation(PXCFaceData::Face* trackedFace);
+	void DrawLocation(PXCFaceData::Face* trackedFace);
 	void DrawPoseAndPulse(PXCFaceData::Face* trackedFace, const int faceId);
 	void DrawExpressions(PXCFaceData::Face* trackedFace, const int faceId);		
 

@@ -3,6 +3,7 @@
 #include "MLineChartConfig.h"
 #include "MLineChartData.h"
 
+
 // MLineChartCtrl
 
 class MLineChartCtrl : public CWnd
