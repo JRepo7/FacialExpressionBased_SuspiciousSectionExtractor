@@ -60,7 +60,8 @@ volatile bool RVS_ADJ_FLAG = false;
 
 
 static int controls[] = {ID_START, ID_STOP, ID_REGISTER, ID_UNREGISTER, IDC_DISTANCES,
-						ID_ADJUST, IDC_CAP_EXP, IDC_EXP_CNT1, IDC_EXP_CNT2, IDC_EXP_CNT3, IDC_EXP_CNT4, IDC_EXP_CNT5, IDC_EXP_CNT6, IDC_EXP_CNT7
+						ID_ADJUST, IDC_CAP_EXP, IDC_EXP_CNT1, IDC_EXP_CNT2, IDC_EXP_CNT3, IDC_EXP_CNT4, IDC_EXP_CNT5, IDC_EXP_CNT6, IDC_EXP_CNT7,
+						IDC_Z1, IDC_Z30, IDC_Z60, IDC_ZGROUP,IDC_LANDMARK, IDC_FP
 };
 static RECT layout[3 + sizeof(controls) / sizeof(controls[0])];
 
@@ -288,7 +289,7 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 			renderer->CvtLandmarkToIntensity();
 			renderer->DetermineExpression();
 			renderer->cursor++;
-			renderer->Func1();
+			renderer->CircularQueue300();
 			renderer->Blinkdetector();
 			renderer->Avoidgaze();
 		}
@@ -317,6 +318,10 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	{ 
 		case WM_INITDIALOG:
 			PopulateDevice(menu1);
+
+			CheckDlgButton(dialogWindow, IDC_Z60, BST_CHECKED); 
+			CheckDlgButton(dialogWindow, IDC_LANDMARK, BST_CHECKED);
+
 			deviceName = FaceTrackingUtilities::GetCheckedDevice(dialogWindow);
 
 			if (wcsstr(deviceName, L"R200") == NULL && wcsstr(deviceName, L"DS4") == NULL)

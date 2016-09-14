@@ -451,6 +451,9 @@ void FaceTrackingRenderer2D::DrawLandmark(PXCFaceData::Face* trackedFace)
 		FacialPoint[i].y = y;
 
 		str.Format(_T("%d"), i);
+	
+	if(FaceTrackingUtilities::IsModuleSelected(m_window, IDC_LANDMARK))
+	{
 		if (m_landmarkPoints[i].confidenceImage)
 		{
 			//SetTextColor(dc2, RGB(255, 255, 255));
@@ -464,6 +467,7 @@ void FaceTrackingRenderer2D::DrawLandmark(PXCFaceData::Face* trackedFace)
 			TextOut(dc2, x, y, str, 1);
 		}
 	}
+}
 
 
 	if(bActivateEyeCenterCalculations)

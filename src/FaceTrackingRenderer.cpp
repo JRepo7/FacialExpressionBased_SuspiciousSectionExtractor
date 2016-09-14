@@ -103,11 +103,19 @@ void FaceTrackingRenderer::RefreshUserInterface()
 
 	//RECT rc1; //화면 확대
 	rc1 = GetResizeRect(rc, bm);
-	//StretchBlt(dc2, -rc1.left - x, -rc1.top - y, rc1.right * width, rc1.bottom * heigt, dc3, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
-	//StretchBlt(dc2, -rc1.left-900, -rc1.top-280, rc1.right*3, rc1.bottom*3, dc3, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
-	StretchBlt(dc2, rc1.left, rc1.top-200, rc1.right*2, rc1.bottom*2, dc3, srcx-80, srcy-100,bm.bmWidth/2, bm.bmHeight/2, SRCCOPY);
-	//StretchBlt(dc2, rc1.left, rc1.top, rc1.right, rc1.bottom, dc3, 0, 0,bm.bmWidth, bm.bmHeight, SRCCOPY);
-	//BitBlt(dc2, rc1.left, rc1.top, rc.right, rc.bottom, dc3, 0, 0, SRCCOPY);
+
+	if (FaceTrackingUtilities::IsModuleSelected(m_window, IDC_Z30))
+	{//30cm
+		StretchBlt(dc2, rc1.left, rc1.top - 100, rc1.right*1.5, rc1.bottom*1.5, dc3, srcx - 100, srcy - 60, bm.bmWidth / 1.5, bm.bmHeight / 1.5, SRCCOPY);
+	}
+	else if (FaceTrackingUtilities::IsModuleSelected(m_window, IDC_Z60))
+	{//60cm
+		StretchBlt(dc2, rc1.left, rc1.top - 100, rc1.right*1.5, rc1.bottom*1.5, dc3, srcx-30, srcy, bm.bmWidth / 2.5, bm.bmHeight / 2.5, SRCCOPY);
+	}
+	else if (FaceTrackingUtilities::IsModuleSelected(m_window, IDC_Z1))
+	{//1m이상
+		StretchBlt(dc2, rc1.left, rc1.top - 200, rc1.right * 2, rc1.bottom * 2, dc3, srcx - 10, srcy-20, bm.bmWidth / 3, bm.bmHeight / 3, SRCCOPY);
+	}
 
 	DeleteDC(dc3);
 	DeleteDC(dc2);

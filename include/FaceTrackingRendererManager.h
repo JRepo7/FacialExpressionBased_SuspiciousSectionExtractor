@@ -57,8 +57,10 @@ public:
 	int GetFrameSize(double second);
 	int VotingUsingSlidingWindow(int duration);
 	void DetermineExpression();
-	void Func1();
-	void QueuingFunc();
+	void CircularQueue1800();
+	void CircularQueue300();
+
+	void Recording();
 	int IsChanged_r();
 	int IsChanged_f();
 
@@ -78,15 +80,18 @@ public:
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
-	int slidingWindow[180] = {1,};
-	BOOL ws_smile[180] = { FALSE, };
+	int slidingWindow[1800] = {1,};
+	BOOL ws_smile[1800] = { FALSE, };
 	int slidingWindow_d[180] = {0,};
+	BOOL ws_subtleSmile[30] = {FALSE};
 	BOOL INITSTATE = FALSE;
 	int sizeOfWindow;
 	int sizeOfWindow_d;
+	int sizeOfWindow_s;
 
 	int cursor;
 	int cursor_d;
+	int cursor_s;
 
 	int numOfFrame;
 	int candidEmo[7];	// for voting
@@ -94,6 +99,10 @@ public:
 	int rear, front, record;
 	bool curr_r, prev_r, next_f,curr_f;
 	bool initFront;
+	bool initFront_s;
+	
+	int frequency[2] = {0,};
+	int winner;
 
 	BOOL STATEOFSMILE=FALSE;
 
@@ -102,7 +111,7 @@ private:
 	FaceTrackingRenderer2D* m_renderer2D;
 	FaceTrackingRenderer3D* m_renderer3D;
 	FaceTrackingRenderer* m_currentRenderer;
-	HWND m_window;						
+	HWND m_window;							// m 					
 	HANDLE m_rendererSignal;
 	OnFinishedRenderingCallback m_callback;
 
@@ -123,6 +132,16 @@ private:
 	pxcF32 yaw;//ÁÂ¿ì
 	pxcF32 pitch;//»óÇÏ
 	pxcF32 hr;
+	int Int1;
+	int Int2;
+	int sumEyesTurnLeft;
+	int sumEyesTurnRight;
+	int sumEyesUp;
+	int sumEyesDown;
+	int avgEyesTurnLeft;
+	int avgEyesTurnRight;
+	int avgEyesUp;
+	int avgEyesDown;
 
 	// Threshold
 	double tOuterBrowRaiserLeft;
