@@ -60,7 +60,7 @@ volatile bool RVS_ADJ_FLAG = false;
 
 
 static int controls[] = {ID_START, ID_STOP, ID_REGISTER, ID_UNREGISTER, IDC_DISTANCES,
-						ID_ADJUST, IDC_CAP_EXP, IDC_EXP_CNT1, IDC_EXP_CNT2, IDC_EXP_CNT3, IDC_EXP_CNT4, IDC_EXP_CNT5, IDC_EXP_CNT6, IDC_EXP_CNT7,
+						ID_ADJUST, IDC_RECORD, IDC_TEST1,IDC_TEST2,IDC_TEST3,IDC_TEST4,IDC_TEST5,IDC_TEST6,IDC_TEST7,IDC_TEST8,
 						IDC_Z1, IDC_Z30, IDC_Z60, IDC_ZGROUP,IDC_LANDMARK, IDC_FP
 };
 static RECT layout[3 + sizeof(controls) / sizeof(controls[0])];
@@ -425,7 +425,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				isStopped = false;
 				isRunning = true;
 
-				if (processor) 
+				if (processor)
 					delete processor;
 
 				processor = new FaceTrackingProcessor(dialogWindow);

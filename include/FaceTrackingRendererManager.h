@@ -50,7 +50,6 @@ public:
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
 	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
-	void SetTextEmoCount();
 	void CaptureSubtleExpression();
 
 	double GetDuration(int frame);
@@ -97,7 +96,7 @@ public:
 	int candidEmo[7];	// for voting
 	int mayor;
 	int rear, front, record;
-	bool curr_r, prev_r, next_f,curr_f;
+	BOOL curr_r, prev_r, next_f,curr_f;
 	bool initFront;
 	bool initFront_s;
 	
@@ -136,12 +135,13 @@ private:
 	int Int2;
 	int sumEyesTurnLeft;
 	int sumEyesTurnRight;
-	int sumEyesUp;
-	int sumEyesDown;
+	int sumEyeyaw;
+	int sumEyepitch;
 	int avgEyesTurnLeft;
 	int avgEyesTurnRight;
-	int avgEyesUp;
-	int avgEyesDown;
+	int avgEyeyaw;
+	int avgEyepitch;
+	int gazecnt;
 
 	// Threshold
 	double tOuterBrowRaiserLeft;

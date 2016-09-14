@@ -42,8 +42,7 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 	Int2 = 0;
 	sumEyesTurnLeft=0;
 	sumEyesTurnRight =0;
-	sumEyesUp=0;
-	sumEyesDown=0;
+	gazecnt = 0;
 }
 
 FaceTrackingRendererManager::~FaceTrackingRendererManager(void)
@@ -195,6 +194,17 @@ void FaceTrackingRendererManager::InitValue()
 	cursor =cursor_s= rear = 0;
 //	sizeOfWindow = sizeOfWindow_d = 0;
 	record = winner = 0;
+
+	sumEyesTurnLeft = 0;
+	sumEyesTurnRight = 0;
+	Int1 = 0;
+
+	sumEyeyaw = 0;
+	sumEyepitch = 0;
+
+	avgEyeyaw = 0;
+	avgEyepitch = 0;
+	gazecnt = 0;
 }
 
 void FaceTrackingRendererManager::PrepValue()
@@ -354,24 +364,7 @@ void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 		}
 	}
 }
-void FaceTrackingRendererManager::SetTextEmoCount()
-{
-	HWND text1 = GetDlgItem(m_window, IDC_EXP_CNT1);
-	HWND text2 = GetDlgItem(m_window, IDC_EXP_CNT2);
-	HWND text3 = GetDlgItem(m_window, IDC_EXP_CNT3);
-	HWND text4 = GetDlgItem(m_window, IDC_EXP_CNT4);
 
-	CString str;
-
-	str.Format(_T("EyesTurnLeft:    %d"), Intensity[EyesTurnLeft]);
-	SetWindowTextW(text1, str);
-	str.Format(_T("EyesTurnRight:      %d"), Intensity[EyesTurnRight]);
-	SetWindowTextW(text2, str);
-	str.Format(_T("EyesUp: %d"), Intensity[EyesUp]);
-	SetWindowTextW(text3, str);
-	str.Format(_T("EyesDown:     %d"), Intensity[EyesDown]);
-	SetWindowTextW(text4, str);
-}
 void FaceTrackingRendererManager::CaptureSubtleExpression() {
 	enum
 	{
@@ -734,8 +727,6 @@ void FaceTrackingRendererManager::DetermineExpression()
 
 	//mayor = VotingUsingSlidingWindow(sizeOfWindow_d);
 
-	SetTextEmoCount();
-
 	HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST = FALSE;
 }
 
@@ -951,7 +942,7 @@ int FaceTrackingRendererManager::IsChanged_f()
 
 void FaceTrackingRendererManager::SubFunc()
 {
-	HWND text = GetDlgItem(m_window, IDC_CAP_EXP);
+	HWND text = GetDlgItem(m_window, IDC_RECORD);
 	CString str;
 	str.Format(_T("°ÅÁþ¿ôÀ½ºóµµ: %d"), record);
 	SetWindowTextW(text, str);
@@ -976,11 +967,27 @@ void FaceTrackingRendererManager::Avoidgaze()
 	SetWindowTextW(pose1, tempLine);
 	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"Pitch: %.0f", pitch);
 	SetWindowTextW(pose2, tempLine);
-	HWND text5 = GetDlgItem(m_window, IDC_EXP_CNT5);
-	HWND text6 = GetDlgItem(m_window, IDC_EXP_CNT6);
-	HWND text7 = GetDlgItem(m_window, IDC_EXP_CNT7);
+	HWND text1 = GetDlgItem(m_window, IDC_TEST1);
+	HWND text2 = GetDlgItem(m_window, IDC_TEST2);
+	HWND text3 = GetDlgItem(m_window, IDC_TEST3);
+	HWND text4 = GetDlgItem(m_window, IDC_TEST4);
+	HWND text5 = GetDlgItem(m_window, IDC_TEST5);
+	HWND text6 = GetDlgItem(m_window, IDC_TEST6);
+	HWND text7 = GetDlgItem(m_window, IDC_TEST7);
+	HWND text8 = GetDlgItem(m_window, IDC_TEST8);
+
+	
 
 	CString str;
+
+	str.Format(_T("EyesTurnLeft:      %d"), Intensity[EyesTurnLeft]);
+	SetWindowTextW(text1, str);
+	str.Format(_T("EyesTurnRight:      %d"), Intensity[EyesTurnRight]);
+	SetWindowTextW(text2, str);
+	str.Format(_T("gazecnt: %d"), gazecnt);
+	SetWindowTextW(text3, str);
+	str.Format(_T("EyesDown:     %d"), Intensity[EyesDown]);
+	SetWindowTextW(text4, str);
 
 
 
@@ -988,61 +995,59 @@ void FaceTrackingRendererManager::Avoidgaze()
 	{
 		sumEyesTurnLeft += Intensity[EyesTurnLeft];
 		sumEyesTurnRight += Intensity[EyesTurnRight];
-		sumEyesUp += Intensity[EyesUp];
-		sumEyesDown += Intensity[EyesDown];
+		sumEyeyaw += yaw;
+		sumEyepitch += pitch;
+
 		Int1++;
 	}
 	else if (Int1 == 15)
 	{
 		avgEyesTurnLeft =(int) sumEyesTurnLeft / 15;
 		avgEyesTurnRight = (int)sumEyesTurnRight / 15;
-		avgEyesUp = (int)sumEyesUp / 15;
-		avgEyesDown = (int)sumEyesDown / 15;
+		avgEyeyaw = (int)sumEyeyaw / 15;
+		avgEyepitch = (int)sumEyepitch / 15;
+
 		str.Format(_T("avgEyesTurnLeft %d"), avgEyesTurnLeft);
 		SetWindowTextW(text5, str);
 		str.Format(_T("avgEyesTurnRight %d"), avgEyesTurnRight);
 		SetWindowTextW(text6, str);
-		str.Format(_T("avgEyesUp %d"), avgEyesUp);
+		str.Format(_T("avgEyeyaw %d"), avgEyeyaw);
 		SetWindowTextW(text7, str);
+		str.Format(_T("avgEyepitch %d"), avgEyepitch);
+		SetWindowTextW(text8, str);
 		Int1++;
 	}
 	else
 	{
+		if (abs(avgEyeyaw - yaw) < 5 && abs(avgEyepitch - pitch) < 5)
+		{
+			if (avgEyesTurnLeft == 0) {
+				if (abs(avgEyesTurnRight - Intensity[EyesTurnRight]) > 40)
+					gazecnt++;
+				else
+					gazecnt = 0;
+			}
+			else if (avgEyesTurnRight == 0) {
+				if (abs(avgEyesTurnLeft - Intensity[EyesTurnLeft]) > 40)
+					gazecnt++;
+				else
+					gazecnt = 0;
+			}
+			else
+			{
+				sumEyesTurnLeft = 0;
+				sumEyesTurnRight = 0;
+				Int1 = 0;
+			}
 
-		if (avgEyesTurnLeft < 10 && avgEyesUp < 10) {
-			if (abs((avgEyesTurnLeft + avgEyesTurnRight + avgEyesUp + avgEyesDown)
-				- ( Intensity[EyesTurnRight] + Intensity[EyesDown])) > 20
-			)
-				GAZE_FLAG == TRUE;
-		}
-		else if (avgEyesTurnLeft < 10 && avgEyesDown < 10) {
-			if (abs((avgEyesTurnLeft + avgEyesTurnRight + avgEyesUp + avgEyesDown)
-				- (Intensity[EyesTurnLeft] + Intensity[EyesUp])) > 20
-			)
-				GAZE_FLAG == TRUE;
-		}
-		else if (avgEyesTurnRight < 10 && avgEyesUp < 10) {
-			if (abs((avgEyesTurnLeft + avgEyesTurnRight + avgEyesUp + avgEyesDown)
-				- (Intensity[EyesTurnLeft] + Intensity[EyesDown])) > 20
-			)
-				GAZE_FLAG == TRUE;
-		}
-		else if (avgEyesTurnRight < 10 && avgEyesDown < 10) {
-			if (abs((avgEyesTurnLeft + avgEyesTurnRight + avgEyesUp + avgEyesDown)
-				- (Intensity[EyesTurnLeft] + Intensity[EyesUp])) > 20
-			)
-				GAZE_FLAG == TRUE;
 		}
 		else
 		{
-			sumEyesTurnLeft = 0;
-			sumEyesTurnRight = 0;
-			sumEyesUp = 0;
-			sumEyesDown = 0;
-			Int1 = 0;
+			gazecnt = 0;
 		}
 	}
 
+	if(gazecnt>120) GAZE_FLAG = TRUE;
 }
 
 void FaceTrackingRendererManager::Heartbeat()
