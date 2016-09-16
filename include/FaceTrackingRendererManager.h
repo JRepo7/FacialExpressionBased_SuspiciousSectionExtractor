@@ -43,9 +43,9 @@ public:
 	void Reset();
 	void GetExpIntensity();
 	void GetLandmarkPoint();
-	void Getheadandpulse();
-	void Heartbeat();
+	void GetHeadandPulse();
 
+	void InitValue();
 	void PrepValue();
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
@@ -66,11 +66,17 @@ public:
 	void SubFunc();
 	void Blinkdetector();
 	void Avoidgaze();
+	void ShowHeartRate();
+
+	void DetermineFlagOutOfHeadPos();
+	void RecordingOutOfRange();
+	BOOL IsChangedRange_r();
+	BOOL IsChangedRange_f();
+	void ShowHeadMovementRecord();
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
 	void SetActivateEyeCenterCalculations(bool bValue); 
-	void InitValue();
 	int adj_frameCount;
 
 	BOOL HAPPY, SAD, SURPRISE, FEAR, ANGRY, DISGUST;		//for Neutral
@@ -82,11 +88,13 @@ public:
 	int slidingWindow[1800] = {1,};
 	BOOL ws_smile[1800] = { FALSE, };
 	int slidingWindow_d[180] = {0,};
-	BOOL ws_subtleSmile[30] = {FALSE};
-	BOOL INITSTATE = FALSE;
+	BOOL ws_subtleSmile[30] = {FALSE,};
+	int slidingWindow_Range[180] = {FALSE, };
+
 	int sizeOfWindow;
 	int sizeOfWindow_d;
 	int sizeOfWindow_s;
+	int sizeOfWindow_R;
 
 	int cursor;
 	int cursor_d;
@@ -96,15 +104,16 @@ public:
 	int candidEmo[7];	// for voting
 	int mayor;
 	int rear, front, record;
-	BOOL curr_r, prev_r, next_f,curr_f;
-	bool initFront;
-	bool initFront_s;
-	
+	int rear_Range, front_Range, record_Range;
+	BOOL prev_r, curr_r, curr_f, next_f;
+	BOOL initFront;
+	BOOL initFront_Range;
+	BOOL PITCH, YAW;
+
 	int frequency[2] = {0,};
+	int frequencyRange[2] = { 0, };
 	int winner;
-
-	BOOL STATEOFSMILE=FALSE;
-
+	int winnerRange;
 
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
@@ -127,10 +136,11 @@ private:
 	int pBrowLowerLeft;
 	//14
 	int Intensity[14];
+
 	//Headpose
-	pxcF32 yaw;//좌우
-	pxcF32 pitch;//상하
+	PXCFaceData::PoseEulerAngles angles;
 	pxcF32 hr;
+
 	int Int1;
 	int Int2;
 	int sumEyesTurnLeft;
@@ -143,9 +153,11 @@ private:
 	int avgEyepitch;
 	int gazecnt;
 
+
 	// Threshold
 	double tOuterBrowRaiserLeft;
 	double tBrowLowerRight;
+
 	double tBrowLowerLeft;
 	double tOuterBrowRaiserRight;
 	double tOuterBrowDepressorRight;
@@ -173,10 +185,7 @@ private:
 	double lipCornerRightUp_LM;
 	double lipCornerLeftUp_LM;
 	double mouthOpen_LM;
-	/*
-	1. 변수추가
-	2. 
-	//*/
+	
 	
 };
 
