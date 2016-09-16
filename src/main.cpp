@@ -7,7 +7,10 @@ accordance with the terms of that agreement
 Copyright(c) 2012-2013 Intel Corporation. All Rights Reserved.
 
 *******************************************************************************/
-#include "afxwin.h"
+
+#include "stdafx.h"
+#include <afx.h>
+#include <afxwin.h>  
 #include <Windows.h>
 #include <WindowsX.h>
 #include <commctrl.h>
@@ -26,6 +29,9 @@ Copyright(c) 2012-2013 Intel Corporation. All Rights Reserved.
 #include "FaceTrackingRenderer3D.h"
 #include "FaceTrackingUtilities.h"
 #include "FaceTrackingProcessor.h"
+#include "MLineChartCtrl.h"
+
+
 #define CAPTURE 8282
 #define ADJUST 5252
 #define EXP_TIMER 9292
@@ -35,7 +41,15 @@ PXCSession* session = NULL;
 FaceTrackingRendererManager* renderer = NULL;
 FaceTrackingProcessor* processor = NULL;
 
+MLineChartCtrl m_LineChartCtrl;
+
 HANDLE ghMutex;
+
+/*전역 핸들 선언*/
+HWND pDlg;
+HWND child;
+/*전역 인스턴스 선언*/
+HINSTANCE g_inst;
 
 volatile bool isRunning = false;
 volatile bool isStopped = false;
@@ -44,9 +58,10 @@ volatile bool isActiveApp = true;
 volatile bool ADJ_FLAG = false;
 volatile bool RVS_ADJ_FLAG = false;
 
+
 static int controls[] = {ID_START, ID_STOP, ID_REGISTER, ID_UNREGISTER, IDC_DISTANCES,
-						ID_ADJUST,IDC_TEXT_I10,IDC_TEXT_I11,IDC_TEXT_I12, IDC_CAP_EXP, 
-						IDC_EXP_CNT1, IDC_EXP_CNT2, IDC_EXP_CNT3, IDC_EXP_CNT4, IDC_EXP_CNT5, IDC_EXP_CNT6, IDC_EXP_CNT7
+						ID_ADJUST, IDC_RECORD, IDC_TEST1,IDC_TEST2,IDC_TEST3,IDC_TEST4,IDC_TEST5,IDC_TEST6,IDC_TEST7,IDC_TEST8,
+						IDC_Z1, IDC_Z30, IDC_Z60, IDC_ZGROUP,IDC_LANDMARK, IDC_FP
 };
 static RECT layout[3 + sizeof(controls) / sizeof(controls[0])];
 
@@ -255,6 +270,8 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 		renderer->Render();
 		renderer->GetExpIntensity();
 		renderer->GetLandmarkPoint();
+		renderer->Getheadandpulse();
+		renderer->Heartbeat();
 
 		if (ADJ_FLAG == TRUE)
 		{
@@ -271,7 +288,10 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 		{
 			renderer->CvtLandmarkToIntensity();
 			renderer->DetermineExpression();
-			renderer->Func();
+			renderer->cursor++;
+			renderer->CircularQueue300();
+			renderer->Blinkdetector();
+			renderer->Avoidgaze();
 		}
 	}
 }
@@ -291,11 +311,17 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	HMENU menu1 = GetMenu(dialogWindow);
 	HMENU menu2;
 	pxcCHAR* deviceName;
+	CRect rc;
+	pDlg = dialogWindow;
 
 	switch (message) 
 	{ 
 		case WM_INITDIALOG:
 			PopulateDevice(menu1);
+
+			CheckDlgButton(dialogWindow, IDC_Z60, BST_CHECKED); 
+			CheckDlgButton(dialogWindow, IDC_LANDMARK, BST_CHECKED);
+
 			deviceName = FaceTrackingUtilities::GetCheckedDevice(dialogWindow);
 
 			if (wcsstr(deviceName, L"R200") == NULL && wcsstr(deviceName, L"DS4") == NULL)
@@ -321,8 +347,8 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				KillTimer(dialogWindow, ADJUST);
 				break;
 
-			//case EXP_TIMER:
-			//	renderer->CaptureSubtleExpression();
+			case EXP_TIMER:
+				renderer->CaptureSubtleExpression();
 				//renderer->DisplayExpressionUsingEmoji(renderer->EXP_EMO);
 			}
 			return TRUE;
@@ -384,6 +410,9 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				return TRUE;
 			case ID_START:
 
+				SetTimer(child, 1234, 1000, NULL);
+				m_LineChartCtrl.m_ChartData.Clear();
+
 				Button_Enable(GetDlgItem(dialogWindow, ID_START), false);
 				Button_Enable(GetDlgItem(dialogWindow, ID_STOP), true);
 				//영상설정 2D 3D
@@ -396,7 +425,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				isStopped = false;
 				isRunning = true;
 
-				if (processor) 
+				if (processor)
 					delete processor;
 
 				processor = new FaceTrackingProcessor(dialogWindow);
@@ -416,6 +445,10 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				return TRUE;
 
 			case ID_STOP:
+
+				KillTimer(child, 1234);
+
+
 				isStopped = true;
 				if (isRunning) 
 				{
@@ -523,11 +556,74 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	return FALSE; 
 }
 
+INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	CRect rcWindow;
+	CRect grWindow;
+	GetClientRect(pDlg, &rcWindow);
+	HDC dc = GetDC(dialogWindow);
+	child = dialogWindow;
+	int degree = 0;
+
+	if (SMILE_FLAG == true)degree++;
+	if (GAZE_FLAG == true)degree++;
+	if (BLINK_FLAG == true)degree++;
+	if (HEADMOTION_FLAG == true)degree++;
+	if (PULSE_FLAG == true)degree++;
+	if (MICROEXP_FLAG == true)degree++;
+	if (EXPRESSION_FLAG == true)degree++;
+
+
+	switch (message)
+	{
+
+	case WM_INITDIALOG:
+		ShowWindow(dialogWindow, SW_NORMAL);
+		MoveWindow(dialogWindow, 25, rcWindow.Height() / 1.5, rcWindow.Width() - 50, rcWindow.Height() / 3, TRUE);
+		GetClientRect(dialogWindow, &m_LineChartCtrl.rcWindow);
+
+		m_LineChartCtrl.DrawChart(dc);
+
+		return TRUE;
+
+	case WM_TIMER:
+		switch (wParam) {
+		case 1234:
+			m_LineChartCtrl.m_ChartData.Add(7, degree% 7 + 7);
+			//m_LineChartCtrl.m_ChartData.Add(7, rand() % 7 + 7);
+			m_LineChartCtrl.DrawChart(dc);
+			UpdateWindow(dialogWindow);
+
+			SMILE_FLAG = FALSE;
+			GAZE_FLAG = FALSE;
+			BLINK_FLAG = FALSE;
+			HEADMOTION_FLAG = FALSE;
+			PULSE_FLAG = FALSE;
+			MICROEXP_FLAG = FALSE;
+			EXPRESSION_FLAG = FALSE;
+
+			if (m_LineChartCtrl.m_ChartData.lstData.GetSize() > 100)
+				m_LineChartCtrl.m_ChartData.Clear();
+			break;
+		}
+		return TRUE;
+
+	case WM_COMMAND:
+
+		return TRUE;
+	case WM_ERASEBKGND:
+		m_LineChartCtrl.DrawChart(dc);
+		return FALSE;
+	}
+	return FALSE;
+}
+
 
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR, int) {
 
 	//ADJ_FLAG = false;
 	//RVS_ADJ_FLAG = false;
+	g_inst = hInstance;
 
 	InitCommonControls();	//enable commlist.h 
 
@@ -551,6 +647,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR, int) {
 	   MessageBoxW(0, L"Failed to create a status bar", L"Face Viewer", MB_ICONEXCLAMATION | MB_OK);
         return 1;
 	}
+
+	HWND graphWindow = CreateDialogW(g_inst, MAKEINTRESOURCE(IDD_GRAPH), dialogWindow, ChildLoopThread);
 	
 	int statusWindowParts[] = {230, -1};
 	SendMessage(statusWindow, SB_SETPARTS, sizeof(statusWindowParts)/sizeof(int), (LPARAM) statusWindowParts);
@@ -616,22 +714,28 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR, int) {
     return (int)msg.wParam;
 }
 
-/*
-LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM IParam)
-{
-	HDC hdc;
-
-	switch (iMessage)
-	{
-	case WM_LBUTTONDOWN:
-		hdc = GetDC(hWnd);
-		TextOut(hdc, 100, 100, TEXT("hi"), 28);
-		ReleaseDC(hWnd, hdc);
-		return 0;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
-	}
-	return(DefWindowProc(hWnd, iMessage, wParam, IParam));
-}
-//*/
+//////////////////  윈도우 프로시져함수의 정의부분  ///////////////////////////////////
+//LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+//
+//{
+//	// switch-case문을 써서 메시지의 종류에 따라
+//	// 적절한 작업을 수행한다.
+//
+//	switch (uMsg)
+//	{
+//
+//	case WM_LBUTTONDOWN: // 마우스 좌측 버튼을 누른 경우
+//						 // 메시지 박스를 표시한다. 
+//		MessageBox(hWnd, _T("마우스 좌측 버튼을 눌렀습니다"), _T("마우스 테스트 "), MB_OK);
+//		break;
+//
+//	case WM_DESTROY:      // 프로그램에 종료 메시지가 온 경우
+//		PostQuitMessage(0); // WM_QUIT메시지를 발생시켜 메시지루프를 중단한다.
+//		break;
+//
+//	default:             // 처리하지 않은 메시지는 
+//		return DefWindowProc(hWnd, uMsg, wParam, lParam);
+//		// DefWindowProc()가 처리하도록 한다.
+//	}
+//	return 0;
+//}

@@ -43,33 +43,29 @@ public:
 	void Reset();
 	void GetExpIntensity();
 	void GetLandmarkPoint();
-
+	void Getheadandpulse();
+	void Heartbeat();
 
 	void PrepValue();
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
 	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
-	void SetTextEmoCount();
 	void CaptureSubtleExpression();
-	//
 
 	double GetDuration(int frame);
 	int GetFrameSize(double second);
-
-	void DetermineExpression();
-
-
 	int VotingUsingSlidingWindow(int duration);
+	void DetermineExpression();
+	void CircularQueue1800();
+	void CircularQueue300();
 
-	void Func();
+	void Recording();
+	int IsChanged_r();
+	int IsChanged_f();
 
-	double IsChanged();
-
-	void CaptureSuspiciousExpression();
-	void CaptureSuspiciousSmile();
-	void CaptureSuspiciousEyeMovement();
-	void CaptureSuspiciousEyeBlink();
-	void CaptureSuspiciousHeadMovement();
+	void SubFunc();
+	void Blinkdetector();
+	void Avoidgaze();
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
@@ -83,23 +79,38 @@ public:
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
-	int slidingWindow[1800] = { 0, };
+	int slidingWindow[1800] = {1,};
+	BOOL ws_smile[1800] = { FALSE, };
 	int slidingWindow_d[180] = {0,};
-
+	BOOL ws_subtleSmile[30] = {FALSE};
+	BOOL INITSTATE = FALSE;
 	int sizeOfWindow;
 	int sizeOfWindow_d;
+	int sizeOfWindow_s;
 
 	int cursor;
 	int cursor_d;
+	int cursor_s;
+
 	int numOfFrame;
 	int candidEmo[7];	// for voting
 	int mayor;
+	int rear, front, record;
+	BOOL curr_r, prev_r, next_f,curr_f;
+	bool initFront;
+	bool initFront_s;
 	
+	int frequency[2] = {0,};
+	int winner;
+
+	BOOL STATEOFSMILE=FALSE;
+
+
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
 	FaceTrackingRenderer3D* m_renderer3D;
 	FaceTrackingRenderer* m_currentRenderer;
-	HWND m_window;							// m 						
+	HWND m_window;							// m 					
 	HANDLE m_rendererSignal;
 	OnFinishedRenderingCallback m_callback;
 
@@ -116,6 +127,21 @@ private:
 	int pBrowLowerLeft;
 	//14
 	int Intensity[14];
+	//Headpose
+	pxcF32 yaw;//ÁÂ¿ì
+	pxcF32 pitch;//»óÇÏ
+	pxcF32 hr;
+	int Int1;
+	int Int2;
+	int sumEyesTurnLeft;
+	int sumEyesTurnRight;
+	int sumEyeyaw;
+	int sumEyepitch;
+	int avgEyesTurnLeft;
+	int avgEyesTurnRight;
+	int avgEyeyaw;
+	int avgEyepitch;
+	int gazecnt;
 
 	// Threshold
 	double tOuterBrowRaiserLeft;

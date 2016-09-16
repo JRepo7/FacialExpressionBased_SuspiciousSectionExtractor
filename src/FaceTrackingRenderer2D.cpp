@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "FaceTrackingRenderer2D.h"
 #include "FaceTrackingUtilities.h"
 #include "FaceTrackingRendererManager.h"
@@ -8,6 +9,9 @@
 
 FaceTrackingRenderer2D::~FaceTrackingRenderer2D()
 {
+	prex=0;
+	prey=0;
+	refreshcount =0;
 }
 //lol
 
@@ -39,9 +43,9 @@ void FaceTrackingRenderer2D::DrawGraphics(PXCFaceData* faceOutput)
 	{
 		PXCFaceData::Face* trackedFace = faceOutput->QueryFaceByIndex(i);		
 		assert(trackedFace != NULL);
-		//drawLocation미사용
-		//if (trackedFace->QueryDetection() != NULL)
-		//	DrawLocation(trackedFace);
+		//drawLocation사용
+		if (trackedFace->QueryDetection() != NULL)
+			DrawLocation(trackedFace);
 		if (trackedFace->QueryLandmarks() != NULL) 
 			DrawLandmark(trackedFace);
 		//if (FaceTrackingUtilities::IsModuleSelected(m_window, IDC_POSE) || FaceTrackingUtilities::IsModuleSelected(m_window, IDC_PULSE))
@@ -50,6 +54,7 @@ void FaceTrackingRenderer2D::DrawGraphics(PXCFaceData* faceOutput)
 			DrawExpressions(trackedFace, i);
 		//if (trackedFace->QueryRecognition() != NULL)
 		//    DrawRecognition(trackedFace, i);
+			
 	}
 }
 
@@ -281,7 +286,7 @@ void FaceTrackingRenderer2D::DrawPoseAndPulse(PXCFaceData::Face* trackedFace, co
 {
 	const PXCFaceData::PoseData* poseData = trackedFace->QueryPose();
 	pxcBool poseAnglesExist;
-	PXCFaceData::PoseEulerAngles angles;
+	
 
 	if (poseData == NULL) 
 		poseAnglesExist = 0;
@@ -289,6 +294,7 @@ void FaceTrackingRenderer2D::DrawPoseAndPulse(PXCFaceData::Face* trackedFace, co
 		poseAnglesExist = poseData->QueryPoseAngles(&angles);
 
 	HWND panelWindow = GetDlgItem(m_window, IDC_PANEL);
+
 	HDC dc1 = GetDC(panelWindow);
 	HDC dc2 = CreateCompatibleDC(dc1);
 	if (!dc2) 
@@ -321,8 +327,8 @@ void FaceTrackingRenderer2D::DrawPoseAndPulse(PXCFaceData::Face* trackedFace, co
 	int yPosition = yStartingPosition;
 	swprintf_s<sizeof(tempLine) / sizeof(pxcCHAR)> (tempLine, L"ID: %d", trackedFace->QueryUserID());
 	TextOut(dc2, xStartingPosition, yPosition, tempLine, (int)std::char_traits<wchar_t>::length(tempLine));
-	if (poseAnglesExist)
-	{
+	//if (poseAnglesExist)
+	//{
 		if (poseData->QueryConfidence() > 0)
 		{
 			SetTextColor(dc2, RGB(0, 0, 0));	
@@ -342,20 +348,19 @@ void FaceTrackingRenderer2D::DrawPoseAndPulse(PXCFaceData::Face* trackedFace, co
 		yPosition += rowMargin;
 		swprintf_s<sizeof(tempLine) / sizeof(WCHAR) > (tempLine, L"Roll : %.0f ", angles.roll);
 		TextOut(dc2, xStartingPosition, yPosition, tempLine, (int)std::char_traits<wchar_t>::length(tempLine));
-	}	
-	else
-	{
+	//}	
+	//else
+	//{
 		SetTextColor(dc2, RGB(255, 0, 0));	
-	}
+	//}
 
 	const PXCFaceData::PulseData* pulse = trackedFace->QueryPulse();
 	if (pulse != NULL)
 	{	
-		pxcF32 hr = pulse->QueryHeartRate();	
-		yPosition += rowMargin;	
-		swprintf_s<sizeof(tempLine) / sizeof(WCHAR) > (tempLine, L"HR: %f", hr);
-
-		TextOut(dc2, xStartingPosition, yPosition, tempLine, (int)std::char_traits<wchar_t>::length(tempLine));
+		hr = pulse->QueryHeartRate();	
+		//yPosition += rowMargin;	
+		
+		//TextOut(dc2, xStartingPosition, yPosition, tempLine, (int)std::char_traits<wchar_t>::length(tempLine));
 	}
 
 	DeleteObject(cyan);
@@ -446,12 +451,15 @@ void FaceTrackingRenderer2D::DrawLandmark(PXCFaceData::Face* trackedFace)
 		FacialPoint[i].y = y;
 
 		str.Format(_T("%d"), i);
+	
+	if(FaceTrackingUtilities::IsModuleSelected(m_window, IDC_LANDMARK))
+	{
 		if (m_landmarkPoints[i].confidenceImage)
 		{
-			SetTextColor(dc2, RGB(255, 255, 255));
-			TextOut(dc2, x, y, str, 2);
+			//SetTextColor(dc2, RGB(255, 255, 255));
+			//TextOut(dc2, x, y, str, 2);
 			//SetPixel(dc2, x, y, RGB(255, 255, 255));
-			//landmarkPoint(dc2, RGB(255, 255, 255),x, y,2);
+			landmarkPoint(dc2, RGB(255, 255, 255),x+5, y+5,2);
 		}
 		else
 		{
@@ -459,6 +467,7 @@ void FaceTrackingRenderer2D::DrawLandmark(PXCFaceData::Face* trackedFace)
 			TextOut(dc2, x, y, str, 1);
 		}
 	}
+}
 
 
 	if(bActivateEyeCenterCalculations)
@@ -501,66 +510,81 @@ void FaceTrackingRenderer2D::DrawLandmark(PXCFaceData::Face* trackedFace)
 	ReleaseDC(panelWindow, dc1);
 }
 
-//void FaceTrackingRenderer2D::DrawLocation(PXCFaceData::Face* trackedFace)
-//{
-//	const PXCFaceData::DetectionData* detectionData = trackedFace->QueryDetection();
-//	if (detectionData == NULL) 
-//		return;	
-//
-//	HWND panelWindow = GetDlgItem(m_window, IDC_PANEL);
-//	HDC dc1 = GetDC(panelWindow);
-//	HDC dc2 = CreateCompatibleDC(dc1);
-//
-//	if (!dc2) 
-//	{
-//		ReleaseDC(panelWindow, dc1);
-//		return;
-//	}
-//
-//	SelectObject(dc2, m_bitmap);
-//
-//	BITMAP bitmap;
-//	GetObject(m_bitmap, sizeof(bitmap), &bitmap);
-//
-//	HPEN cyan = CreatePen(PS_SOLID, 3, RGB(255 ,255 , 0));
-//
-//	if (!cyan)
-//	{
-//		DeleteDC(dc2);
-//		ReleaseDC(panelWindow, dc1);
-//		return;
-//	}
-//	SelectObject(dc2, cyan);
-//
-//	PXCRectI32 rectangle;
-//	pxcBool hasRect = detectionData->QueryBoundingRect(&rectangle);
-//	if (!hasRect)
-//	{
-//		DeleteObject(cyan);
-//		DeleteDC(dc2);
-//		ReleaseDC(panelWindow, dc1);
-//		return;
-//	}
-//
-//	//rc1.left=rectangle.x;
-//	//rc1.top = rectangle.y;
-//	//rc1.right = rectangle.w;
-//	//rc1.bottom = rectangle.h;
-//
-//	//MoveToEx(dc2, rectangle.x, rectangle.y, 0);
-//	//LineTo(dc2, rectangle.x, rectangle.y + rectangle.h);
-//	//LineTo(dc2, rectangle.x + rectangle.w, rectangle.y + rectangle.h);
-//	//LineTo(dc2, rectangle.x + rectangle.w, rectangle.y);
-//	//LineTo(dc2, rectangle.x, rectangle.y);
-//
-//	//WCHAR line[64];
-//	//swprintf_s<sizeof(line)/sizeof(pxcCHAR)>(line,L"%d",trackedFace->QueryUserID());
-//	//TextOut(dc2,rectangle.x, rectangle.y, line, (int)std::char_traits<wchar_t>::length(line));
-//	DeleteObject(cyan);
-//
-//	DeleteDC(dc2);
-//	ReleaseDC(panelWindow, dc1);
-//}
+void FaceTrackingRenderer2D::DrawLocation(PXCFaceData::Face* trackedFace)
+{
+	const PXCFaceData::DetectionData* detectionData = trackedFace->QueryDetection();
+	if (detectionData == NULL) 
+		return;	
+
+	HWND panelWindow = GetDlgItem(m_window, IDC_PANEL);
+	HDC dc1 = GetDC(panelWindow);
+	HDC dc2 = CreateCompatibleDC(dc1);
+
+	if (!dc2) 
+	{
+		ReleaseDC(panelWindow, dc1);
+		return;
+	}
+
+	SelectObject(dc2, m_bitmap);
+
+	BITMAP bitmap;
+	GetObject(m_bitmap, sizeof(bitmap), &bitmap);
+
+	HPEN cyan = CreatePen(PS_SOLID, 1, RGB(255 ,255 , 0));
+
+	if (!cyan)
+	{
+		DeleteDC(dc2);
+		ReleaseDC(panelWindow, dc1);
+		return;
+	}
+	SelectObject(dc2, cyan);
+
+	PXCRectI32 rectangle;
+	pxcBool hasRect = detectionData->QueryBoundingRect(&rectangle);
+	if (!hasRect)
+	{
+		DeleteObject(cyan);
+		DeleteDC(dc2);
+		ReleaseDC(panelWindow, dc1);
+		return;
+	}
+
+	if (refreshcount == 0)
+	{
+		srcx = rectangle.x;
+		srcy = rectangle.y;
+		prex = rectangle.x;
+		prey = rectangle.y;
+		refreshcount = 1;
+	}
+
+	if (abs(prex - rectangle.x) > 10 || abs(prey - rectangle.y) > 10)
+	{
+		refreshcount = 0;
+	}
+
+
+	//rc1.left=rectangle.x;
+	//rc1.top = rectangle.y;
+	//rc1.right = rectangle.w;
+	//rc1.bottom = rectangle.h;
+
+	//MoveToEx(dc2, rectangle.x, rectangle.y, 0);
+	//LineTo(dc2, rectangle.x, rectangle.y + rectangle.h);
+	//LineTo(dc2, rectangle.x + rectangle.w, rectangle.y + rectangle.h);
+	//LineTo(dc2, rectangle.x + rectangle.w, rectangle.y);
+	//LineTo(dc2, rectangle.x, rectangle.y);
+
+	//WCHAR line[64];
+	//swprintf_s<sizeof(line)/sizeof(pxcCHAR)>(line,L"%d",trackedFace->QueryUserID());
+	//TextOut(dc2,rectangle.x, rectangle.y, line, (int)std::char_traits<wchar_t>::length(line));
+	DeleteObject(cyan);
+
+	DeleteDC(dc2);
+	ReleaseDC(panelWindow, dc1);
+}
 
 void FaceTrackingRenderer2D::CalcDistances()
 {
