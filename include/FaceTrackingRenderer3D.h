@@ -11,6 +11,7 @@ public:
 	virtual ~FaceTrackingRenderer3D();
 
 	void DrawBitmap(PXCCapture::Sample* sample, bool ir);
+	void DrawBitmap2(PXCCapture::Sample* sample, bool ir);
 
 private:
 	void DrawGraphics(PXCFaceData* faceOutput);
@@ -21,6 +22,9 @@ private:
 
 	PXCSession* m_session;
 	PXCImage::ImageInfo m_outputImageInfo;
+	PXCImage::ImageInfo m_outputImageInfo2;
 	PXCImage* m_outputImage;
+	PXCImage* m_outputImage2;
 	PXCImage::ImageData m_outputImageData;
+	PXCImage::ImageData m_outputImageData2;
 };

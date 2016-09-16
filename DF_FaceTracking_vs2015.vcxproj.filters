@@ -107,5 +107,7 @@
     <Image Include="emo\역겨움.bmp" />
     <Image Include="emo\중립.bmp" />
     <Image Include="emo\화남.bmp" />
+    <Image Include="emo\GREEN.bmp" />
+    <Image Include="emo\RED.bmp" />
   </ItemGroup>
 </Project>

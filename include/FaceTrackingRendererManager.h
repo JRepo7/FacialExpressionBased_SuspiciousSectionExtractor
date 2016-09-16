@@ -37,6 +37,7 @@ public:
 	void SetNumberOfLandmarks(int numLandmarks);
 	void SetCallback(OnFinishedRenderingCallback callback);
 	void DrawBitmap(PXCCapture::Sample* sample, bool ir);
+	void DrawBitmap2(PXCCapture::Sample* sample, bool ir);
 	void SetOutput(PXCFaceData* output);
 	void SignalRenderer();
 	void DrawDistances();

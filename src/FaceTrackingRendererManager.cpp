@@ -117,6 +117,11 @@ void FaceTrackingRendererManager::DrawBitmap(PXCCapture::Sample* sample, bool ir
 	m_currentRenderer->DrawBitmap(sample, ir);
 }
 
+void FaceTrackingRendererManager::DrawBitmap2(PXCCapture::Sample* sample, bool ir)
+{
+	m_currentRenderer->DrawBitmap2(sample, ir);
+}
+
 void FaceTrackingRendererManager::SetOutput(PXCFaceData* output)
 {
 	m_renderer2D->SetOutput(output);
@@ -1086,7 +1091,7 @@ void FaceTrackingRendererManager::Heartbeat()
 	}
 	else if (hrcnt2 < 120)
 	{
-		if (hr >= 2 * pre_hr1 && (pre_hr1!=0) )
+		if (hr >= 2 * pre_hr1 && pre_hr1 > 10 )
 		{
 			PULSE_FLAG = TRUE;
 		}
@@ -1106,7 +1111,7 @@ void FaceTrackingRendererManager::Heartbeat()
 	}
 	else if (hrcnt3 < 150)
 	{
-		if (hr >= 2 * pre_hr2 && (pre_hr2 != 0))
+		if (hr >= 2 * pre_hr2 && pre_hr2 > 10)
 		{
 			PULSE_FLAG = TRUE;
 		}
@@ -1126,7 +1131,7 @@ void FaceTrackingRendererManager::Heartbeat()
 	}
 	else if (hrcnt4 < 180)
 	{
-		if (hr >= 2 * pre_hr3 && (pre_hr3 != 0))
+		if (hr >= 2 * pre_hr3 && pre_hr3 > 10)
 		{
 			PULSE_FLAG = TRUE;
 		}
@@ -1146,7 +1151,7 @@ void FaceTrackingRendererManager::Heartbeat()
 	}
 	else if (hrcnt5 < 210)
 	{
-		if (hr >= 2 * pre_hr4 && (pre_hr4 != 0))
+		if (hr >= 2 * pre_hr4 && pre_hr4 > 10)
 		{
 			PULSE_FLAG = TRUE;
 		}

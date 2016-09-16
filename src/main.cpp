@@ -61,7 +61,8 @@ volatile bool RVS_ADJ_FLAG = false;
 
 static int controls[] = {ID_START, ID_STOP, ID_REGISTER, ID_UNREGISTER, IDC_DISTANCES,
 						ID_ADJUST, IDC_RECORD, IDC_TEST1,IDC_TEST2,IDC_TEST3,IDC_TEST4,IDC_TEST5,IDC_TEST6,IDC_TEST7,IDC_TEST8,
-						IDC_Z1, IDC_Z30, IDC_Z60, IDC_ZGROUP,IDC_LANDMARK, IDC_FP
+						IDC_Z1, IDC_Z30, IDC_Z60, IDC_ZGROUP,IDC_LANDMARK, IDC_FP, IDD_GRAPH, IDC_ZGROUP, IDC_TEXT_EMO, IDC_PULSE,IDC_PANEL2,
+						IDC_LED1, IDC_LED2, IDC_LED3, IDC_LED4, IDC_LED5, IDC_LED6, IDC_LED7,
 };
 static RECT layout[3 + sizeof(controls) / sizeof(controls[0])];
 
@@ -313,11 +314,21 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	pxcCHAR* deviceName;
 	CRect rc;
 	pDlg = dialogWindow;
+	HBITMAP hBmp;
 
 	switch (message) 
 	{ 
 		case WM_INITDIALOG:
 			PopulateDevice(menu1);
+
+			hBmp = (HBITMAP)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_RED), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
+			SendDlgItemMessage(dialogWindow, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
+			SendDlgItemMessage(dialogWindow, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
+			SendDlgItemMessage(dialogWindow, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
+			SendDlgItemMessage(dialogWindow, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
+			SendDlgItemMessage(dialogWindow, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
+			SendDlgItemMessage(dialogWindow, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
+			SendDlgItemMessage(dialogWindow, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
 
 			CheckDlgButton(dialogWindow, IDC_Z60, BST_CHECKED); 
 			CheckDlgButton(dialogWindow, IDC_LANDMARK, BST_CHECKED);
@@ -563,6 +574,9 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 	GetClientRect(pDlg, &rcWindow);
 	HDC dc = GetDC(dialogWindow);
 	child = dialogWindow;
+	HBITMAP RED = (HBITMAP)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_RED), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
+	HBITMAP GREEN = (HBITMAP)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_GREEN), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
+
 	int degree = 0;
 
 	if (SMILE_FLAG == true)degree++;
@@ -593,6 +607,28 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 			//m_LineChartCtrl.m_ChartData.Add(7, rand() % 7 + 7);
 			m_LineChartCtrl.DrawChart(dc);
 			UpdateWindow(dialogWindow);
+
+			if(EXPRESSION_FLAG==TRUE)SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+			else SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+
+			if (MICROEXP_FLAG == TRUE)SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+			else SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+
+			if (SMILE_FLAG == TRUE)SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+			else SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+
+			if (GAZE_FLAG == TRUE)SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+			else SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+
+			if (BLINK_FLAG == TRUE)SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+			else SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+
+			if (HEADMOTION_FLAG == TRUE)SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+			else SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+
+			if (PULSE_FLAG == TRUE)SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+			else SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+
 
 			SMILE_FLAG = FALSE;
 			GAZE_FLAG = FALSE;

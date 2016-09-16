@@ -94,6 +94,42 @@ void FaceTrackingRenderer2D::DrawBitmap(PXCCapture::Sample* sample, bool ir)
 	DrawDistances();
 }
 
+void FaceTrackingRenderer2D::DrawBitmap2(PXCCapture::Sample* sample, bool ir)
+{
+	if (m_bitmap2)
+	{
+		DeleteObject(m_bitmap2);
+		m_bitmap2 = 0;
+	}
+
+	PXCImage* image = sample->color;
+	if (ir)
+		image = sample->ir;
+
+	PXCImage::ImageInfo info = image->QueryInfo();
+	PXCImage::ImageData data;
+	if (image->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PIXEL_FORMAT_RGB32, &data) >= PXC_STATUS_NO_ERROR)
+	{
+		HWND hwndPanel = GetDlgItem(m_window, IDC_PANEL2);
+		HDC dc = GetDC(hwndPanel);
+		BITMAPINFO binfo;
+		memset(&binfo, 0, sizeof(binfo));
+		binfo.bmiHeader.biWidth = data.pitches[0] / 4;
+		binfo.bmiHeader.biHeight = -(int)info.height;
+		binfo.bmiHeader.biBitCount = 32;
+		binfo.bmiHeader.biPlanes = 1;
+		binfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		binfo.bmiHeader.biCompression = BI_RGB;
+		Sleep(1);
+		m_bitmap2 = CreateDIBitmap(dc, &binfo.bmiHeader, CBM_INIT, data.planes[0], &binfo, DIB_RGB_COLORS);
+
+		ReleaseDC(hwndPanel, dc);
+		image->ReleaseAccess(&data);
+	}
+
+	DrawDistances();
+}
+
 void FaceTrackingRenderer2D::DrawDistances()
 {
 	if(headWidthAvg == 0)

@@ -176,6 +176,101 @@ void FaceTrackingRenderer3D::DrawBitmap(PXCCapture::Sample* sample, bool ir)
 	}
 }
 
+void FaceTrackingRenderer3D::DrawBitmap2(PXCCapture::Sample* sample, bool ir)
+{
+	PXCImage *imageDepth = sample->depth;
+	assert(imageDepth);
+	PXCImage::ImageInfo imageDepthInfo = imageDepth->QueryInfo();
+
+	m_outputImageInfo2.width = 1024;
+	m_outputImageInfo2.height = 1024;
+	m_outputImageInfo2.format = PXCImage::PIXEL_FORMAT_RGB32;
+	m_outputImageInfo2.reserved = 0;
+
+	m_outputImage2 = m_session->CreateImage(&m_outputImageInfo2);
+	assert(m_outputImage2);
+
+	PXCImage::ImageData imageDepthData;
+	if (imageDepth->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PIXEL_FORMAT_RGB32, &imageDepthData) >= PXC_STATUS_NO_ERROR)
+	{
+		memset(&m_outputImageData2, 0, sizeof(m_outputImageData2));
+		pxcStatus status = m_outputImage2->AcquireAccess(PXCImage::ACCESS_WRITE, PXCImage::PIXEL_FORMAT_RGB32, &m_outputImageData2);
+		if (status < PXC_STATUS_NO_ERROR) return;
+
+		int stridePixels = m_outputImageData2.pitches[0];
+		pxcBYTE *pixels = reinterpret_cast<pxcBYTE*> (m_outputImageData2.planes[0]);
+		memset(pixels, 0, stridePixels * m_outputImageInfo2.height);
+
+		// get access to depth data
+		PXCPoint3DF32* vertices = new PXCPoint3DF32[imageDepthInfo.width * imageDepthInfo.height];
+		PXCProjection* projection(m_senseManager->QueryCaptureManager()->QueryDevice()->CreateProjection());
+		if (!projection)
+		{
+			if (vertices) delete[] vertices;
+			return;
+		}
+
+		projection->QueryVertices(imageDepth, vertices);
+		projection->Release();
+		int strideVertices = imageDepthInfo.width;
+
+		// render vertices
+		int numVertices = 0;
+		for (int y = 0; y < imageDepthInfo.height; y++)
+		{
+			const PXCPoint3DF32 *verticesRow = vertices + y * strideVertices;
+			for (int x = 0; x < imageDepthInfo.width; x++)
+			{
+				const PXCPoint3DF32 &v = verticesRow[x];
+				if (v.z <= 0.0f)
+				{
+					continue;
+				}
+
+				double ix = 0, iy = 0;
+				if (ProjectVertex(v, ix, iy))
+				{
+					pxcBYTE *ptr = m_outputImageData2.planes[0];
+					ptr += my_round(iy) * m_outputImageData2.pitches[0];
+					ptr += my_round(ix) * 4;
+					ptr[0] = pxcBYTE(255.0f * 0.5f);
+					ptr[1] = pxcBYTE(255.0f * 0.5f);
+					ptr[2] = pxcBYTE(255.0f * 0.5f);
+					ptr[3] = pxcBYTE(255.0f);
+				}
+
+				numVertices++;
+			}
+		}
+		if (vertices) delete[] vertices;
+
+		if (m_bitmap2)
+		{
+			DeleteObject(m_bitmap2);
+			m_bitmap2 = 0;
+		}
+
+		HWND hwndPanel = GetDlgItem(m_window, IDC_PANEL);
+		HDC dc = GetDC(hwndPanel);
+		BITMAPINFO binfo;
+		memset(&binfo, 0, sizeof(binfo));
+		binfo.bmiHeader.biWidth = m_outputImageData2.pitches[0] / 4;
+		binfo.bmiHeader.biHeight = -(int)m_outputImageInfo2.height;
+		binfo.bmiHeader.biBitCount = 32;
+		binfo.bmiHeader.biPlanes = 1;
+		binfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		binfo.bmiHeader.biCompression = BI_RGB;
+		Sleep(1);
+		m_bitmap2 = CreateDIBitmap(dc, &binfo.bmiHeader, CBM_INIT, m_outputImageData2.planes[0], &binfo, DIB_RGB_COLORS);
+
+		ReleaseDC(hwndPanel, dc);
+
+		m_outputImage2->ReleaseAccess(&m_outputImageData2);
+		imageDepth->ReleaseAccess(&imageDepthData);
+		m_outputImage2->Release();
+	}
+}
+
 void FaceTrackingRenderer3D::DrawLandmark(PXCFaceData::Face* trackedFace)
 {
 	const PXCFaceData::LandmarksData *landmarkData = trackedFace->QueryLandmarks();
