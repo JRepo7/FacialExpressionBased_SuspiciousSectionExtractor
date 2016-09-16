@@ -233,6 +233,8 @@ void RedoLayout(HWND dialogWindow)
 {
 	RECT rectangle;
 	GetClientRect(dialogWindow, &rectangle);
+	CRect rcWindow;
+	GetClientRect(pDlg, &rcWindow);
 
 	/* Status */
 	SetWindowPos(GetDlgItem(dialogWindow, IDC_STATUS), dialogWindow, 
@@ -251,6 +253,7 @@ void RedoLayout(HWND dialogWindow)
 		rectangle.bottom - (layout[1].top - layout[0].top) - (layout[0].bottom - layout[1].bottom),
 		SWP_NOZORDER);
 
+
 	/* Buttons & CheckBoxes */
 	for (int i = 0; i < sizeof(controls) / sizeof(controls[0]); ++i)
 	{
@@ -262,6 +265,7 @@ void RedoLayout(HWND dialogWindow)
 			(layout[3 + i].bottom - layout[3 + i].top),
 			SWP_NOZORDER);
 	}
+
 }
 
 static DWORD WINAPI RenderingThread(LPVOID arg)
