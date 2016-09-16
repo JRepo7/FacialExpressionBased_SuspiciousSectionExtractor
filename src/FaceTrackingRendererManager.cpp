@@ -45,6 +45,12 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 	hrcnt4=0;
 	hrcnt5=0;
 	hrcnt6=0;
+	count1=0;
+	count2=0;
+	count3=0;
+	count4=0;
+	count5=0;
+	count6=0;
 
 
 	sumEyesTurnLeft=0;
@@ -218,6 +224,12 @@ void FaceTrackingRendererManager::InitValue()
 	hrcnt5 = 0;
 	hrcnt6 = 0;
 
+	count1 = 0;
+	count2 = 0;
+	count3 = 0;
+	count4 = 0;
+	count5 = 0;
+	count6 = 0;
 
 	sumEyeyaw = 0;
 	sumEyepitch = 0;
@@ -397,14 +409,16 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 		neutral
 
 	};
-	int Winner =max(happyCnt,
+	int Win =max(happyCnt,
 					max(sadCnt, 
 						max(surpriseCnt, 
 							max(fearCnt, 
 								max(angryCnt, 
 									max(disgustCnt,neutralCnt))))));
 	
-	if (Winner == neutralCnt)
+	ContinueExpression(Win);
+
+	if (Win == neutralCnt)
 	{
 		EXP_EMO[neutral] = TRUE;
 
@@ -412,7 +426,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 
 		EXP_EMO[neutral] = FALSE;
 	}
-	else if (Winner ==happyCnt)
+	else if (Win ==happyCnt)
 	{
 		EXP_EMO[happy] = TRUE;
 
@@ -420,7 +434,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 
 		EXP_EMO[happy] = FALSE;
 	}
-	else if (Winner == sadCnt)
+	else if (Win == sadCnt)
 	{
 		EXP_EMO[sad] = TRUE;
 
@@ -428,7 +442,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 
 		EXP_EMO[sad] = FALSE;
 	}
-	else if (Winner == surpriseCnt)
+	else if (Win == surpriseCnt)
 	{
 		EXP_EMO[surprise] = TRUE;
 
@@ -436,7 +450,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 
 		EXP_EMO[surprise] = FALSE;
 	}
-	else if (Winner == fearCnt)
+	else if (Win == fearCnt)
 	{
 		EXP_EMO[fear] = TRUE;
 
@@ -444,7 +458,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 
 		EXP_EMO[fear] = FALSE;
 	}
-	else if (Winner == angryCnt)
+	else if (Win == angryCnt)
 	{
 		EXP_EMO[angry] = TRUE;
 
@@ -452,7 +466,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 
 		EXP_EMO[angry] = FALSE;
 	}
-	else if (Winner == disgustCnt)
+	else if (Win == disgustCnt)
 	{
 		EXP_EMO[disgust] = TRUE;
 
@@ -460,6 +474,8 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 
 		EXP_EMO[disgust] = FALSE;
 	}
+
+	
 
 	happyCnt= sadCnt= surpriseCnt= fearCnt= angryCnt= disgustCnt= neutralCnt=0;
 }
@@ -987,28 +1003,6 @@ void FaceTrackingRendererManager::Avoidgaze()
 	SetWindowTextW(pose1, tempLine);
 	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"Pitch: %.0f", pitch);
 	SetWindowTextW(pose2, tempLine);
-	HWND text1 = GetDlgItem(m_window, IDC_TEST1);
-	HWND text2 = GetDlgItem(m_window, IDC_TEST2);
-	HWND text3 = GetDlgItem(m_window, IDC_TEST3);
-	HWND text4 = GetDlgItem(m_window, IDC_TEST4);
-	HWND text5 = GetDlgItem(m_window, IDC_TEST5);
-	HWND text6 = GetDlgItem(m_window, IDC_TEST6);
-	HWND text7 = GetDlgItem(m_window, IDC_TEST7);
-	HWND text8 = GetDlgItem(m_window, IDC_TEST8);
-
-	
-
-	CString str;
-
-	str.Format(_T("EyesTurnLeft:      %d"), Intensity[EyesTurnLeft]);
-	SetWindowTextW(text1, str);
-	str.Format(_T("EyesTurnRight:      %d"), Intensity[EyesTurnRight]);
-	SetWindowTextW(text2, str);
-	str.Format(_T("gazecnt: %d"), gazecnt);
-	SetWindowTextW(text3, str);
-	str.Format(_T("EyesDown:     %d"), Intensity[EyesDown]);
-	SetWindowTextW(text4, str);
-
 
 
 	if (Int1<15)
@@ -1027,14 +1021,6 @@ void FaceTrackingRendererManager::Avoidgaze()
 		avgEyeyaw = (int)sumEyeyaw / 15;
 		avgEyepitch = (int)sumEyepitch / 15;
 
-		str.Format(_T("avgEyesTurnLeft %d"), avgEyesTurnLeft);
-		SetWindowTextW(text5, str);
-		str.Format(_T("avgEyesTurnRight %d"), avgEyesTurnRight);
-		SetWindowTextW(text6, str);
-		str.Format(_T("avgEyeyaw %d"), avgEyeyaw);
-		SetWindowTextW(text7, str);
-		str.Format(_T("avgEyepitch %d"), avgEyepitch);
-		SetWindowTextW(text8, str);
 		Int1++;
 	}
 	else
@@ -1173,4 +1159,59 @@ void FaceTrackingRendererManager::Heartbeat()
 		if (compare_hr1 == compare_hr2 && compare_hr2 == compare_hr3)
 			PULSE_FLAG = FALSE;
 	}
+}
+
+void FaceTrackingRendererManager::ContinueExpression(int win)
+{
+	if (win == happyCnt && win != 0) count1++;
+	else if (win != happyCnt) count1 = 0;
+	
+	if (win == sadCnt && win != 0) count2++;
+	else if(win != sadCnt) count2 = 0;
+
+	if (win == surpriseCnt && win != 0) count3++;
+	else if (win != surpriseCnt) count3 = 0;
+
+	if (win == fearCnt && win != 0) count4++;
+	else if (win != fearCnt) count4 = 0;
+
+	if (win == angryCnt && win != 0) count5++;
+	else if (win != angryCnt) count5 = 0;
+
+	if (win == disgustCnt && win != 0) count6++;
+	else if (win != disgustCnt) count6 = 0;
+
+	if (count1 > 25 || count2 > 25 || count3 > 25 || count4 > 25 || count5 > 25 || count6 > 25)
+		EXPRESSION_FLAG = TRUE;
+
+	HWND text1 = GetDlgItem(m_window, IDC_TEST1);
+	HWND text2 = GetDlgItem(m_window, IDC_TEST2);
+	HWND text3 = GetDlgItem(m_window, IDC_TEST3);
+	HWND text4 = GetDlgItem(m_window, IDC_TEST4);
+	HWND text5 = GetDlgItem(m_window, IDC_TEST5);
+	HWND text6 = GetDlgItem(m_window, IDC_TEST6);
+	HWND text7 = GetDlgItem(m_window, IDC_TEST7);
+	HWND text8 = GetDlgItem(m_window, IDC_TEST8);
+
+
+
+	CString str;
+
+	str.Format(_T("HAPPY:      %d"), count1);
+	SetWindowTextW(text1, str);
+	str.Format(_T("SAD:      %d"), count2);
+	SetWindowTextW(text2, str);
+	str.Format(_T("SURPRISE: %d"), count3);
+	SetWindowTextW(text3, str);
+	str.Format(_T("FEAR:     %d"), count4);
+	SetWindowTextW(text4, str);
+
+	str.Format(_T("ANGRY:  %d"), count5);
+	SetWindowTextW(text5, str);
+	str.Format(_T("DISGUST: %d"), count6);
+	SetWindowTextW(text6, str);
+	str.Format(_T("avgEyeyaw %d"), avgEyeyaw);
+	SetWindowTextW(text7, str);
+	str.Format(_T("avgEyepitch %d"), avgEyepitch);
+	SetWindowTextW(text8, str);
 }

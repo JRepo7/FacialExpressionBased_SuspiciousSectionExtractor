@@ -46,6 +46,7 @@ public:
 	void GetLandmarkPoint();
 	void Getheadandpulse();
 	void Heartbeat();
+	void ContinueExpression(int Winner);
 
 	void PrepValue();
 	void SetThresValue();
@@ -146,6 +147,12 @@ private:
 	int compare_hr1;
 	int compare_hr2;
 	int compare_hr3;
+	int count1;
+	int count2;
+	int count3;
+	int count4;
+	int count5;
+	int count6;
 
 	int sumEyesTurnLeft;
 	int sumEyesTurnRight;

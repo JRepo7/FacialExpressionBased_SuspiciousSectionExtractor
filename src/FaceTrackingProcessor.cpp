@@ -202,6 +202,7 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
             }
 
             m_output->Update();
+			
             PXCCapture::Sample* sample = senseManager->QueryFaceSample();
 
             isNotFirstFrame = true;
