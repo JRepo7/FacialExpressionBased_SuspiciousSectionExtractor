@@ -39,7 +39,14 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 	pitch = 0;
 	hr = 0;
 	Int1 = 0;
-	Int2 = 0;
+	hrcnt1=0;
+	hrcnt2=0;
+	hrcnt3=0;
+	hrcnt4=0;
+	hrcnt5=0;
+	hrcnt6=0;
+
+
 	sumEyesTurnLeft=0;
 	sumEyesTurnRight =0;
 	gazecnt = 0;
@@ -198,6 +205,14 @@ void FaceTrackingRendererManager::InitValue()
 	sumEyesTurnLeft = 0;
 	sumEyesTurnRight = 0;
 	Int1 = 0;
+
+	hrcnt1 = 0;
+	hrcnt2 = 0;
+	hrcnt3 = 0;
+	hrcnt4 = 0;
+	hrcnt5 = 0;
+	hrcnt6 = 0;
+
 
 	sumEyeyaw = 0;
 	sumEyepitch = 0;
@@ -952,9 +967,9 @@ void FaceTrackingRendererManager::Blinkdetector()
 {
 	if ((outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM)==0 && (Intensity[ClosedEyeLeft] + Intensity[ClosedEyeRight])>190)
 	{
-		//test떄매 disable
-		//BLINK_FLAG = TRUE;
-		BLINK_FLAG = FALSE;
+		BLINK_FLAG = TRUE;
+		//test 때매 추가
+		//BLINK_FLAG = FALSE;
 	}
 }
 
@@ -1056,4 +1071,101 @@ void FaceTrackingRendererManager::Heartbeat()
 	WCHAR tempLine[64];
 	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"HR: %f", hr);
 	SetWindowTextW(pulse1, tempLine);
+
+	//심박수 100이상이 1분간 지속될때
+	if (hr > 99) hrcnt1++;
+	else hrcnt1 = 0;
+	if (hrcnt1 > 1800) PULSE_FLAG = TRUE;
+
+	//심박수가 0~4초동안 정상치의 2배가 될때
+	if (hrcnt2 == 0) {
+		if (hr > 59 && hr < 100) 
+		{
+			pre_hr1 = hr;
+		}
+	}
+	else if (hrcnt2 < 120)
+	{
+		if (hr >= 2 * pre_hr1 && (pre_hr1!=0) )
+		{
+			PULSE_FLAG = TRUE;
+		}
+	}
+	else if(hrcnt2 > 120) 
+	{
+		hrcnt2 = 0;
+	}
+	hrcnt2++;
+
+	//심박수가 1~5초동안 정상치의 2배가 될때
+	if (hrcnt3 == 30) {
+		if (hr > 59 && hr < 100)
+		{
+			pre_hr2 = hr;
+		}
+	}
+	else if (hrcnt3 < 150)
+	{
+		if (hr >= 2 * pre_hr2 && (pre_hr2 != 0))
+		{
+			PULSE_FLAG = TRUE;
+		}
+	}
+	else if (hrcnt3 > 150)
+	{
+		hrcnt3 = 0;
+	}
+	hrcnt3++;
+
+	//심박수가 2~6초동안 정상치의 2배가 될때
+	if (hrcnt4 == 60) {
+		if (hr > 59 && hr < 100)
+		{
+			pre_hr3 = hr;
+		}
+	}
+	else if (hrcnt4 < 180)
+	{
+		if (hr >= 2 * pre_hr3 && (pre_hr3 != 0))
+		{
+			PULSE_FLAG = TRUE;
+		}
+	}
+	else if (hrcnt4 > 180)
+	{
+		hrcnt4 = 0;
+	}
+	hrcnt4++;
+
+	//심박수가 3~7초동안 정상치의 2배가 될때
+	if (hrcnt5 == 90) {
+		if (hr > 59 && hr < 100)
+		{
+			pre_hr4 = hr;
+		}
+	}
+	else if (hrcnt5 < 210)
+	{
+		if (hr >= 2 * pre_hr4 && (pre_hr4 != 0))
+		{
+			PULSE_FLAG = TRUE;
+		}
+	}
+	else if (hrcnt5 > 210)
+	{
+		hrcnt5 = 0;
+	}
+	hrcnt5++;
+
+	if (hr != 0) {
+		if (hrcnt6 == 0)compare_hr1 = hr;
+		else if (hrcnt6 == 150)compare_hr2 = hr;
+		else if (hrcnt6 == 300)compare_hr3 = hr;
+		else if (hrcnt6 > 300)hrcnt6 = 0;
+
+		hrcnt6++;
+
+		if (compare_hr1 == compare_hr2 && compare_hr2 == compare_hr3)
+			PULSE_FLAG = FALSE;
+	}
 }

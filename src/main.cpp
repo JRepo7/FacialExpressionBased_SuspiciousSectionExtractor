@@ -271,7 +271,6 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 		renderer->GetExpIntensity();
 		renderer->GetLandmarkPoint();
 		renderer->Getheadandpulse();
-		renderer->Heartbeat();
 
 		if (ADJ_FLAG == TRUE)
 		{
@@ -292,6 +291,7 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 			renderer->CircularQueue300();
 			renderer->Blinkdetector();
 			renderer->Avoidgaze();
+			renderer->Heartbeat();
 		}
 	}
 }

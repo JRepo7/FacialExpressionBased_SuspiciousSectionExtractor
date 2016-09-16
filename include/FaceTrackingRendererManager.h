@@ -132,7 +132,20 @@ private:
 	pxcF32 pitch;//»óÇÏ
 	pxcF32 hr;
 	int Int1;
-	int Int2;
+	int hrcnt1;
+	int hrcnt2;
+	int hrcnt3;
+	int hrcnt4;
+	int hrcnt5;
+	int hrcnt6;
+	int pre_hr1;
+	int pre_hr2;
+	int pre_hr3;
+	int pre_hr4;
+	int compare_hr1;
+	int compare_hr2;
+	int compare_hr3;
+
 	int sumEyesTurnLeft;
 	int sumEyesTurnRight;
 	int sumEyeyaw;
