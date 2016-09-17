@@ -39,6 +39,7 @@ void FaceTrackingRenderer::Render()
 	DrawFrameRate();
 	DrawGraphics(m_currentFrameOutput);
 	RefreshUserInterface();
+	RefreshUserInterface2();
 }
 
 void FaceTrackingRenderer::DrawFrameRate()
@@ -126,6 +127,69 @@ void FaceTrackingRenderer::RefreshUserInterface()
 	SendMessage(panel, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bitmap);
 	InvalidateRect(panel, 0, TRUE);
 	 DeleteObject(bitmap);
+}
+
+void FaceTrackingRenderer::RefreshUserInterface2()
+{
+	if (!m_bitmap2) return;
+
+	HWND panel2 = GetDlgItem(m_window, IDC_PANEL2);
+	RECT rc;
+	GetClientRect(panel2, &rc);
+
+	HDC dc = GetDC(panel2);
+	if (!dc)
+	{
+		return;
+	}
+
+	HBITMAP bitmap = CreateCompatibleBitmap(dc, rc.right, rc.bottom);
+
+	if (!bitmap)
+	{
+
+		ReleaseDC(panel2, dc);
+		return;
+	}
+	HDC dc2 = CreateCompatibleDC(dc);
+	if (!dc2)
+	{
+		DeleteObject(bitmap);
+		ReleaseDC(m_window, dc);
+		return;
+	}
+	SelectObject(dc2, bitmap);
+	SetStretchBltMode(dc2, COLORONCOLOR);
+
+	/* Draw the main window */
+	HDC dc3 = CreateCompatibleDC(dc);
+
+	if (!dc3)
+	{
+		DeleteDC(dc2);
+		DeleteObject(bitmap);
+		ReleaseDC(m_window, dc);
+		return;
+	}
+
+	SelectObject(dc3, m_bitmap2);
+	BITMAP bm;
+	GetObject(m_bitmap2, sizeof(BITMAP), &bm);
+	RECT rc2;
+
+	rc2 = GetResizeRect(rc, bm);
+
+	StretchBlt(dc2, rc2.left, rc2.top, rc2.right, rc2.bottom, dc3, 0, 0,bm.bmWidth, bm.bmHeight, SRCCOPY);
+
+	DeleteDC(dc3);
+	DeleteDC(dc2);
+	ReleaseDC(m_window, dc);
+
+	HBITMAP bitmap2 = (HBITMAP)SendMessage(panel2, STM_GETIMAGE, 0, 0);
+	if (bitmap2) DeleteObject(bitmap2);
+	SendMessage(panel2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bitmap);
+	InvalidateRect(panel2, 0, TRUE);
+	DeleteObject(bitmap);
 }
 
 RECT FaceTrackingRenderer::GetResizeRect(RECT rectangle, BITMAP bitmap)

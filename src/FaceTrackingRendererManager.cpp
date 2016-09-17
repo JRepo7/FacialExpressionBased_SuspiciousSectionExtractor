@@ -29,19 +29,27 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 	sizeOfWindow = GetFrameSize(6);
 	sizeOfWindow_d = GetFrameSize(6);
 	sizeOfWindow_s = GetFrameSize(1);
-	sizeOfWindow_R = GetFrameSize(6);
-
 	candidEmo[happy] = candidEmo[sad] = candidEmo[surprise] = candidEmo[fear] = candidEmo[angry] = candidEmo[disgust] = candidEmo[neutral] = 0;
 	//memset(slidingWindow, 0, SizeOfWindow);
 	record = rear = front = 0;
-	record_Range = rear_Range = front_Range = 0;
-	initFront = initFront_Range = false;
+	initFront =initFront_s= false;
 	curr_r = prev_r = next_f = curr_f = false;
 	winner = 0;
-	angles.yaw = angles.pitch = hr = 0;
-	Int1 = Int2 = 0;
-	sumEyesTurnLeft = sumEyesTurnRight = gazecnt = 0;
-	PITCH = YAW = FALSE;
+	yaw = 0;
+	pitch = 0;
+	hr = 0;
+	Int1 = 0;
+	hrcnt1=0;
+	hrcnt2=0;
+	hrcnt3=0;
+	hrcnt4=0;
+	hrcnt5=0;
+	hrcnt6=0;
+
+
+	sumEyesTurnLeft=0;
+	sumEyesTurnRight =0;
+	gazecnt = 0;
 }
 
 FaceTrackingRendererManager::~FaceTrackingRendererManager(void)
@@ -109,6 +117,11 @@ void FaceTrackingRendererManager::DrawBitmap(PXCCapture::Sample* sample, bool ir
 	m_currentRenderer->DrawBitmap(sample, ir);
 }
 
+void FaceTrackingRendererManager::DrawBitmap2(PXCCapture::Sample* sample, bool ir)
+{
+	m_currentRenderer->DrawBitmap2(sample, ir);
+}
+
 void FaceTrackingRendererManager::SetOutput(PXCFaceData* output)
 {
 	m_renderer2D->SetOutput(output);
@@ -162,15 +175,13 @@ void FaceTrackingRendererManager::GetLandmarkPoint()
 		FacialPoint[i] = m_renderer2D->FacialPoint[i];
 	}
 }
-
-void FaceTrackingRendererManager::GetHeadandPulse()
+void FaceTrackingRendererManager::Getheadandpulse()
 {
-	angles.yaw = m_renderer2D->angles.yaw;
-	angles.pitch = m_renderer2D->angles.pitch;
-	angles.roll = m_renderer2D->angles.roll;
-
+	yaw=m_renderer2D->angles.yaw;
+	pitch=m_renderer2D->angles.pitch;
 	hr = m_renderer2D->hr;
 }
+
 
 void FaceTrackingRendererManager::InitValue()
 {
@@ -192,14 +203,21 @@ void FaceTrackingRendererManager::InitValue()
 	EXP_EMO[0] = EXP_EMO[1] = EXP_EMO[2] = EXP_EMO[3] = EXP_EMO[4] = EXP_EMO[5] = EXP_EMO[6] = FALSE;
 	happyCnt = sadCnt = surpriseCnt = fearCnt = angryCnt = disgustCnt = neutralCnt= 0;
 
-	cursor =cursor_s= rear = rear_Range = 0;
-
+	cursor =cursor_s= rear = 0;
 //	sizeOfWindow = sizeOfWindow_d = 0;
 	record = winner = 0;
 
 	sumEyesTurnLeft = 0;
 	sumEyesTurnRight = 0;
 	Int1 = 0;
+
+	hrcnt1 = 0;
+	hrcnt2 = 0;
+	hrcnt3 = 0;
+	hrcnt4 = 0;
+	hrcnt5 = 0;
+	hrcnt6 = 0;
+
 
 	sumEyeyaw = 0;
 	sumEyepitch = 0;
@@ -741,8 +759,11 @@ void FaceTrackingRendererManager::CircularQueue1800()
 	if (cursor_s == sizeOfWindow)
 	{
 		cursor_s = 0;
+
+		//initFront = true;
 	}
 
+	// update value...
 	if (mouthOpen_LM > 10 && Intensity[MouthOpen] > 5)
 	{
 		if (cursor_s % 6 == 0)
@@ -763,7 +784,10 @@ void FaceTrackingRendererManager::CircularQueue1800()
 									
 		}
 		ws_smile[cursor_s] = TRUE;
+
+		//QueuingFunc();
 		cursor_s++;
+
 
 	}
 	else if (Intensity[MouthOpen]> 3 && (lipCornerLeftUp_LM + lipCornerRightUp_LM) > 1)
@@ -785,7 +809,11 @@ void FaceTrackingRendererManager::CircularQueue1800()
 			frequency[smile]++;
 		}
 		ws_smile[cursor_s] = TRUE;
+
+		//QueuingFunc();
 		cursor_s++;
+
+
 
 	}
 	else
@@ -807,19 +835,31 @@ void FaceTrackingRendererManager::CircularQueue1800()
 			frequency[notsmile]++;
 		}
 		ws_smile[cursor_s] = FALSE;
+		//QueuingFunc();
 		cursor_s++;
 	}
 
+	//SubFunc();
 
 
 }
+/*
+void FaceTrackingRendererManager::SubtleValueOfSmile()
+{
+	if (cursor_s % 6 == 0)
+	{
+		ws_subtleSmile[cursor_s++] = winner;
+	}
+	SubFunc();
+}
+//*/
 void FaceTrackingRendererManager::CircularQueue300()
 {
 	CircularQueue1800();
 	if (rear == sizeOfWindow_s)
 	{
 		rear = 0;
-		initFront = true;
+		initFront_s = true;
 	}
 	if (cursor_s % 6 == 0) // per 0.2 second. 
 	{
@@ -835,7 +875,7 @@ void FaceTrackingRendererManager::CircularQueue300()
 void FaceTrackingRendererManager::Recording()
 {
 
-	if (!initFront)
+	if (!initFront_s)
 	{
 		if (rear == 0)
 		{
@@ -905,6 +945,7 @@ int FaceTrackingRendererManager::IsChanged_r()
 		return 1;
 	}
 }
+
 int FaceTrackingRendererManager::IsChanged_f()
 {
 	curr_f = ws_subtleSmile[rear+1];
@@ -931,9 +972,9 @@ void FaceTrackingRendererManager::Blinkdetector()
 {
 	if ((outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM)==0 && (Intensity[ClosedEyeLeft] + Intensity[ClosedEyeRight])>190)
 	{
-		//test떄매 disable
-		//BLINK_FLAG = TRUE;
-		BLINK_FLAG = FALSE;
+		BLINK_FLAG = TRUE;
+		//test 때매 추가
+		//BLINK_FLAG = FALSE;
 	}
 }
 
@@ -942,9 +983,9 @@ void FaceTrackingRendererManager::Avoidgaze()
 	HWND pose1 = GetDlgItem(m_window, IDC_POSE1);
 	HWND pose2 = GetDlgItem(m_window, IDC_POSE2);
 	WCHAR tempLine[64];
-	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"Yaw : %.0f", angles.yaw);
+	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"Yaw : %.0f", yaw);
 	SetWindowTextW(pose1, tempLine);
-	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"Pitch: %.0f", angles.pitch);
+	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"Pitch: %.0f", pitch);
 	SetWindowTextW(pose2, tempLine);
 	HWND text1 = GetDlgItem(m_window, IDC_TEST1);
 	HWND text2 = GetDlgItem(m_window, IDC_TEST2);
@@ -974,8 +1015,8 @@ void FaceTrackingRendererManager::Avoidgaze()
 	{
 		sumEyesTurnLeft += Intensity[EyesTurnLeft];
 		sumEyesTurnRight += Intensity[EyesTurnRight];
-		sumEyeyaw += angles.yaw;
-		sumEyepitch += angles.pitch;
+		sumEyeyaw += yaw;
+		sumEyepitch += pitch;
 
 		Int1++;
 	}
@@ -998,7 +1039,7 @@ void FaceTrackingRendererManager::Avoidgaze()
 	}
 	else
 	{
-		if (abs(avgEyeyaw - angles.yaw) < 5 && abs(avgEyepitch - angles.pitch) < 5)
+		if (abs(avgEyeyaw - yaw) < 5 && abs(avgEyepitch - pitch) < 5)
 		{
 			if (avgEyesTurnLeft == 0) {
 				if (abs(avgEyesTurnRight - Intensity[EyesTurnRight]) > 40)
@@ -1029,139 +1070,107 @@ void FaceTrackingRendererManager::Avoidgaze()
 	if(gazecnt>120) GAZE_FLAG = TRUE;
 }
 
-void FaceTrackingRendererManager::ShowHeartRate()
+void FaceTrackingRendererManager::Heartbeat()
 {
 	HWND pulse1 = GetDlgItem(m_window, IDC_PULSE);
 	WCHAR tempLine[64];
 	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"HR: %f", hr);
 	SetWindowTextW(pulse1, tempLine);
-}
 
-void FaceTrackingRendererManager::DetermineFlagOutOfHeadPos()
-{
-	enum
-	{
-		pitch,
-		yaw
-	};
-	if ( (10 <= angles.pitch && angles.pitch <=15) || (-15 <=angles.pitch && angles.pitch< -10) )
-	{
-		PITCH = TRUE;
-	}
-	if ( 10 <= angles.yaw && angles.yaw <= 15 || (-15 <= angles.yaw && angles.yaw< -10) )
-	{
-		YAW = TRUE;
-	}
+	//심박수 100이상이 1분간 지속될때
+	if (hr > 99) hrcnt1++;
+	else hrcnt1 = 0;
+	if (hrcnt1 > 1800) PULSE_FLAG = TRUE;
 
-	if (PITCH == TRUE || YAW == TRUE)
-	{
-		slidingWindow_Range[rear_Range] = TRUE;
-	}
-	else
-	{
-		slidingWindow_Range[rear_Range] = FALSE;
-	}
-
-	PITCH = YAW = FALSE;
-}
-
-void FaceTrackingRendererManager::RecordingOutOfRange()
-{
-	if (rear_Range == sizeOfWindow_R)
-	{
-		rear_Range = 0;
-		initFront_Range = true;
-	}
-	DetermineFlagOutOfHeadPos();
-
-	if (!initFront_Range)
-	{
-		if (rear_Range == 0)
+	//심박수가 0~4초동안 정상치의 2배가 될때
+	if (hrcnt2 == 0) {
+		if (hr > 59 && hr < 100) 
 		{
-			if (slidingWindow_Range[rear_Range] == TRUE)
-			{
-				record_Range++;
-			}
-		}
-		else
-		{
-			if (IsChangedRange_r())
-			{
-				if (slidingWindow_Range[rear_Range] == TRUE)
-				{
-					record_Range++;
-				}
-			}
+			pre_hr1 = hr;
 		}
 	}
-	else
+	else if (hrcnt2 < 120)
 	{
-		if (rear_Range == 0)
+		if (hr >= 2 * pre_hr1 && pre_hr1 > 10 )
 		{
-			if (slidingWindow_Range[sizeOfWindow_R - 1] == FALSE && slidingWindow_Range[0] == TRUE)
-			{
-				if (slidingWindow_Range[rear_Range] == TRUE)
-				{
-					record_Range++;
-				}
-			}
+			PULSE_FLAG = TRUE;
 		}
-		else
+	}
+	else if(hrcnt2 > 120) 
+	{
+		hrcnt2 = 0;
+	}
+	hrcnt2++;
+
+	//심박수가 1~5초동안 정상치의 2배가 될때
+	if (hrcnt3 == 30) {
+		if (hr > 59 && hr < 100)
 		{
-			if (IsChangedRange_r())
-			{
-				if (slidingWindow_Range[rear_Range] == TRUE)
-				{
-					record_Range++;
-				}
-			}
+			pre_hr2 = hr;
 		}
-
-		// front init
-		if (IsChangedRange_f())
+	}
+	else if (hrcnt3 < 150)
+	{
+		if (hr >= 2 * pre_hr2 && pre_hr2 > 10)
 		{
-			if (slidingWindow_Range[rear_Range + 2] == FALSE)
-			{
-				if (record_Range > 0)
-				{
-					record_Range--;
-				}
-			}
+			PULSE_FLAG = TRUE;
 		}
+	}
+	else if (hrcnt3 > 150)
+	{
+		hrcnt3 = 0;
+	}
+	hrcnt3++;
 
+	//심박수가 2~6초동안 정상치의 2배가 될때
+	if (hrcnt4 == 60) {
+		if (hr > 59 && hr < 100)
+		{
+			pre_hr3 = hr;
+		}
 	}
-	
-	rear_Range++;
+	else if (hrcnt4 < 180)
+	{
+		if (hr >= 2 * pre_hr3 && pre_hr3 > 10)
+		{
+			PULSE_FLAG = TRUE;
+		}
+	}
+	else if (hrcnt4 > 180)
+	{
+		hrcnt4 = 0;
+	}
+	hrcnt4++;
 
-	ShowHeadMovementRecord();
-}
+	//심박수가 3~7초동안 정상치의 2배가 될때
+	if (hrcnt5 == 90) {
+		if (hr > 59 && hr < 100)
+		{
+			pre_hr4 = hr;
+		}
+	}
+	else if (hrcnt5 < 210)
+	{
+		if (hr >= 2 * pre_hr4 && pre_hr4 > 10)
+		{
+			PULSE_FLAG = TRUE;
+		}
+	}
+	else if (hrcnt5 > 210)
+	{
+		hrcnt5 = 0;
+	}
+	hrcnt5++;
 
-void FaceTrackingRendererManager::ShowHeadMovementRecord()
-{
-	HWND text = GetDlgItem(m_window, IDC_RECORD_RANGE);
-	CString str;
-	str.Format(_T("DetectLyingOutOfMovement: %d"), record_Range);
-	SetWindowTextW(text, str);
-}
-int FaceTrackingRendererManager::IsChangedRange_r()
-{
-	if (slidingWindow_Range[rear_Range] == slidingWindow_Range[rear_Range - 1])
-	{
-		return 0;
-	}
-	else
-	{
-		return 1;
-	}
-}
-int FaceTrackingRendererManager::IsChangedRange_f()
-{
-	if (slidingWindow_Range[rear_Range + 1] == slidingWindow_Range[rear_Range + 2])
-	{
-		return 0;
-	}
-	else
-	{
-		return 1;
+	if (hr != 0) {
+		if (hrcnt6 == 0)compare_hr1 = hr;
+		else if (hrcnt6 == 150)compare_hr2 = hr;
+		else if (hrcnt6 == 300)compare_hr3 = hr;
+		else if (hrcnt6 > 300)hrcnt6 = 0;
+
+		hrcnt6++;
+
+		if (compare_hr1 == compare_hr2 && compare_hr2 == compare_hr3)
+			PULSE_FLAG = FALSE;
 	}
 }

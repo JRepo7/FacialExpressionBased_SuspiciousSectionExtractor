@@ -265,6 +265,8 @@
     <ResourceCompile Include="face_tracking.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="emo\GREEN.bmp" />
+    <Image Include="emo\RED.bmp" />
     <Image Include="emo\기쁨.bmp" />
     <Image Include="emo\놀람.bmp" />
     <Image Include="emo\두려움.bmp" />

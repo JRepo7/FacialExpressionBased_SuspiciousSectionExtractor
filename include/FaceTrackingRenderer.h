@@ -27,6 +27,7 @@ public:
 	void SetSenseManager(PXCSenseManager* senseManager);
 	PXCSenseManager* GetSenseManager();
 	virtual void DrawBitmap(PXCCapture::Sample* sample, bool ir) = 0;
+	virtual void DrawBitmap2(PXCCapture::Sample* sample, bool ir) = 0;
 	void Render();
 	//추가함 화면확대
 	RECT rc1;
@@ -42,11 +43,13 @@ protected:
 	
 	HWND m_window;
 	HBITMAP m_bitmap;
+	HBITMAP m_bitmap2;
 
 	virtual void DrawGraphics(PXCFaceData* faceOutput) = 0;
 	virtual void DrawLandmark(PXCFaceData::Face* trackedFace) = 0;
 	void DrawFrameRate();
 	void RefreshUserInterface();
+	void RefreshUserInterface2();
 	RECT GetResizeRect(RECT rectangle, BITMAP bitmap);
 	std::map<PXCFaceData::ExpressionsData::FaceExpression, std::wstring> InitExpressionsMap();
 };

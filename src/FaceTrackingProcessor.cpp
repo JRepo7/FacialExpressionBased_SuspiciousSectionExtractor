@@ -214,6 +214,8 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
 				{
 					renderer->DrawBitmap(
 						sample, config->GetTrackingMode() == PXCFaceConfiguration::FACE_MODE_IR);
+					renderer->DrawBitmap2(
+						sample, config->GetTrackingMode() == PXCFaceConfiguration::FACE_MODE_IR);
 					renderer->SetOutput(m_output);
 					renderer->SignalRenderer();
 					if(!ReleaseMutex(ghMutex))

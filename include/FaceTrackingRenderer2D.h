@@ -34,6 +34,7 @@ public:
 public:
 
 	void DrawBitmap(PXCCapture::Sample* sample, bool ir);
+	void DrawBitmap2(PXCCapture::Sample* sample, bool ir);
 	void CalcDistances();
 	void Reset();
 	void SetActivateEyeCenterCalculations(bool bValue) {bActivateEyeCenterCalculations = bValue;}
