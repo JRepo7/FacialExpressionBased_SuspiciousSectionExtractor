@@ -294,7 +294,6 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 			renderer->DetermineExpression();
 			renderer->cursor++;
 			renderer->CircularQueue300();
-			renderer->Blinkdetector();
 			renderer->Avoidgaze();
 			renderer->ShowHeartRate();
 			renderer->RecordingOutOfRange();

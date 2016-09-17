@@ -482,6 +482,10 @@ void FaceTrackingRendererManager::ContinueExpression(int win)
 		EXPRESSION_FLAG = TRUE;
 
 }
+void FaceTrackingRendererManager::MicroExpression(int win)
+{
+
+}
 void FaceTrackingRendererManager::DisplayExpressionUsingEmoji(BOOL EXP_EMO[])
 {
 	enum {
