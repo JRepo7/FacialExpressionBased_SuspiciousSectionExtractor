@@ -29,27 +29,24 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 	sizeOfWindow = GetFrameSize(6);
 	sizeOfWindow_d = GetFrameSize(6);
 	sizeOfWindow_s = GetFrameSize(1);
+	sizeOfWindow_R = GetFrameSize(6);
+
 	candidEmo[happy] = candidEmo[sad] = candidEmo[surprise] = candidEmo[fear] = candidEmo[angry] = candidEmo[disgust] = candidEmo[neutral] = 0;
 	//memset(slidingWindow, 0, SizeOfWindow);
 	record = rear = front = 0;
-	initFront =initFront_s= false;
+	record_Range = rear_Range = front_Range = 0;
+
+	initFront = false;
 	curr_r = prev_r = next_f = curr_f = false;
+
 	winner = 0;
-	yaw = 0;
-	pitch = 0;
-	hr = 0;
+	angles.yaw = angles.pitch = hr = 0;
+
 	Int1 = 0;
-	hrcnt1=0;
-	hrcnt2=0;
-	hrcnt3=0;
-	hrcnt4=0;
-	hrcnt5=0;
-	hrcnt6=0;
+	hrcnt1=hrcnt2=hrcnt3=hrcnt4=hrcnt5=hrcnt6=0;
 
-
-	sumEyesTurnLeft=0;
-	sumEyesTurnRight =0;
-	gazecnt = 0;
+	sumEyesTurnLeft=sumEyesTurnRight =gazecnt = 0;
+	count1 = count2 = count3 = count4 = count5 = count6 = 0;
 }
 
 FaceTrackingRendererManager::~FaceTrackingRendererManager(void)
@@ -175,10 +172,10 @@ void FaceTrackingRendererManager::GetLandmarkPoint()
 		FacialPoint[i] = m_renderer2D->FacialPoint[i];
 	}
 }
-void FaceTrackingRendererManager::Getheadandpulse()
+void FaceTrackingRendererManager::GetHeadandPulse()
 {
-	yaw=m_renderer2D->angles.yaw;
-	pitch=m_renderer2D->angles.pitch;
+	angles.yaw=m_renderer2D->angles.yaw;
+	angles.pitch=m_renderer2D->angles.pitch;
 	hr = m_renderer2D->hr;
 }
 
@@ -211,13 +208,9 @@ void FaceTrackingRendererManager::InitValue()
 	sumEyesTurnRight = 0;
 	Int1 = 0;
 
-	hrcnt1 = 0;
-	hrcnt2 = 0;
-	hrcnt3 = 0;
-	hrcnt4 = 0;
-	hrcnt5 = 0;
-	hrcnt6 = 0;
+	hrcnt1 =hrcnt2 =hrcnt3 = hrcnt4 =hrcnt5 = hrcnt6 = 0;
 
+	count1 = count2 = count3 = count4 = count5 = count6 = 0;
 
 	sumEyeyaw = 0;
 	sumEyepitch = 0;
@@ -397,14 +390,15 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 		neutral
 
 	};
-	int Winner =max(happyCnt,
+	int Win =max(happyCnt,
 					max(sadCnt, 
 						max(surpriseCnt, 
 							max(fearCnt, 
 								max(angryCnt, 
 									max(disgustCnt,neutralCnt))))));
-	
-	if (Winner == neutralCnt)
+	ContinueExpression(Win);
+	MicroExpression(Win);
+	if (Win == neutralCnt)
 	{
 		EXP_EMO[neutral] = TRUE;
 
@@ -412,7 +406,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 
 		EXP_EMO[neutral] = FALSE;
 	}
-	else if (Winner ==happyCnt)
+	else if (Win ==happyCnt)
 	{
 		EXP_EMO[happy] = TRUE;
 
@@ -420,7 +414,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 
 		EXP_EMO[happy] = FALSE;
 	}
-	else if (Winner == sadCnt)
+	else if (Win == sadCnt)
 	{
 		EXP_EMO[sad] = TRUE;
 
@@ -428,7 +422,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 
 		EXP_EMO[sad] = FALSE;
 	}
-	else if (Winner == surpriseCnt)
+	else if (Win == surpriseCnt)
 	{
 		EXP_EMO[surprise] = TRUE;
 
@@ -436,7 +430,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 
 		EXP_EMO[surprise] = FALSE;
 	}
-	else if (Winner == fearCnt)
+	else if (Win == fearCnt)
 	{
 		EXP_EMO[fear] = TRUE;
 
@@ -444,7 +438,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 
 		EXP_EMO[fear] = FALSE;
 	}
-	else if (Winner == angryCnt)
+	else if (Win == angryCnt)
 	{
 		EXP_EMO[angry] = TRUE;
 
@@ -452,7 +446,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 
 		EXP_EMO[angry] = FALSE;
 	}
-	else if (Winner == disgustCnt)
+	else if (Win == disgustCnt)
 	{
 		EXP_EMO[disgust] = TRUE;
 
@@ -462,6 +456,31 @@ void FaceTrackingRendererManager::CaptureSubtleExpression() {
 	}
 
 	happyCnt= sadCnt= surpriseCnt= fearCnt= angryCnt= disgustCnt= neutralCnt=0;
+}
+
+void FaceTrackingRendererManager::ContinueExpression(int win)
+{
+	if (win == happyCnt && win != 0) count1++;
+	else if (win != happyCnt) count1 = 0;
+
+	if (win == sadCnt && win != 0) count2++;
+	else if (win != sadCnt) count2 = 0;
+
+	if (win == surpriseCnt && win != 0) count3++;
+	else if (win != surpriseCnt) count3 = 0;
+
+	if (win == fearCnt && win != 0) count4++;
+	else if (win != fearCnt) count4 = 0;
+
+	if (win == angryCnt && win != 0) count5++;
+	else if (win != angryCnt) count5 = 0;
+
+	if (win == disgustCnt && win != 0) count6++;
+	else if (win != disgustCnt) count6 = 0;
+
+	if (count1 > 25 || count2 > 25 || count3 > 25 || count4 > 25 || count5 > 25 || count6 > 25)
+		EXPRESSION_FLAG = TRUE;
+
 }
 void FaceTrackingRendererManager::DisplayExpressionUsingEmoji(BOOL EXP_EMO[])
 {
@@ -625,34 +644,34 @@ int FaceTrackingRendererManager::VotingUsingSlidingWindow(int duration)
 
 	}
 	//WhoIsWinner? 
-	int Winner = max(candidEmo[happy],
+	int Win = max(candidEmo[happy],
 		max(candidEmo[sad],
 			max(candidEmo[surprise],
 				max(candidEmo[fear],
 					max(candidEmo[angry],
 						max(candidEmo[disgust], candidEmo[neutral]))))));
 
-		if (candidEmo[happy] == Winner)
+		if (candidEmo[happy] == Win)
 		{
 			return happy;
 		}
-		else if (candidEmo[sad] == Winner)
+		else if (candidEmo[sad] == Win)
 		{
 			return sad;
 		}
-		else if (candidEmo[fear] == Winner)
+		else if (candidEmo[fear] == Win)
 		{
 			return fear;
 		}
-		else if (candidEmo[angry] == Winner)
+		else if (candidEmo[angry] == Win)
 		{
 			return angry;
 		}
-		else if (candidEmo[disgust] == Winner)
+		else if (candidEmo[disgust] == Win)
 		{
 			return disgust;
 		}
-		else if (candidEmo[angry] == Winner)
+		else if (candidEmo[angry] == Win)
 		{
 			return angry;
 		}
@@ -662,7 +681,6 @@ int FaceTrackingRendererManager::VotingUsingSlidingWindow(int duration)
 		}
 
 }
-
 
 void FaceTrackingRendererManager::DetermineExpression()
 {
@@ -744,8 +762,6 @@ void FaceTrackingRendererManager::DetermineExpression()
 		neutralCnt++;
 		slidingWindow[neutral] = angry;
 	}
-
-	//mayor = VotingUsingSlidingWindow(sizeOfWindow_d);
 
 	HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST = FALSE;
 }
@@ -843,23 +859,14 @@ void FaceTrackingRendererManager::CircularQueue1800()
 
 
 }
-/*
-void FaceTrackingRendererManager::SubtleValueOfSmile()
-{
-	if (cursor_s % 6 == 0)
-	{
-		ws_subtleSmile[cursor_s++] = winner;
-	}
-	SubFunc();
-}
-//*/
+
 void FaceTrackingRendererManager::CircularQueue300()
 {
 	CircularQueue1800();
 	if (rear == sizeOfWindow_s)
 	{
 		rear = 0;
-		initFront_s = true;
+		initFront = true;
 	}
 	if (cursor_s % 6 == 0) // per 0.2 second. 
 	{
@@ -875,7 +882,7 @@ void FaceTrackingRendererManager::CircularQueue300()
 void FaceTrackingRendererManager::Recording()
 {
 
-	if (!initFront_s)
+	if (!initFront)
 	{
 		if (rear == 0)
 		{
@@ -968,24 +975,14 @@ void FaceTrackingRendererManager::SubFunc()
 	SetWindowTextW(text, str);
 }
 
-void FaceTrackingRendererManager::Blinkdetector() 
-{
-	if ((outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM)==0 && (Intensity[ClosedEyeLeft] + Intensity[ClosedEyeRight])>190)
-	{
-		BLINK_FLAG = TRUE;
-		//test 때매 추가
-		//BLINK_FLAG = FALSE;
-	}
-}
-
 void FaceTrackingRendererManager::Avoidgaze()
 {
 	HWND pose1 = GetDlgItem(m_window, IDC_POSE1);
 	HWND pose2 = GetDlgItem(m_window, IDC_POSE2);
 	WCHAR tempLine[64];
-	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"Yaw : %.0f", yaw);
+	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"Yaw : %.0f", angles.yaw);
 	SetWindowTextW(pose1, tempLine);
-	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"Pitch: %.0f", pitch);
+	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"Pitch: %.0f", angles.pitch);
 	SetWindowTextW(pose2, tempLine);
 	HWND text1 = GetDlgItem(m_window, IDC_TEST1);
 	HWND text2 = GetDlgItem(m_window, IDC_TEST2);
@@ -1015,8 +1012,8 @@ void FaceTrackingRendererManager::Avoidgaze()
 	{
 		sumEyesTurnLeft += Intensity[EyesTurnLeft];
 		sumEyesTurnRight += Intensity[EyesTurnRight];
-		sumEyeyaw += yaw;
-		sumEyepitch += pitch;
+		sumEyeyaw += angles.yaw;
+		sumEyepitch += angles.pitch;
 
 		Int1++;
 	}
@@ -1039,7 +1036,7 @@ void FaceTrackingRendererManager::Avoidgaze()
 	}
 	else
 	{
-		if (abs(avgEyeyaw - yaw) < 5 && abs(avgEyepitch - pitch) < 5)
+		if (abs(avgEyeyaw - angles.yaw) < 5 && abs(avgEyepitch - angles.pitch) < 5)
 		{
 			if (avgEyesTurnLeft == 0) {
 				if (abs(avgEyesTurnRight - Intensity[EyesTurnRight]) > 40)
@@ -1070,7 +1067,7 @@ void FaceTrackingRendererManager::Avoidgaze()
 	if(gazecnt>120) GAZE_FLAG = TRUE;
 }
 
-void FaceTrackingRendererManager::Heartbeat()
+void FaceTrackingRendererManager::ShowHeartRate()
 {
 	HWND pulse1 = GetDlgItem(m_window, IDC_PULSE);
 	WCHAR tempLine[64];
@@ -1172,5 +1169,151 @@ void FaceTrackingRendererManager::Heartbeat()
 
 		if (compare_hr1 == compare_hr2 && compare_hr2 == compare_hr3)
 			PULSE_FLAG = FALSE;
+	}
+}
+
+void FaceTrackingRendererManager::DetermineFlagOutOfHeadPos()
+{
+	enum
+	{
+		pitch,
+		yaw
+	};
+	if ((10 <= angles.pitch && angles.pitch <= 15) || (-15 <= angles.pitch && angles.pitch< -10))
+	{
+		PITCH = TRUE;
+	}
+	if (10 <= angles.yaw && angles.yaw <= 15 || (-15 <= angles.yaw && angles.yaw< -10))
+	{
+		YAW = TRUE;
+	}
+
+	if (PITCH == TRUE || YAW == TRUE)
+	{
+		slidingWindow_Range[rear_Range] = TRUE;
+	}
+	else
+	{
+		slidingWindow_Range[rear_Range] = FALSE;
+	}
+
+	PITCH = YAW = FALSE;
+}
+
+void FaceTrackingRendererManager::RecordingOutOfRange()
+{
+	if (rear_Range == sizeOfWindow_R)
+	{
+		rear_Range = 0;
+		initFront_Range = true;
+	}
+	DetermineFlagOutOfHeadPos();
+
+	if (!initFront_Range)
+	{
+		if (rear_Range == 0)
+		{
+			if (slidingWindow_Range[rear_Range] == TRUE)
+			{
+				record_Range++;
+			}
+		}
+		else
+		{
+			if (IsChangedRange_r())
+			{
+				if (slidingWindow_Range[rear_Range] == TRUE)
+				{
+					record_Range++;
+				}
+			}
+		}
+	}
+	else
+	{
+		if (rear_Range == 0)
+		{
+			if (slidingWindow_Range[sizeOfWindow_R - 1] == FALSE && slidingWindow_Range[0] == TRUE)
+			{
+				if (slidingWindow_Range[rear_Range] == TRUE)
+				{
+					record_Range++;
+				}
+			}
+		}
+		else
+		{
+			if (IsChangedRange_r())
+			{
+				if (slidingWindow_Range[rear_Range] == TRUE)
+				{
+					record_Range++;
+				}
+			}
+		}
+
+		// front init
+		if (IsChangedRange_f())
+		{
+			if (slidingWindow_Range[rear_Range + 2] == FALSE)
+			{
+				if (record_Range > 0)
+				{
+					record_Range--;
+				}
+			}
+		}
+
+	}
+
+	rear_Range++;
+
+	ShowHeadMovementRecord();
+}
+
+void FaceTrackingRendererManager::ShowHeadMovementRecord()
+{
+	HWND text = GetDlgItem(m_window, IDC_RECORD_RANGE);
+	CString str;
+	str.Format(_T("DetectLyingOutOfMovement: %d"), record_Range);
+	SetWindowTextW(text, str);
+}
+int FaceTrackingRendererManager::IsChangedRange_r()
+{
+	if (slidingWindow_Range[rear_Range] == slidingWindow_Range[rear_Range - 1])
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+}
+int FaceTrackingRendererManager::IsChangedRange_f()
+{
+	if (slidingWindow_Range[rear_Range + 1] == slidingWindow_Range[rear_Range + 2])
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+}
+void FaceTrackingRendererManager::FlagOnOff()
+{
+	if ((5 <= record_Range && record_Range <= 8) || ( 18 <= record_Range && record_Range <=28) )
+	{
+		HEADMOTION_FLAG = TRUE;
+	}
+
+	if ((2 <= record && record <= 6))
+	{
+		SMILE_FLAG = TRUE;
+	}
+
+	if ((outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM) == 0 && (Intensity[ClosedEyeLeft] + Intensity[ClosedEyeRight])>190)
+	{
+		BLINK_FLAG = TRUE;
 	}
 }

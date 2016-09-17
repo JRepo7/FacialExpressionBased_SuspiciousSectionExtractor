@@ -363,8 +363,8 @@ void FaceTrackingRenderer2D::DrawPoseAndPulse(PXCFaceData::Face* trackedFace, co
 	int yPosition = yStartingPosition;
 	swprintf_s<sizeof(tempLine) / sizeof(pxcCHAR)> (tempLine, L"ID: %d", trackedFace->QueryUserID());
 	TextOut(dc2, xStartingPosition, yPosition, tempLine, (int)std::char_traits<wchar_t>::length(tempLine));
-	//if (poseAnglesExist)
-	//{
+	if (poseAnglesExist)
+	{
 		if (poseData->QueryConfidence() > 0)
 		{
 			SetTextColor(dc2, RGB(0, 0, 0));	
@@ -384,11 +384,11 @@ void FaceTrackingRenderer2D::DrawPoseAndPulse(PXCFaceData::Face* trackedFace, co
 		yPosition += rowMargin;
 		swprintf_s<sizeof(tempLine) / sizeof(WCHAR) > (tempLine, L"Roll : %.0f ", angles.roll);
 		TextOut(dc2, xStartingPosition, yPosition, tempLine, (int)std::char_traits<wchar_t>::length(tempLine));
-	//}	
-	//else
-	//{
+	}	
+	else
+	{
 		SetTextColor(dc2, RGB(255, 0, 0));	
-	//}
+	}
 
 	const PXCFaceData::PulseData* pulse = trackedFace->QueryPulse();
 	if (pulse != NULL)

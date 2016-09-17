@@ -52,6 +52,8 @@ public:
 	void CvtLandmarkToIntensity();
 	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
 	void CaptureSubtleExpression();
+	void ContinueExpression(int win);
+	void MicroExpression(int win);
 
 	double GetDuration(int frame);
 	int GetFrameSize(double second);
@@ -65,7 +67,6 @@ public:
 	int IsChanged_f();
 
 	void SubFunc();
-	void Blinkdetector();
 	void Avoidgaze();
 	void ShowHeartRate();
 
@@ -74,6 +75,7 @@ public:
 	BOOL IsChangedRange_r();
 	BOOL IsChangedRange_f();
 	void ShowHeadMovementRecord();
+	void FlagOnOff();
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
@@ -143,30 +145,15 @@ private:
 	pxcF32 hr;
 
 	int Int1;
-	int hrcnt1;
-	int hrcnt2;
-	int hrcnt3;
-	int hrcnt4;
-	int hrcnt5;
-	int hrcnt6;
-	int pre_hr1;
-	int pre_hr2;
-	int pre_hr3;
-	int pre_hr4;
-	int compare_hr1;
-	int compare_hr2;
-	int compare_hr3;
+	int hrcnt1, hrcnt2, hrcnt3, hrcnt4, hrcnt5, hrcnt6;
+	int pre_hr1, pre_hr2, pre_hr3,pre_hr4;
+	int compare_hr1, compare_hr2, compare_hr3;
 
-	int sumEyesTurnLeft;
-	int sumEyesTurnRight;
-	int sumEyeyaw;
-	int sumEyepitch;
-	int avgEyesTurnLeft;
-	int avgEyesTurnRight;
-	int avgEyeyaw;
-	int avgEyepitch;
+	int sumEyesTurnLeft, sumEyesTurnRight, sumEyeyaw, sumEyepitch;
+	int avgEyesTurnLeft, avgEyesTurnRight, avgEyeyaw, avgEyepitch;
 	int gazecnt;
 
+	int count1, count2, count3, count4, count5, count6;
 
 	// Threshold
 	double tOuterBrowRaiserLeft;
