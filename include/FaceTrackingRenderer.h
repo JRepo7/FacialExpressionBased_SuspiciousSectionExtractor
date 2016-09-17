@@ -31,11 +31,6 @@ public:
 	//추가함 화면확대
 	RECT rc1;
 
-	int x;
-	int y;
-	int width;
-	int heigt;
-
 protected:
 	static const int LANDMARK_ALIGNMENT = -3;
 	int m_numLandmarks;

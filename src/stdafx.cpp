@@ -3,3 +3,15 @@
 // stdafx.obj에는 미리 컴파일된 형식 정보가 포함됩니다.
 
 #include "stdafx.h"
+
+int srcx=0;
+int srcy=0;
+
+
+volatile bool SMILE_FLAG = FALSE;
+volatile bool GAZE_FLAG = FALSE;
+volatile bool BLINK_FLAG = FALSE;
+volatile bool HEADMOTION_FLAG = FALSE;
+volatile bool PULSE_FLAG = FALSE;
+volatile bool MICROEXP_FLAG = FALSE;
+volatile bool EXPRESSION_FLAG = FALSE;

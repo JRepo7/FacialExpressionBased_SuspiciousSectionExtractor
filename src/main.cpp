@@ -7,6 +7,8 @@ accordance with the terms of that agreement
 Copyright(c) 2012-2013 Intel Corporation. All Rights Reserved.
 
 *******************************************************************************/
+
+#include "stdafx.h"
 #include <afx.h>
 #include <afxwin.h>  
 #include <Windows.h>
@@ -28,6 +30,8 @@ Copyright(c) 2012-2013 Intel Corporation. All Rights Reserved.
 #include "FaceTrackingUtilities.h"
 #include "FaceTrackingProcessor.h"
 #include "MLineChartCtrl.h"
+
+
 #define CAPTURE 8282
 #define ADJUST 5252
 #define EXP_TIMER 9292
@@ -46,10 +50,6 @@ HWND pDlg;
 HWND child;
 /*전역 인스턴스 선언*/
 HINSTANCE g_inst;
-/* 윈도우 프로시저 선언 */
-LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-/* 자식 윈도우 프로시저 선언*/
-LRESULT CALLBACK ChildProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 volatile bool isRunning = false;
 volatile bool isStopped = false;
@@ -58,17 +58,10 @@ volatile bool isActiveApp = true;
 volatile bool ADJ_FLAG = false;
 volatile bool RVS_ADJ_FLAG = false;
 
-//거짓말 단서 플래그 7개
-volatile bool SMILE_FLAG = false;
-volatile bool GAZE_FLAG = false;
-volatile bool BLINK_FLAG = false;
-volatile bool HEADMOTION_FLAG = false;
-volatile bool PULSE_FLAG = false;
-volatile bool MICROEXP_FLAG = false;
-volatile bool EXPRESSION_FLAG = false;
 
 static int controls[] = {ID_START, ID_STOP, ID_REGISTER, ID_UNREGISTER, IDC_DISTANCES,
-						ID_ADJUST, IDC_CAP_EXP, IDC_EXP_CNT1, IDC_EXP_CNT2, IDC_EXP_CNT3, IDC_EXP_CNT4, IDC_EXP_CNT5, IDC_EXP_CNT6, IDC_EXP_CNT7
+						ID_ADJUST, IDC_RECORD, IDC_TEST1,IDC_TEST2,IDC_TEST3,IDC_TEST4,IDC_TEST5,IDC_TEST6,IDC_TEST7,IDC_TEST8,
+						IDC_Z1, IDC_Z30, IDC_Z60, IDC_ZGROUP,IDC_LANDMARK, IDC_FP
 };
 static RECT layout[3 + sizeof(controls) / sizeof(controls[0])];
 
@@ -277,6 +270,8 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 		renderer->Render();
 		renderer->GetExpIntensity();
 		renderer->GetLandmarkPoint();
+		renderer->GetHeadandPulse();
+		renderer->ShowHeartRate();
 
 		if (ADJ_FLAG == TRUE)
 		{
@@ -295,7 +290,9 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 			renderer->DetermineExpression();
 			renderer->cursor++;
 			renderer->CircularQueue300();
-			
+			renderer->RecordingOutOfRange();
+			renderer->Blinkdetector();
+			renderer->Avoidgaze();
 		}
 	}
 }
@@ -322,6 +319,10 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	{ 
 		case WM_INITDIALOG:
 			PopulateDevice(menu1);
+
+			CheckDlgButton(dialogWindow, IDC_Z60, BST_CHECKED); 
+			CheckDlgButton(dialogWindow, IDC_LANDMARK, BST_CHECKED);
+
 			deviceName = FaceTrackingUtilities::GetCheckedDevice(dialogWindow);
 
 			if (wcsstr(deviceName, L"R200") == NULL && wcsstr(deviceName, L"DS4") == NULL)
@@ -389,18 +390,6 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 
 			switch (LOWORD(wParam)) 
 			{
-			case IDC_UP:
-				
-				return TRUE;
-			case IDC_DOWN:
-				
-				return TRUE;
-			case IDC_RIGHT:
-				
-				return TRUE;
-			case IDC_LEFT:
-				
-				return TRUE;
 			case ID_ADJUST:
 				renderer->InitValue();
 				ADJ_FLAG = TRUE;
@@ -437,7 +426,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				isStopped = false;
 				isRunning = true;
 
-				if (processor) 
+				if (processor)
 					delete processor;
 
 				processor = new FaceTrackingProcessor(dialogWindow);
@@ -601,9 +590,18 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 	case WM_TIMER:
 		switch (wParam) {
 		case 1234:
-			//m_LineChartCtrl.m_ChartData.Add(7, degree% 7 + 7);
-			m_LineChartCtrl.m_ChartData.Add(7, rand() % 7 + 7);
+			m_LineChartCtrl.m_ChartData.Add(7, degree% 7 + 7);
+			//m_LineChartCtrl.m_ChartData.Add(7, rand() % 7 + 7);
 			m_LineChartCtrl.DrawChart(dc);
+			UpdateWindow(dialogWindow);
+
+			SMILE_FLAG = FALSE;
+			GAZE_FLAG = FALSE;
+			BLINK_FLAG = FALSE;
+			HEADMOTION_FLAG = FALSE;
+			PULSE_FLAG = FALSE;
+			MICROEXP_FLAG = FALSE;
+			EXPRESSION_FLAG = FALSE;
 
 			if (m_LineChartCtrl.m_ChartData.lstData.GetSize() > 100)
 				m_LineChartCtrl.m_ChartData.Clear();
