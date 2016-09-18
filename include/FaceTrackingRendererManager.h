@@ -46,6 +46,7 @@ public:
 	void GetLandmarkPoint();
 	void GetHeadandPulse();
 
+	void Initstop();
 	void InitValue();
 	void PrepValue();
 	void SetThresValue();
@@ -67,7 +68,7 @@ public:
 	int IsChanged_f();
 
 	void SubFunc();
-	void Avoidgaze();
+	//void Avoidgaze();
 	void ShowHeartRate();
 
 	void DetermineFlagOutOfHeadPos();
@@ -146,7 +147,7 @@ private:
 
 	int Int1;
 	int hrcnt1, hrcnt2, hrcnt3, hrcnt4, hrcnt5, hrcnt6;
-	int pre_hr1, pre_hr2, pre_hr3,pre_hr4;
+	pxcF32 pre_hr1, pre_hr2, pre_hr3,pre_hr4;
 	int compare_hr1, compare_hr2, compare_hr3;
 
 	int sumEyesTurnLeft, sumEyesTurnRight, sumEyeyaw, sumEyepitch;
