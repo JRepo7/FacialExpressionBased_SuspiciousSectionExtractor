@@ -528,7 +528,7 @@ void FaceTrackingRendererManager::GetFreqBasedOnEmo()
 
 	HWND text = GetDlgItem(m_window, IDC_MICRO);
 	CString str;
-	str.Format(_T("ºÐ´ç È½¼ö: %d"), Win);
+	str.Format(_T("%d"), Win);
 	SetWindowTextW(text, str);
 }
 
@@ -594,10 +594,6 @@ void FaceTrackingRendererManager::ContinueExpression(int win)
 
 	if (count1 > 25 || count2 > 25 || count3 > 25 || count4 > 25 || count5 > 25 || count6 > 25)
 		EXPRESSION_FLAG = TRUE;
-
-}
-void FaceTrackingRendererManager::MicroExpression(int win)
-{
 
 }
 void FaceTrackingRendererManager::DisplayExpressionUsingEmoji(BOOL EXP_EMO[])
