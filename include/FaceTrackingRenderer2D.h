@@ -49,6 +49,9 @@ public:
 	int prex;
 	int prey;
 	int refreshcount;
+	int systemcnt;
+	float gazemin;
+	float gazemax;
 
 
 protected:
@@ -61,7 +64,9 @@ private:
 	void DrawLandmark(PXCFaceData::Face* trackedFace);
 	void DrawLocation(PXCFaceData::Face* trackedFace);
 	void DrawPoseAndPulse(PXCFaceData::Face* trackedFace, const int faceId);
-	void DrawExpressions(PXCFaceData::Face* trackedFace, const int faceId);
+	void DrawExpressions(PXCFaceData::Face* trackedFace, const int faceId);	
+	void DrawGaze(PXCFaceData::Face* trackedFace, const int faceId);
+	void DrawCount();
 
 	//void DrawRecognition(PXCFaceData::Face* trackedFace, const int faceId);
 
@@ -85,6 +90,7 @@ private:
 	int frameNum;
 	int fn; //sample frame number (this starts from when frameNum == sizeData 
 
+	int count1;
 
 	bool bActivateEyeCenterCalculations;
 };

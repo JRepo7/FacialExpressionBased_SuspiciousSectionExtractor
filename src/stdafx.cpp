@@ -15,3 +15,4 @@ volatile bool HEADMOTION_FLAG = FALSE;
 volatile bool PULSE_FLAG = FALSE;
 volatile bool MICROEXP_FLAG = FALSE;
 volatile bool EXPRESSION_FLAG = FALSE;
+volatile bool AUTOADJUST = FALSE;

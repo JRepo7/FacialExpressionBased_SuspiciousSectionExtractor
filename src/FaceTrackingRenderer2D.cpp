@@ -9,9 +9,13 @@
 
 FaceTrackingRenderer2D::~FaceTrackingRenderer2D()
 {
-	prex=0;
-	prey=0;
-	refreshcount =0;
+	prex = 0;
+	prey = 0;
+	refreshcount = 0;
+	gazemin = 0;
+	gazemax = 0;
+	count1 = 0;
+	systemcnt = 0;
 }
 //lol
 
@@ -31,6 +35,10 @@ void landmarkPoint(HDC dc, COLORREF color, int x, int y, int rad)
 FaceTrackingRenderer2D::FaceTrackingRenderer2D(HWND window) : FaceTrackingRenderer(window) , bActivateEyeCenterCalculations(false)
 {
 	Reset();
+	gazemin = 0;
+	gazemax = 0;
+	count1 = 0;
+	systemcnt = 0;
 }
 
 void FaceTrackingRenderer2D::DrawGraphics(PXCFaceData* faceOutput)
@@ -49,9 +57,14 @@ void FaceTrackingRenderer2D::DrawGraphics(PXCFaceData* faceOutput)
 		if (trackedFace->QueryLandmarks() != NULL) 
 			DrawLandmark(trackedFace);
 		//if (FaceTrackingUtilities::IsModuleSelected(m_window, IDC_POSE) || FaceTrackingUtilities::IsModuleSelected(m_window, IDC_PULSE))
+		if(systemcnt<250)
+			DrawCount();
+
 			DrawPoseAndPulse(trackedFace, i);
 		if (trackedFace->QueryExpressions() != NULL)
 			DrawExpressions(trackedFace, i);
+		if (trackedFace->QueryGaze() != NULL)
+			DrawGaze(trackedFace, i);
 		//if (trackedFace->QueryRecognition() != NULL)
 		//    DrawRecognition(trackedFace, i);
 			
@@ -318,6 +331,8 @@ void FaceTrackingRenderer2D::DrawExpressions(PXCFaceData::Face* trackedFace, con
 }
 
 
+
+
 void FaceTrackingRenderer2D::DrawPoseAndPulse(PXCFaceData::Face* trackedFace, const int faceId)
 {
 	const PXCFaceData::PoseData* poseData = trackedFace->QueryPose();
@@ -363,8 +378,8 @@ void FaceTrackingRenderer2D::DrawPoseAndPulse(PXCFaceData::Face* trackedFace, co
 	int yPosition = yStartingPosition;
 	swprintf_s<sizeof(tempLine) / sizeof(pxcCHAR)> (tempLine, L"ID: %d", trackedFace->QueryUserID());
 	TextOut(dc2, xStartingPosition, yPosition, tempLine, (int)std::char_traits<wchar_t>::length(tempLine));
-	//if (poseAnglesExist)
-	//{
+	if (poseAnglesExist)
+	{
 		if (poseData->QueryConfidence() > 0)
 		{
 			SetTextColor(dc2, RGB(0, 0, 0));	
@@ -373,6 +388,7 @@ void FaceTrackingRenderer2D::DrawPoseAndPulse(PXCFaceData::Face* trackedFace, co
 		{
 			SetTextColor(dc2, RGB(255, 0, 0));	
 		}
+
 		yPosition += rowMargin;
 		swprintf_s<sizeof(tempLine) / sizeof(WCHAR) > (tempLine, L"Yaw : %.0f", angles.yaw);
 		TextOut(dc2, xStartingPosition, yPosition, tempLine, (int)std::char_traits<wchar_t>::length(tempLine));
@@ -384,11 +400,11 @@ void FaceTrackingRenderer2D::DrawPoseAndPulse(PXCFaceData::Face* trackedFace, co
 		yPosition += rowMargin;
 		swprintf_s<sizeof(tempLine) / sizeof(WCHAR) > (tempLine, L"Roll : %.0f ", angles.roll);
 		TextOut(dc2, xStartingPosition, yPosition, tempLine, (int)std::char_traits<wchar_t>::length(tempLine));
-	//}	
-	//else
-	//{
+	}	
+	else
+	{
 		SetTextColor(dc2, RGB(255, 0, 0));	
-	//}
+	}
 
 	const PXCFaceData::PulseData* pulse = trackedFace->QueryPulse();
 	if (pulse != NULL)
@@ -458,7 +474,6 @@ void FaceTrackingRenderer2D::DrawLandmark(PXCFaceData::Face* trackedFace)
 		return;
 	}
 
-
 	SetBkMode(dc2, TRANSPARENT);
 
 	SelectObject(dc2, m_bitmap);
@@ -481,12 +496,9 @@ void FaceTrackingRenderer2D::DrawLandmark(PXCFaceData::Face* trackedFace)
 	{
 		int x = (int)m_landmarkPoints[i].image.x + LANDMARK_ALIGNMENT;
 		int y = (int)m_landmarkPoints[i].image.y + LANDMARK_ALIGNMENT;	
-		CString str;
 
 		FacialPoint[i].x = x;
 		FacialPoint[i].y = y;
-
-		str.Format(_T("%d"), i);
 	
 	if(FaceTrackingUtilities::IsModuleSelected(m_window, IDC_LANDMARK))
 	{
@@ -499,11 +511,10 @@ void FaceTrackingRenderer2D::DrawLandmark(PXCFaceData::Face* trackedFace)
 		}
 		else
 		{
-			SetTextColor(dc2, RGB(255, 0, 0));
-			TextOut(dc2, x, y, str, 1);
+			landmarkPoint(dc2, RGB(255, 0, 0), x + 5, y + 5, 1);
 		}
 	}
-}
+	}
 
 
 	if(bActivateEyeCenterCalculations)
@@ -544,6 +555,61 @@ void FaceTrackingRenderer2D::DrawLandmark(PXCFaceData::Face* trackedFace)
 	DeleteObject(hFont);
 	DeleteDC(dc2);
 	ReleaseDC(panelWindow, dc1);
+}
+
+void FaceTrackingRenderer2D::DrawCount() 
+{
+	HWND panel = GetDlgItem(m_window, IDC_PANEL2);
+	HDC dc1 = GetDC(panel);
+	HDC dc2 = CreateCompatibleDC(dc1);
+
+	systemcnt++;
+
+	if (systemcnt == 60)
+	{
+		AUTOADJUST = TRUE;
+	}
+	else AUTOADJUST = FALSE;
+
+
+	if (!dc2)
+	{
+		ReleaseDC(panel, dc1);
+		return;
+	}
+
+	HFONT hFont = CreateFont(600, 0, 0, 0, FW_BOLD, 0, 0, 0, 0, 0, 0, 300, 0, L"MONOSPACE");
+
+	if (!hFont)
+	{
+		DeleteDC(dc2);
+		ReleaseDC(panel, dc1);
+		return;
+	}
+
+	SetBkMode(dc2, TRANSPARENT);
+	SelectObject(dc2, m_bitmap2);
+	SelectObject(dc2, hFont);
+
+	BITMAP bitmap;
+	GetObject(m_bitmap2, sizeof(bitmap), &bitmap);
+
+	SetTextColor(dc2, RGB(255, 255, 255));
+	CString str;
+	int temp = 10 - systemcnt / 25;
+	str.Format(_T("%d"), temp);
+	if (temp == 10) 
+	{
+		TextOut(dc2, 320, 100, str, 2);
+	}
+	else
+	{
+		TextOut(dc2, 480, 100, str, 2);
+	}
+
+	DeleteObject(hFont);
+	DeleteDC(dc2);
+	ReleaseDC(panel, dc1);
 }
 
 void FaceTrackingRenderer2D::DrawLocation(PXCFaceData::Face* trackedFace)
@@ -620,6 +686,59 @@ void FaceTrackingRenderer2D::DrawLocation(PXCFaceData::Face* trackedFace)
 
 	DeleteDC(dc2);
 	ReleaseDC(panelWindow, dc1);
+}
+
+void FaceTrackingRenderer2D::DrawGaze(PXCFaceData::Face * trackedFace, const int faceId)
+{
+	PXCFaceData::GazeData *gazed = trackedFace->QueryGaze();
+
+	pxcF64 angleh = gazed->QueryGazeHorizontalAngle();
+	pxcF64 anglev = gazed->QueryGazeVerticalAngle();
+
+
+
+	if (gazemin < -999) gazemin = 0;
+
+	if ((angles.yaw< 2 &&angles.yaw >-2))
+	{
+		gazemax = max(gazemax, angleh);
+		gazemin = min(angleh, gazemin);
+	}
+
+	HWND text = GetDlgItem(m_window, IDC_TEST8);
+
+	CString str;
+
+	str.Format(_T("시선회피:  %2.1f 초"),(float) count1/30);
+	SetWindowTextW(text, str);
+
+	if (gazemax<50 || gazemin >-50) {
+		if (angleh > 40 || angleh < -40) count1++;
+		else count1 = 0;
+	}
+	else if ( (gazemax > 50 && gazemax < 150) || (gazemin<-50 && gazemin>-150) )
+	{
+		if (angleh > 80 || angleh < -80) count1++;
+		else count1 = 0;
+	}
+	else if ((gazemax > 150 && gazemax < 300) || (gazemin<-150 && gazemin>-300))
+	{
+		if (angleh > 150 || angleh < -150) count1++;
+		else count1 = 0;
+	}
+	else if (gazemax > 300 || gazemin<-300)
+	{
+		if (angleh > 300 || angleh < -300) count1++;
+		else count1 = 0;
+	}
+
+	if(count1 >120) GAZE_FLAG = TRUE;
+
+	if ((angles.yaw> 5 && angles.yaw <-5))
+	{
+		GAZE_FLAG = FALSE;
+	}
+
 }
 
 void FaceTrackingRenderer2D::CalcDistances()

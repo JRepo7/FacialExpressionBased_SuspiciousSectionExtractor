@@ -44,15 +44,17 @@ public:
 	void Reset();
 	void GetExpIntensity();
 	void GetLandmarkPoint();
-	void Getheadandpulse();
-	void Heartbeat();
-	void ContinueExpression(int Winner);
+	void GetHeadandPulse();
 
+	void Initstop();
+	void InitValue();
 	void PrepValue();
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
 	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
 	void CaptureSubtleExpression();
+	void ContinueExpression(int win);
+	void MicroExpression(int win);
 
 	double GetDuration(int frame);
 	int GetFrameSize(double second);
@@ -66,13 +68,19 @@ public:
 	int IsChanged_f();
 
 	void SubFunc();
-	void Blinkdetector();
-	void Avoidgaze();
+	//void Avoidgaze();
+	void ShowHeartRate();
+
+	void DetermineFlagOutOfHeadPos();
+	void RecordingOutOfRange();
+	BOOL IsChangedRange_r();
+	BOOL IsChangedRange_f();
+	void ShowHeadMovementRecord();
+	void FlagOnOff();
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
 	void SetActivateEyeCenterCalculations(bool bValue); 
-	void InitValue();
 	int adj_frameCount;
 
 	BOOL HAPPY, SAD, SURPRISE, FEAR, ANGRY, DISGUST;		//for Neutral
@@ -84,11 +92,13 @@ public:
 	int slidingWindow[1800] = {1,};
 	BOOL ws_smile[1800] = { FALSE, };
 	int slidingWindow_d[180] = {0,};
-	BOOL ws_subtleSmile[30] = {FALSE};
-	BOOL INITSTATE = FALSE;
+	BOOL ws_subtleSmile[30] = {FALSE,};
+	int slidingWindow_Range[180] = {FALSE, };
+
 	int sizeOfWindow;
 	int sizeOfWindow_d;
 	int sizeOfWindow_s;
+	int sizeOfWindow_R;
 
 	int cursor;
 	int cursor_d;
@@ -98,15 +108,16 @@ public:
 	int candidEmo[7];	// for voting
 	int mayor;
 	int rear, front, record;
-	BOOL curr_r, prev_r, next_f,curr_f;
-	bool initFront;
-	bool initFront_s;
-	
+	int rear_Range, front_Range, record_Range;
+	BOOL prev_r, curr_r, curr_f, next_f;
+	BOOL initFront;
+	BOOL initFront_Range;
+	BOOL PITCH, YAW;
+
 	int frequency[2] = {0,};
+	int frequencyRange[2] = { 0, };
 	int winner;
-
-	BOOL STATEOFSMILE=FALSE;
-
+	int winnerRange;
 
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
@@ -129,44 +140,26 @@ private:
 	int pBrowLowerLeft;
 	//14
 	int Intensity[14];
-	//Headpose
-	pxcF32 yaw;//좌우
-	pxcF32 pitch;//상하
-	pxcF32 hr;
-	int Int1;
-	int hrcnt1;
-	int hrcnt2;
-	int hrcnt3;
-	int hrcnt4;
-	int hrcnt5;
-	int hrcnt6;
-	int pre_hr1;
-	int pre_hr2;
-	int pre_hr3;
-	int pre_hr4;
-	int compare_hr1;
-	int compare_hr2;
-	int compare_hr3;
-	int count1;
-	int count2;
-	int count3;
-	int count4;
-	int count5;
-	int count6;
 
-	int sumEyesTurnLeft;
-	int sumEyesTurnRight;
-	int sumEyeyaw;
-	int sumEyepitch;
-	int avgEyesTurnLeft;
-	int avgEyesTurnRight;
-	int avgEyeyaw;
-	int avgEyepitch;
+	//Headpose
+	PXCFaceData::PoseEulerAngles angles;
+	pxcF32 hr;
+
+	int Int1;
+	int hrcnt1, hrcnt2, hrcnt3, hrcnt4, hrcnt5, hrcnt6;
+	pxcF32 pre_hr1, pre_hr2, pre_hr3,pre_hr4;
+	int compare_hr1, compare_hr2, compare_hr3;
+
+	int sumEyesTurnLeft, sumEyesTurnRight, sumEyeyaw, sumEyepitch;
+	int avgEyesTurnLeft, avgEyesTurnRight, avgEyeyaw, avgEyepitch;
 	int gazecnt;
+
+	int count1, count2, count3, count4, count5, count6;
 
 	// Threshold
 	double tOuterBrowRaiserLeft;
 	double tBrowLowerRight;
+
 	double tBrowLowerLeft;
 	double tOuterBrowRaiserRight;
 	double tOuterBrowDepressorRight;
@@ -194,10 +187,7 @@ private:
 	double lipCornerRightUp_LM;
 	double lipCornerLeftUp_LM;
 	double mouthOpen_LM;
-	/*
-	1. 변수추가
-	2. 
-	//*/
+	
 	
 };
 
