@@ -232,6 +232,7 @@ void FaceTrackingRendererManager::GetHeadandPulse()
 	hr = m_renderer2D->hr;
 }
 
+
 void FaceTrackingRendererManager::PrepValue()
 {
 	adj_frameCount++;
@@ -423,7 +424,17 @@ void FaceTrackingRendererManager::CaptureSubtleExpression()
 		frequencyEmo[slidingWindow_M[cursor_m]]--;
 	}
 
-	if (Win == happyCnt)
+	if (Win == neutralCnt)
+	{
+		EXP_EMO[neutral] = TRUE;
+
+		slidingWindow_M[cursor_m] = neutral;
+
+		DisplayExpressionUsingEmoji(EXP_EMO);
+
+		EXP_EMO[neutral] = FALSE;
+	}
+	else if (Win == happyCnt)
 	{
 		EXP_EMO[happy] = TRUE;
 
@@ -433,8 +444,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression()
 
 		EXP_EMO[happy] = FALSE;
 	}
-
-	if (Win == sadCnt)
+	else if (Win == sadCnt)
 	{
 		EXP_EMO[sad] = TRUE;
 
@@ -481,16 +491,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression()
 
 		EXP_EMO[disgust] = FALSE;
 	}
-	else if (Win == neutralCnt)
-	{
-		EXP_EMO[neutral] = TRUE;
 
-		slidingWindow_M[cursor_m] = neutral;
-
-		DisplayExpressionUsingEmoji(EXP_EMO);
-
-		EXP_EMO[neutral] = FALSE;
-	}
 
 	frequencyEmo[slidingWindow_M[cursor_m]]++;// range 0~6
 
@@ -527,7 +528,7 @@ void FaceTrackingRendererManager::GetFreqBasedOnEmo()
 
 	HWND text = GetDlgItem(m_window, IDC_MICRO);
 	CString str;
-	str.Format(_T("%d"), Win);
+	str.Format(_T("ºÐ´ç È½¼ö: %d"), Win);
 	SetWindowTextW(text, str);
 }
 
@@ -588,7 +589,7 @@ void FaceTrackingRendererManager::ContinueExpression(int win)
 
 	CString str;
 
-	str.Format(_T("%2.1f"), (float)max(count1, max(count2, max(count3, max(count4, max(count5, count6))))) / 5);
+	str.Format(_T("Áö¼Ó½Ã°£:  %2.1f ÃÊ"), (float)max(count1, max(count2, max(count3, max(count4, max(count5, count6))))) / 5);
 	SetWindowTextW(text, str);
 
 	if (count1 > 25 || count2 > 25 || count3 > 25 || count4 > 25 || count5 > 25 || count6 > 25)
@@ -806,14 +807,18 @@ void FaceTrackingRendererManager::CircularQueue1800()
 	if (cursor_s == sizeOfWindow)
 	{
 		cursor_s = 0;
+
+		//initFront = true;
 	}
+
+	// update value...
 	if (mouthOpen_LM > 10 && Intensity[MouthOpen] > 5)
 	{
 		if (cursor_s % 6 == 0)
 		{
 			if (frequency[smile] > frequency[notsmile])
 			{
-				winner = 1;							
+				winner = 1;								// 0.2ÃÊ¸¶´Ù smile? winner = 1 else winner = 0
 			}
 			else
 			{
@@ -824,10 +829,14 @@ void FaceTrackingRendererManager::CircularQueue1800()
 		else
 		{
 			frequency[smile]++;		
+									
 		}
 		ws_smile[cursor_s] = TRUE;
 
+		//QueuingFunc();
 		cursor_s++;
+
+
 	}
 	else if (Intensity[MouthOpen]> 3 && (lipCornerLeftUp_LM + lipCornerRightUp_LM) > 1)
 	{
@@ -849,7 +858,11 @@ void FaceTrackingRendererManager::CircularQueue1800()
 		}
 		ws_smile[cursor_s] = TRUE;
 
+		//QueuingFunc();
 		cursor_s++;
+
+
+
 	}
 	else
 	{
@@ -870,8 +883,13 @@ void FaceTrackingRendererManager::CircularQueue1800()
 			frequency[notsmile]++;
 		}
 		ws_smile[cursor_s] = FALSE;
+		//QueuingFunc();
 		cursor_s++;
 	}
+
+	//SubFunc();
+
+
 }
 
 void FaceTrackingRendererManager::CircularQueue300()
@@ -888,11 +906,14 @@ void FaceTrackingRendererManager::CircularQueue300()
 		Recording();
 		rear++;
 	}
+
+
 	SubFunc();
 }
 
 void FaceTrackingRendererManager::Recording()
 {
+
 	if (!initFront)
 	{
 		if (rear == 0)
@@ -935,6 +956,7 @@ void FaceTrackingRendererManager::Recording()
 				}
 			}
 		}
+
 		// front init
 		if (IsChanged_f())
 		{
@@ -953,7 +975,7 @@ void FaceTrackingRendererManager::Recording()
 int FaceTrackingRendererManager::IsChanged_r()
 {
 	curr_r = ws_subtleSmile[rear];
-	prev_r = ws_subtleSmile[rear-1];
+	prev_r = ws_subtleSmile[rear-1];	//init? ws[front] : false 
 	if (curr_r == prev_r)
 	{
 		return 0;
@@ -978,12 +1000,11 @@ int FaceTrackingRendererManager::IsChanged_f()
 	}
 }
 
-//IDC_TEST2
 void FaceTrackingRendererManager::SubFunc()
 {
-	HWND text = GetDlgItem(m_window, IDC_TEST2);
+	HWND text = GetDlgItem(m_window, IDC_RECORD);
 	CString str;
-	str.Format(_T("%d"), record);
+	str.Format(_T("°ÅÁþ¿ôÀ½ºóµµ: %d"), record);
 	SetWindowTextW(text, str);
 }
 
@@ -1201,7 +1222,7 @@ void FaceTrackingRendererManager::ShowHeadMovementRecord()
 	HWND text = GetDlgItem(m_window, IDC_RECORD_RANGE);
 	HWND text1 = GetDlgItem(m_window, IDC_POSE1);
 	CString str;
-	str.Format(_T("ºÐ´çÈ½¼ö: %d"), record_Range);
+	str.Format(_T("ºÐ´çÈ½¼ö:  %d"), record_Range);
 	SetWindowTextW(text, str);
 
 
@@ -1251,7 +1272,7 @@ void FaceTrackingRendererManager::FlagOnOff()
 		SMILE_FLAG = TRUE;
 	}
 
-	if ((outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM) == 0 && (Intensity[ClosedEyeLeft] + Intensity[ClosedEyeRight])>190)
+	if ((outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM) == 0 && (Intensity[ClosedEyeLeft] + Intensity[ClosedEyeRight])>150)
 	{
 		BLINK_FLAG = TRUE;
 	}
@@ -1261,4 +1282,8 @@ void FaceTrackingRendererManager::FlagOnOff()
 		EXPRESSION_FLAG = TRUE;
 	}
 
+	HWND text = GetDlgItem(m_window, IDC_TEST2);
+	CString str;
+	str.Format(_T("ºÐ´ç È½¼ö:  %d"), record);
+	SetWindowTextW(text, str);
 }

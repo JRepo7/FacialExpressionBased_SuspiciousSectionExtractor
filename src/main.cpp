@@ -323,6 +323,8 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	HWND text = GetDlgItem(dialogWindow, IDC_TEST8);
 	HWND pulse1 = GetDlgItem(dialogWindow, IDC_TEST6);
 	HWND pulse2 = GetDlgItem(dialogWindow, IDC_PULSE);
+	HWND head = GetDlgItem(dialogWindow, IDC_RECORD_RANGE);
+	HWND smile = GetDlgItem(dialogWindow, IDC_TEST2);
 
 	if (AUTOADJUST)
 	{
@@ -353,6 +355,9 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			SetWindowTextW(pulse1, str);
 			str.Format(_T("실시간 심박수: 0.00"));
 			SetWindowTextW(pulse2, str);
+			str.Format(_T("분당 횟수:  0"));
+			SetWindowTextW(head, str);
+			SetWindowTextW(smile, str);
 
 			CheckDlgButton(dialogWindow, IDC_Z60, BST_CHECKED); 
 			CheckDlgButton(dialogWindow, IDC_LANDMARK, BST_CHECKED);
