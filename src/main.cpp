@@ -60,7 +60,7 @@ volatile bool RVS_ADJ_FLAG = false;
 
 
 static int controls[] = {ID_START, ID_STOP, ID_REGISTER, ID_UNREGISTER, IDC_DISTANCES,
-						ID_ADJUST, IDC_RECORD, IDC_TEST1,IDC_TEST2,IDC_TEST3,IDC_TEST4,IDC_TEST5,IDC_TEST6,IDC_TEST7,IDC_TEST8,
+						ID_ADJUST, IDC_RECORD, IDC_TEST2,IDC_TEST6,IDC_TEST7,IDC_TEST8,
 						IDC_Z1, IDC_Z30, IDC_Z60, IDC_ZGROUP,IDC_LANDMARK, IDC_FP, IDD_GRAPH, IDC_ZGROUP, IDC_TEXT_EMO, IDC_PULSE,IDC_PANEL2,
 						IDC_LED1, IDC_LED2, IDC_LED3, IDC_LED4, IDC_LED5, IDC_LED6, IDC_LED7,
 };
@@ -294,7 +294,7 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 			renderer->DetermineExpression();
 			renderer->cursor++;
 			renderer->CircularQueue300();
-			renderer->Avoidgaze();
+			//renderer->Avoidgaze();
 			renderer->ShowHeartRate();
 			renderer->RecordingOutOfRange();
 			renderer->FlagOnOff();
@@ -320,6 +320,18 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	CRect rc;
 	pDlg = dialogWindow;
 	HBITMAP hBmp;
+	HWND text = GetDlgItem(dialogWindow, IDC_TEST8);
+	HWND pulse1 = GetDlgItem(dialogWindow, IDC_TEST6);
+	HWND pulse2 = GetDlgItem(dialogWindow, IDC_PULSE);
+
+	if (AUTOADJUST)
+	{
+		renderer->InitValue();
+		ADJ_FLAG = TRUE;
+		SetTimer(dialogWindow, ADJUST, 2000, NULL);
+	}
+
+	CString str;
 
 	switch (message) 
 	{ 
@@ -334,6 +346,13 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			SendDlgItemMessage(dialogWindow, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
 			SendDlgItemMessage(dialogWindow, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
 			SendDlgItemMessage(dialogWindow, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
+
+			str.Format(_T("시선회피:  0.0초"));
+			SetWindowTextW(text, str);
+			str.Format(_T("기준 심박수: 0.00"));
+			SetWindowTextW(pulse1, str);
+			str.Format(_T("실시간 심박수: 0.00"));
+			SetWindowTextW(pulse2, str);
 
 			CheckDlgButton(dialogWindow, IDC_Z60, BST_CHECKED); 
 			CheckDlgButton(dialogWindow, IDC_LANDMARK, BST_CHECKED);
@@ -453,17 +472,17 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				//	Button_Enable(GetDlgItem(dialogWindow, ID_UNREGISTER), true);
 				////}
 
-				renderer->InitValue();
-				ADJ_FLAG = TRUE;
-				SetTimer(dialogWindow, ADJUST, 2000, NULL);
+
 
 				Sleep(0); //TODO: remove
+
 				return TRUE;
 
 			case ID_STOP:
 
 				KillTimer(child, 1234);
 
+				renderer->InitStop();
 
 				isStopped = true;
 				if (isRunning) 

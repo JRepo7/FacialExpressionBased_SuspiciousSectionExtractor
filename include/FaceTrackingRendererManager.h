@@ -32,7 +32,7 @@ public:
 	~FaceTrackingRendererManager();
 
 	void InitValue();
-
+	void InitStop();
 	void SetRendererType(FaceTrackingRenderer::RendererType type);
 	void Render();
 	void SetSenseManager(PXCSenseManager* senseManager);
@@ -53,13 +53,14 @@ public:
 	void CvtLandmarkToIntensity();
 	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
 	void CaptureSubtleExpression();
+	
 	void GetFreqBasedOnEmo();
-
+	
 	void ContinueExpression(int win);
+	void MicroExpression(int win);
 
 	double GetDuration(int frame);
 	int GetFrameSize(double second);
-	int VotingUsingSlidingWindow(int duration);
 	void DetermineExpression();
 	void CircularQueue1800();
 	void CircularQueue300();
@@ -69,7 +70,6 @@ public:
 	int IsChanged_f();
 
 	void SubFunc();
-	void Avoidgaze();
 	void ShowHeartRate();
 
 	void DetermineFlagOutOfHeadPos();
@@ -89,14 +89,13 @@ public:
 	//BOOL EXP_HAPPY, EXP_SAD, EXP_SURPRISE, EXP_FEAR, EXP_ANGRY, EXP_DISGUST, EXP_NEUTRAL;
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
-	int numOfFreq;
 
-	BOOL slidingWindow[1800] = {1,};
+	BOOL slidingWindow[1800] = { TRUE, };
 	BOOL ws_smile[1800] = { FALSE, };
-	BOOL slidingWindow_d[180] = {0,};
+	BOOL slidingWindow_d[180] = { 0, };
 	BOOL ws_subtleSmile[30] = {FALSE,};
-	BOOL slidingWindow_Range[180] = {FALSE, };
-	int slidingWindow_M[10] = {0, }; // 0.2frame * 10 = 2s ... 
+	BOOL slidingWindow_Range[180] = { FALSE, };
+	int slidingWindow_M[10] = { 0, }; // 0.2frame * 10 = 2s ... 
 	int amountOfHappy, amountOfSad, amountOfSurprise, amountOfFear, amountOfAngry, amountOfDisgust, amountOfNeutral;
 	int currentEmo;
 
@@ -115,8 +114,8 @@ public:
 	int candidEmo[7];	// for voting
 	int mayor;
 	int rear, front, record;
-	int rear_Range, record_Range;
 
+	int rear_Range, record_Range;
 	BOOL prev_r, curr_r, curr_f, next_f;
 
 	BOOL initFront;
@@ -126,7 +125,7 @@ public:
 
 	int frequency[2] = {0,};
 	int frequencyRange[2] = { 0, };
-	int frequencyEmo[7] = {0,};
+	int frequencyEmo[7] = { 0, };
 	int winner;
 	int winnerRange;
 
@@ -158,7 +157,7 @@ private:
 
 	int Int1;
 	int hrcnt1, hrcnt2, hrcnt3, hrcnt4, hrcnt5, hrcnt6;
-	int pre_hr1, pre_hr2, pre_hr3,pre_hr4;
+	pxcF32 pre_hr1, pre_hr2, pre_hr3,pre_hr4;
 	int compare_hr1, compare_hr2, compare_hr3;
 
 	int sumEyesTurnLeft, sumEyesTurnRight, sumEyeyaw, sumEyepitch;
