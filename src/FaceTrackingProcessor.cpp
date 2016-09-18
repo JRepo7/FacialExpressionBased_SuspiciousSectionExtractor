@@ -116,6 +116,12 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
 		return;
 	}
 	config->SetTrackingMode(FaceTrackingUtilities::GetCheckedProfile(dialogWindow));
+
+	//시선추적 추가 데이터
+	PXCFaceConfiguration::GazeConfiguration *gazec = config->QueryGaze();
+	gazec->isEnabled = true;
+	//
+
 	config->ApplyChanges();
 
 	if (!FaceTrackingUtilities::GetPlaybackState(dialogWindow))
