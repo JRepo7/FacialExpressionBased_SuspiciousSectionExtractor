@@ -32,7 +32,6 @@ public:
 	~FaceTrackingRendererManager();
 
 	void InitValue();
-	void InitamountOfEmo();
 
 	void SetRendererType(FaceTrackingRenderer::RendererType type);
 	void Render();
@@ -54,10 +53,8 @@ public:
 	void CvtLandmarkToIntensity();
 	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
 	void CaptureSubtleExpression();
-	void CheckChangeFunc();
+	void GetFreqBasedOnEmo();
 
-	int IsChangedFlag_r();
-	int IsChangedFlag_f();
 	void ContinueExpression(int win);
 
 	double GetDuration(int frame);
@@ -122,7 +119,6 @@ public:
 
 	BOOL prev_r, curr_r, curr_f, next_f;
 
-	BOOL prev, curr, next;
 	BOOL initFront;
 	BOOL initFront_M;
 	BOOL initFront_Range;
@@ -130,6 +126,7 @@ public:
 
 	int frequency[2] = {0,};
 	int frequencyRange[2] = { 0, };
+	int frequencyEmo[7] = {0,};
 	int winner;
 	int winnerRange;
 
