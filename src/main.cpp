@@ -60,7 +60,7 @@ volatile bool RVS_ADJ_FLAG = false;
 
 
 static int controls[] = {ID_START, ID_STOP, ID_REGISTER, ID_UNREGISTER, IDC_DISTANCES,
-						ID_ADJUST, IDC_RECORD, IDC_TEST1,IDC_TEST2,IDC_TEST3,IDC_TEST4,IDC_TEST5,IDC_TEST6,IDC_TEST7,IDC_TEST8,
+						ID_ADJUST, IDC_RECORD, IDC_TEST2,IDC_TEST6,IDC_TEST7,IDC_TEST8,
 						IDC_Z1, IDC_Z30, IDC_Z60, IDC_ZGROUP,IDC_LANDMARK, IDC_FP, IDD_GRAPH, IDC_ZGROUP, IDC_TEXT_EMO, IDC_PULSE,IDC_PANEL2,
 						IDC_LED1, IDC_LED2, IDC_LED3, IDC_LED4, IDC_LED5, IDC_LED6, IDC_LED7,
 };
@@ -482,7 +482,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 
 				KillTimer(child, 1234);
 
-				renderer->Initstop();
+				renderer->InitStop();
 
 				isStopped = true;
 				if (isRunning) 
