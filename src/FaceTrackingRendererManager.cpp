@@ -1012,7 +1012,7 @@ void FaceTrackingRendererManager::ShowHeartRate()
 {
 	HWND pulse1 = GetDlgItem(m_window, IDC_PULSE);
 	WCHAR tempLine[64];
-	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"실시간 심박수: %2.1f", hr);
+	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"실시간 심박수: %3.1f", hr);
 	SetWindowTextW(pulse1, tempLine);
 	HWND text = GetDlgItem(m_window, IDC_TEST6);
 	CString str;
@@ -1102,7 +1102,7 @@ void FaceTrackingRendererManager::ShowHeartRate()
 	}
 	hrcnt5++;
 
-	str.Format(_T("기준심박수: %2.1f"), max(pre_hr1,max(pre_hr2,max(pre_hr3, pre_hr4))));
+	str.Format(_T("기준심박수: %3.1f"), max(pre_hr1,max(pre_hr2,max(pre_hr3, pre_hr4))));
 	SetWindowTextW(text, str);
 
 	if (hr != 0) {
@@ -1227,13 +1227,13 @@ void FaceTrackingRendererManager::ShowHeadMovementRecord()
 
 
 	if (angles.yaw<5 && angles.yaw>-5) {
-		str.Format(_T("정  면"));
+		str.Format(_T("정         면"));
 	}
 	else if (angles.yaw < -5) {
-		str.Format(_T("좌  측"));
+		str.Format(_T("좌측  %2.0f도"), angles.yaw);
 	}
 	else if (angles.yaw > 5) {
-		str.Format(_T("우  측"));
+		str.Format(_T("우측  %2.0f도"), angles.yaw);
 	}
 
 	SetWindowTextW(text1, str);
