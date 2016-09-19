@@ -321,10 +321,12 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	pDlg = dialogWindow;
 	HBITMAP hBmp;
 	HWND text = GetDlgItem(dialogWindow, IDC_TEST8);
+	HWND text1 = GetDlgItem(dialogWindow, IDC_TEST7);
 	HWND pulse1 = GetDlgItem(dialogWindow, IDC_TEST6);
 	HWND pulse2 = GetDlgItem(dialogWindow, IDC_PULSE);
 	HWND head = GetDlgItem(dialogWindow, IDC_RECORD_RANGE);
 	HWND smile = GetDlgItem(dialogWindow, IDC_TEST2);
+	HWND micro = GetDlgItem(dialogWindow, IDC_MICRO);
 
 	if (AUTOADJUST)
 	{
@@ -358,6 +360,10 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			str.Format(_T("분당 횟수:  0"));
 			SetWindowTextW(head, str);
 			SetWindowTextW(smile, str);
+			str.Format(_T("NONE"));
+			SetWindowTextW(micro, str);
+			str.Format(_T("지속시간 : 0.0초"));
+			SetWindowTextW(text1, str);
 
 			CheckDlgButton(dialogWindow, IDC_Z60, BST_CHECKED); 
 			CheckDlgButton(dialogWindow, IDC_LANDMARK, BST_CHECKED);
