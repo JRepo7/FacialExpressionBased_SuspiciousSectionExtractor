@@ -54,7 +54,8 @@ public:
 	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
 	void CaptureSubtleExpression();
 	
-	void CheckNoise(int currState);
+	void CalcMicroCount(int Win);
+	void GetFreqBasedOnEmo();
 	
 	void ContinueExpression(int win);
 
@@ -65,7 +66,6 @@ public:
 	void CircularQueue300();
 
 	void Recording();
-	int IsChanged(int arg1, int arg2);
 	int IsChanged_r();
 	int IsChanged_f();
 
@@ -94,12 +94,12 @@ public:
 	BOOL ws_smile[1800] = { FALSE, };
 	BOOL slidingWindow_d[180] = { 0, };
 	BOOL ws_subtleSmile[30] = {FALSE,};
-	BOOL slidingWindow_Range[360] = { FALSE, };
-	int Gauge[5] = { 0, }; // 0.2frame * 10 = 2s ... 
-	int changeCnt;
+	BOOL slidingWindow_Range[180] = { FALSE, };
+	int slidingWindow_M[10] = { 0, }; // 0.2frame * 10 = 2s ... 
+	int amountOfHappy, amountOfSad, amountOfSurprise, amountOfFear, amountOfAngry, amountOfDisgust, amountOfNeutral;
+	int currentEmo;
 
 	int sizeOfWindow;
-	int sizeOfWindow_d;
 	int sizeOfWindow_s;
 	int sizeOfWindow_R;
 	int sizeOfWindow_M;
@@ -108,6 +108,7 @@ public:
 	int cursor_d;
 	int cursor_s;
 	int cursor_m;
+	int cursor_f;
 
 	int candidEmo[7];	// for voting
 	int mayor;
@@ -124,9 +125,10 @@ public:
 
 	int frequency[2] = {0,};
 	int frequencyRange[2] = { 0, };
+	int frequencyEmo[7] = {0,};
 	int winner;
 	int winnerRange;
-
+	int preEmo;
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
 	FaceTrackingRenderer3D* m_renderer3D;
@@ -136,6 +138,7 @@ private:
 	OnFinishedRenderingCallback m_callback;
 
 	Point FacialPoint[78];
+	bool F_FLAG;
 
 	int pOuterBrowRaiserRight;
 	int pOuterBrowRaiserLeft;
@@ -163,6 +166,7 @@ private:
 	int gazecnt;
 
 	int count1, count2, count3, count4, count5, count6;
+	int nCnt, hCnt, sCnt, pCnt, fCnt, aCnt, dCnt;
 
 	// Threshold
 	double tOuterBrowRaiserLeft;
