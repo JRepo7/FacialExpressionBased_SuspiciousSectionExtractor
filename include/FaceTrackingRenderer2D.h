@@ -45,11 +45,17 @@ public:
 
 	PXCFaceData::PoseEulerAngles angles;
 	pxcF32 hr;
+	pxcF32 sumangleh;
+	pxcF32 avgangleh;
+	pxcF32 angleh;
+	pxcF32 preangle;
 
 	int prex;
 	int prey;
 	int refreshcount;
 	int systemcnt;
+	int gazecnt;
+	int gazesumcnt;
 	float gazemin;
 	float gazemax;
 

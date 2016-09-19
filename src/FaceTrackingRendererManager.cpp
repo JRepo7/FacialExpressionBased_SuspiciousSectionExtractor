@@ -113,6 +113,12 @@ void FaceTrackingRendererManager::InitStop()
 	m_renderer2D->systemcnt = 0;
 	m_renderer2D->gazemax = 0;
 	m_renderer2D->gazemin = 0;
+	m_renderer2D->angleh = 0;
+	m_renderer2D->avgangleh = 0;
+	m_renderer2D->sumangleh = 0;
+	m_renderer2D->gazesumcnt = 0;
+	m_renderer2D->gazecnt = 0;
+	record_Range = 0;
 	nCnt = hCnt = sCnt = pCnt = fCnt = aCnt = dCnt = 0;
 	preEmo = 0;
 }
@@ -977,8 +983,6 @@ void FaceTrackingRendererManager::CircularQueue300()
 		rear++;
 	}
 
-
-	SubFunc();
 }
 
 void FaceTrackingRendererManager::Recording()
@@ -1068,14 +1072,6 @@ int FaceTrackingRendererManager::IsChanged_f()
 	{
 		return 1;
 	}
-}
-
-void FaceTrackingRendererManager::SubFunc()
-{
-	HWND text = GetDlgItem(m_window, IDC_RECORD);
-	CString str;
-	str.Format(_T("°ÅÁþ¿ôÀ½ºóµµ: %d"), record);
-	SetWindowTextW(text, str);
 }
 
 void FaceTrackingRendererManager::ShowHeartRate()
