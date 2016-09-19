@@ -33,43 +33,45 @@ public:
 
 	void InitValue();
 	void InitStop();
-	void SetRendererType(FaceTrackingRenderer::RendererType type);
-	void Render();
-	void SetSenseManager(PXCSenseManager* senseManager);
-	void SetNumberOfLandmarks(int numLandmarks);
-	void SetCallback(OnFinishedRenderingCallback callback);
-	void DrawBitmap(PXCCapture::Sample* sample, bool ir);
-	void DrawBitmap2(PXCCapture::Sample* sample, bool ir);
-	void SetOutput(PXCFaceData* output);
-	void SignalRenderer();
-	void DrawDistances();
-	void Reset();
-	void GetExpIntensity();
-	void GetLandmarkPoint();
-	void GetHeadandPulse();
+		void SetRendererType(FaceTrackingRenderer::RendererType type);
+		void Render();
+		void SetSenseManager(PXCSenseManager* senseManager);
+		void SetNumberOfLandmarks(int numLandmarks);
+		void SetCallback(OnFinishedRenderingCallback callback);
+		void DrawBitmap(PXCCapture::Sample* sample, bool ir);
+		void DrawBitmap2(PXCCapture::Sample* sample, bool ir);
+		void SetOutput(PXCFaceData* output);
+		void SignalRenderer();
+		void DrawDistances();
+		void Reset();
+		void GetExpIntensity();
+		void GetLandmarkPoint();
+		void GetHeadandPulse();
 
 	void PrepValue();
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
 	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
+	
 	void CaptureSubtleExpression();
-	
-	void microCount(int Win);
-	void GetFreqBasedOnEmo();
-	
+		void GetCursorF();
+		void GetMicroCount(int Win);
+		void MakeHistogram();
+		void PrintHistoValue(int Win);
+
 	void ContinueExpression(int win);
+		double GetDuration(int frame);
+		int GetFrameSize(double second);
 
-	double GetDuration(int frame);
-	int GetFrameSize(double second);
 	void DetermineExpression();
-	void CircularQueue1800();
 	void CircularQueue300();
+		void GetSuspiciousSmileFreq();
+		void CircularQueue1800();
+		void Recording();
 
-	void Recording();
-	int IsChanged_r();
-	int IsChanged_f();
+		int IsChanged_r();
+		int IsChanged_f();
 
-	void SubFunc();
 	void ShowHeartRate();
 
 	void DetermineFlagOutOfHeadPos();
