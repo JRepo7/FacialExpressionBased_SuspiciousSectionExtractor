@@ -27,9 +27,8 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 	//slidingWindow = NULL;
 	cursor = cursor_d=cursor_s= cursor_m = 0 ;
 	sizeOfWindow = GetFrameSize(6);
-	sizeOfWindow_d = GetFrameSize(6);
 	sizeOfWindow_s = GetFrameSize(1);
-	sizeOfWindow_R = GetFrameSize(6);
+	sizeOfWindow_R = GetFrameSize(60);
 	sizeOfWindow_M = 5;
 
 	candidEmo[happy] = candidEmo[sad] = candidEmo[surprise] = candidEmo[fear] = candidEmo[angry] = candidEmo[disgust] = candidEmo[neutral] = 0;
@@ -111,6 +110,12 @@ void FaceTrackingRendererManager::InitStop()
 	m_renderer2D->systemcnt = 0;
 	m_renderer2D->gazemax = 0;
 	m_renderer2D->gazemin = 0;
+	m_renderer2D->angleh = 0;
+	m_renderer2D->avgangleh = 0;
+	m_renderer2D->sumangleh = 0;
+	m_renderer2D->gazesumcnt = 0;
+	m_renderer2D->gazecnt = 0;
+	record_Range = 0;
 }
 
 void FaceTrackingRendererManager::SetRendererType(FaceTrackingRenderer::RendererType type)
@@ -735,9 +740,7 @@ void FaceTrackingRendererManager::DetermineExpression()
 	{
 		HAPPY = TRUE;
 		happyCnt++;
-		slidingWindow[cursor] = happy;
 	}
-	
 
 	if (((outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM >1) ||
 		(Intensity[BrowLoweredLeft]>10 && Intensity[BrowLoweredRight] > 10)) &&
@@ -746,7 +749,6 @@ void FaceTrackingRendererManager::DetermineExpression()
 	{
 		SAD = TRUE;
 		sadCnt++;
-		slidingWindow[cursor] = sad;
 	}
 
 	if (outerBrowRaiserLeft_LM > 1 && outerBrowRaiserRight_LM > 1 &&
@@ -755,7 +757,6 @@ void FaceTrackingRendererManager::DetermineExpression()
 	{
 		SURPRISE = TRUE;
 		surpriseCnt++;
-		slidingWindow[cursor] = surprise;
 	}
 
 	if ((BrowLowerRight_LM + BrowLowerLeft_LM > 10) &&
@@ -764,7 +765,6 @@ void FaceTrackingRendererManager::DetermineExpression()
 	{
 		DISGUST = TRUE;
 		disgustCnt++;
-		slidingWindow[cursor] = disgust;
 	}
 	else if ((lipCornerRightDown_LM + lipCornerLeftDown_LM < 5) &&
 		(BrowLowerRight_LM + BrowLowerLeft_LM>10) &&
@@ -772,14 +772,12 @@ void FaceTrackingRendererManager::DetermineExpression()
 	{
 		FEAR = TRUE;
 		fearCnt++;
-		slidingWindow[cursor] = fear;
 	}
 	else if (BrowLowerLeft_LM>10 && BrowLowerRight_LM>10 &&
 		(lipCornerRightDown_LM + lipCornerLeftDown_LM < 5))
 	{
 		ANGRY = TRUE;
 		angryCnt++;
-		slidingWindow[cursor] = angry;
 	}
 
 	if (HAPPY == FALSE && SAD == FALSE &&
@@ -787,9 +785,7 @@ void FaceTrackingRendererManager::DetermineExpression()
 		ANGRY == FALSE && DISGUST == FALSE)
 	{
 		neutralCnt++;
-		slidingWindow[neutral] = angry;
 	}
-
 	HAPPY = SAD = SURPRISE = FEAR = ANGRY = DISGUST = FALSE;
 }
 
@@ -1007,7 +1003,7 @@ void FaceTrackingRendererManager::ShowHeartRate()
 {
 	HWND pulse1 = GetDlgItem(m_window, IDC_PULSE);
 	WCHAR tempLine[64];
-	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"실시간 심박수: %2.1f", hr);
+	swprintf_s<sizeof(tempLine) / sizeof(WCHAR) >(tempLine, L"실시간 심박수: %3.1f", hr);
 	SetWindowTextW(pulse1, tempLine);
 	HWND text = GetDlgItem(m_window, IDC_TEST6);
 	CString str;
@@ -1097,7 +1093,7 @@ void FaceTrackingRendererManager::ShowHeartRate()
 	}
 	hrcnt5++;
 
-	str.Format(_T("기준심박수: %2.1f"), max(pre_hr1,max(pre_hr2,max(pre_hr3, pre_hr4))));
+	str.Format(_T("기준심박수: %3.1f"), max(pre_hr1,max(pre_hr2,max(pre_hr3, pre_hr4))));
 	SetWindowTextW(text, str);
 
 	if (hr != 0) {
@@ -1222,13 +1218,13 @@ void FaceTrackingRendererManager::ShowHeadMovementRecord()
 
 
 	if (angles.yaw<5 && angles.yaw>-5) {
-		str.Format(_T("정  면"));
+		str.Format(_T("정         면"));
 	}
 	else if (angles.yaw < -5) {
-		str.Format(_T("좌  측"));
+		str.Format(_T("좌측  %2.0f도"), angles.yaw);
 	}
 	else if (angles.yaw > 5) {
-		str.Format(_T("우  측"));
+		str.Format(_T("우측  %2.0f도"), angles.yaw);
 	}
 
 	SetWindowTextW(text1, str);

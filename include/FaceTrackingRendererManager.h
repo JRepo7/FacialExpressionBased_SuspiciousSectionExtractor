@@ -94,7 +94,7 @@ public:
 	BOOL ws_smile[1800] = { FALSE, };
 	BOOL slidingWindow_d[180] = { 0, };
 	BOOL ws_subtleSmile[30] = {FALSE,};
-	BOOL slidingWindow_Range[180] = { FALSE, };
+	BOOL slidingWindow_Range[1800] = { FALSE, };
 	int Gauge[5] = { 0, }; // 0.2frame * 10 = 2s ... 
 	int changeCnt;
 
