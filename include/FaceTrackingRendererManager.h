@@ -94,7 +94,7 @@ public:
 	BOOL ws_smile[1800] = { FALSE, };
 	BOOL slidingWindow_d[180] = { 0, };
 	BOOL ws_subtleSmile[30] = {FALSE,};
-	BOOL slidingWindow_Range[600] = { FALSE, };
+	BOOL slidingWindow_Range[900] = { FALSE, };
 	int slidingWindow_M[10] = { 0, }; // 0.2frame * 10 = 2s ... 
 	int amountOfHappy, amountOfSad, amountOfSurprise, amountOfFear, amountOfAngry, amountOfDisgust, amountOfNeutral;
 	int currentEmo;

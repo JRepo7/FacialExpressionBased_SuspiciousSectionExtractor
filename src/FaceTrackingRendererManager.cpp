@@ -28,7 +28,7 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 	cursor = cursor_d=cursor_s= cursor_m = 0 ;
 	sizeOfWindow = GetFrameSize(60);
 	sizeOfWindow_s = GetFrameSize(10);
-	sizeOfWindow_R = GetFrameSize(20);
+	sizeOfWindow_R = GetFrameSize(30);
 	sizeOfWindow_M = 10;
 
 	candidEmo[happy] = candidEmo[sad] = candidEmo[surprise] = candidEmo[fear] = candidEmo[angry] = candidEmo[disgust] = candidEmo[neutral] = 0;
