@@ -393,7 +393,6 @@ void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 		}
 	}
 }
-
 void FaceTrackingRendererManager::CaptureSubtleExpression() 
 {
 	enum
@@ -512,7 +511,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression()
 
 
 	if (Win!=0)
-	microCount(Win);
+	CalcMicroCount(Win);
 
 	frequencyEmo[slidingWindow_M[cursor_m]]++;// range 0~6
 
@@ -537,7 +536,6 @@ void FaceTrackingRendererManager::CaptureSubtleExpression()
 
 	happyCnt = sadCnt = surpriseCnt = fearCnt = angryCnt = disgustCnt = neutralCnt = 0;
 }
-
 
 void FaceTrackingRendererManager::GetFreqBasedOnEmo()
 {
@@ -655,7 +653,7 @@ void FaceTrackingRendererManager::ContinueExpression(int win)
 		EXPRESSION_FLAG = TRUE;
 
 }
-void FaceTrackingRendererManager::microCount(int Win)
+void FaceTrackingRendererManager::CalcMicroCount(int Win)
 {
 	if (Win == happyCnt) hCnt++;
 	else hCnt = 0;

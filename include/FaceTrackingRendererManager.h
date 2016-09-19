@@ -54,7 +54,7 @@ public:
 	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
 	void CaptureSubtleExpression();
 	
-	void microCount(int Win);
+	void CalcMicroCount(int Win);
 	void GetFreqBasedOnEmo();
 	
 	void ContinueExpression(int win);
