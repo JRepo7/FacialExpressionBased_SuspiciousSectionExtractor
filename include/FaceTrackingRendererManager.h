@@ -31,6 +31,8 @@ public:
 		HWND window);
 	~FaceTrackingRendererManager();
 
+	void InitValue();
+	void InitStop();
 	void SetRendererType(FaceTrackingRenderer::RendererType type);
 	void Render();
 	void SetSenseManager(PXCSenseManager* senseManager);
@@ -46,19 +48,19 @@ public:
 	void GetLandmarkPoint();
 	void GetHeadandPulse();
 
-	void Initstop();
-	void InitValue();
 	void PrepValue();
 	void SetThresValue();
 	void CvtLandmarkToIntensity();
 	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
 	void CaptureSubtleExpression();
+	
+	void GetFreqBasedOnEmo();
+	
 	void ContinueExpression(int win);
 	void MicroExpression(int win);
 
 	double GetDuration(int frame);
 	int GetFrameSize(double second);
-	int VotingUsingSlidingWindow(int duration);
 	void DetermineExpression();
 	void CircularQueue1800();
 	void CircularQueue300();
@@ -68,7 +70,6 @@ public:
 	int IsChanged_f();
 
 	void SubFunc();
-	//void Avoidgaze();
 	void ShowHeartRate();
 
 	void DetermineFlagOutOfHeadPos();
@@ -89,33 +90,41 @@ public:
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
-	int slidingWindow[1800] = {1,};
+	BOOL slidingWindow[1800] = { TRUE, };
 	BOOL ws_smile[1800] = { FALSE, };
-	int slidingWindow_d[180] = {0,};
+	BOOL slidingWindow_d[180] = { 0, };
 	BOOL ws_subtleSmile[30] = {FALSE,};
-	int slidingWindow_Range[180] = {FALSE, };
+	BOOL slidingWindow_Range[600] = { FALSE, };
+	int slidingWindow_M[10] = { 0, }; // 0.2frame * 10 = 2s ... 
+	int amountOfHappy, amountOfSad, amountOfSurprise, amountOfFear, amountOfAngry, amountOfDisgust, amountOfNeutral;
+	int currentEmo;
 
 	int sizeOfWindow;
-	int sizeOfWindow_d;
 	int sizeOfWindow_s;
 	int sizeOfWindow_R;
+	int sizeOfWindow_M;
 
 	int cursor;
 	int cursor_d;
 	int cursor_s;
+	int cursor_m;
 
 	int numOfFrame;
 	int candidEmo[7];	// for voting
 	int mayor;
 	int rear, front, record;
-	int rear_Range, front_Range, record_Range;
+
+	int rear_Range, record_Range;
 	BOOL prev_r, curr_r, curr_f, next_f;
+
 	BOOL initFront;
+	BOOL initFront_M;
 	BOOL initFront_Range;
 	BOOL PITCH, YAW;
 
 	int frequency[2] = {0,};
 	int frequencyRange[2] = { 0, };
+	int frequencyEmo[7] = { 0, };
 	int winner;
 	int winnerRange;
 
