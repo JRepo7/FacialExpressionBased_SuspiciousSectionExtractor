@@ -374,9 +374,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			PopulateProfile(dialogWindow);
 			SaveLayout(dialogWindow);
 			ShowWindow(dialogWindow, SW_MAXIMIZE);
-
 			//감정측정시간간격
-			SetTimer(dialogWindow, EXP_TIMER, 200, NULL);//0.2s
 
 
 			return TRUE; 
@@ -450,7 +448,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				}  
 				return TRUE;
 			case ID_START:
-
+				SetTimer(dialogWindow, EXP_TIMER, 200, NULL);//0.2s
 				SetTimer(child, 1234, 1000, NULL);
 				m_LineChartCtrl.m_ChartData.Clear();
 
