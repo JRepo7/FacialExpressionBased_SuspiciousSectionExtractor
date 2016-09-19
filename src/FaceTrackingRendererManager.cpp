@@ -26,10 +26,9 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 	EXP_EMO[happy]= EXP_EMO[sad] = EXP_EMO[surprise] = EXP_EMO[fear] = EXP_EMO[angry] = EXP_EMO[disgust] = EXP_EMO[neutral] =FALSE;
 	//slidingWindow = NULL;
 	cursor = cursor_d=cursor_s= cursor_m = 0 ;
-	sizeOfWindow = GetFrameSize(6);
-	sizeOfWindow_d = GetFrameSize(6);
-	sizeOfWindow_s = GetFrameSize(1);
-	sizeOfWindow_R = GetFrameSize(6);
+	sizeOfWindow = GetFrameSize(60);
+	sizeOfWindow_s = GetFrameSize(10);
+	sizeOfWindow_R = GetFrameSize(20);
 	sizeOfWindow_M = 10;
 
 	candidEmo[happy] = candidEmo[sad] = candidEmo[surprise] = candidEmo[fear] = candidEmo[angry] = candidEmo[disgust] = candidEmo[neutral] = 0;
@@ -112,6 +111,12 @@ void FaceTrackingRendererManager::InitStop()
 	m_renderer2D->systemcnt = 0;
 	m_renderer2D->gazemax = 0;
 	m_renderer2D->gazemin = 0;
+	m_renderer2D->angleh = 0;
+	m_renderer2D->avgangleh = 0;
+	m_renderer2D->sumangleh = 0;
+	m_renderer2D->gazesumcnt = 0;
+	m_renderer2D->gazecnt = 0;
+	record_Range = 0;
 }
 
 void FaceTrackingRendererManager::SetRendererType(FaceTrackingRenderer::RendererType type)

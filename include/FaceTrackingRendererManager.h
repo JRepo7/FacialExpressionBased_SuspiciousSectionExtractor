@@ -94,13 +94,12 @@ public:
 	BOOL ws_smile[1800] = { FALSE, };
 	BOOL slidingWindow_d[180] = { 0, };
 	BOOL ws_subtleSmile[30] = {FALSE,};
-	BOOL slidingWindow_Range[180] = { FALSE, };
+	BOOL slidingWindow_Range[600] = { FALSE, };
 	int slidingWindow_M[10] = { 0, }; // 0.2frame * 10 = 2s ... 
 	int amountOfHappy, amountOfSad, amountOfSurprise, amountOfFear, amountOfAngry, amountOfDisgust, amountOfNeutral;
 	int currentEmo;
 
 	int sizeOfWindow;
-	int sizeOfWindow_d;
 	int sizeOfWindow_s;
 	int sizeOfWindow_R;
 	int sizeOfWindow_M;

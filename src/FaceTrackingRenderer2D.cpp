@@ -39,6 +39,11 @@ FaceTrackingRenderer2D::FaceTrackingRenderer2D(HWND window) : FaceTrackingRender
 	gazemax = 0;
 	count1 = 0;
 	systemcnt = 0;
+	sumangleh = 0;
+	avgangleh = 0;
+	angleh = 0;
+	gazesumcnt = 0;
+	gazecnt = 0;
 }
 
 void FaceTrackingRenderer2D::DrawGraphics(PXCFaceData* faceOutput)
@@ -57,14 +62,18 @@ void FaceTrackingRenderer2D::DrawGraphics(PXCFaceData* faceOutput)
 		if (trackedFace->QueryLandmarks() != NULL) 
 			DrawLandmark(trackedFace);
 		//if (FaceTrackingUtilities::IsModuleSelected(m_window, IDC_POSE) || FaceTrackingUtilities::IsModuleSelected(m_window, IDC_PULSE))
-		if(systemcnt<250)
+		if(systemcnt<230)
 			DrawCount();
+		else if (trackedFace->QueryGaze() != NULL) {
+			if(systemcnt<259) DrawCount();
+			DrawGaze(trackedFace, i);
+		}
+			
 
 			DrawPoseAndPulse(trackedFace, i);
 		if (trackedFace->QueryExpressions() != NULL)
 			DrawExpressions(trackedFace, i);
-		if (trackedFace->QueryGaze() != NULL)
-			DrawGaze(trackedFace, i);
+
 		//if (trackedFace->QueryRecognition() != NULL)
 		//    DrawRecognition(trackedFace, i);
 			
@@ -565,7 +574,7 @@ void FaceTrackingRenderer2D::DrawCount()
 
 	systemcnt++;
 
-	if (systemcnt == 60)
+	if (systemcnt == 90)
 	{
 		AUTOADJUST = TRUE;
 	}
@@ -596,7 +605,7 @@ void FaceTrackingRenderer2D::DrawCount()
 
 	SetTextColor(dc2, RGB(255, 255, 255));
 	CString str;
-	int temp = 10 - systemcnt / 25;
+	int temp = 10 - systemcnt / 26;
 	str.Format(_T("%d"), temp);
 	if (temp == 10) 
 	{
@@ -692,12 +701,7 @@ void FaceTrackingRenderer2D::DrawGaze(PXCFaceData::Face * trackedFace, const int
 {
 	PXCFaceData::GazeData *gazed = trackedFace->QueryGaze();
 
-	pxcF64 angleh = gazed->QueryGazeHorizontalAngle();
-	pxcF64 anglev = gazed->QueryGazeVerticalAngle();
-
-
-
-	if (gazemin < -999) gazemin = 0;
+	pxcF64 angle = gazed->QueryGazeHorizontalAngle();
 
 	if ((angles.yaw< 2 &&angles.yaw >-2))
 	{
@@ -709,34 +713,64 @@ void FaceTrackingRenderer2D::DrawGaze(PXCFaceData::Face * trackedFace, const int
 
 	CString str;
 
-	str.Format(_T("시선회피:  %2.1f 초"),(float) count1/30);
+	str.Format(_T("지속시간:  %2.1f 초"), (float)count1 / 30);
 	SetWindowTextW(text, str);
 
-	if (gazemax<50 || gazemin >-50) {
-		if (angleh > 40 || angleh < -40) count1++;
-		else count1 = 0;
+
+	if (systemcnt < 259) {
+		sumangleh += angle;
+		gazesumcnt++;
 	}
-	else if ( (gazemax > 50 && gazemax < 150) || (gazemin<-50 && gazemin>-150) )
+	else if (systemcnt == 259) {
+		sumangleh += angle;
+		gazesumcnt++;
+		avgangleh = sumangleh / gazesumcnt;
+		systemcnt++;
+	}
+	else
 	{
-		if (angleh > 80 || angleh < -80) count1++;
-		else count1 = 0;
+		angleh = angle - avgangleh;
+
+		if (gazemax<50 || gazemin >-50) {
+			if (angleh > 40 || angleh < -40) count1++;
+			else count1 = 0;
+		}
+		else if ((gazemax > 50 && gazemax < 150) || (gazemin<-50 && gazemin>-150))
+		{
+			if (angleh > 80 || angleh < -80) count1++;
+			else count1 = 0;
+		}
+		else if ((gazemax > 150 && gazemax < 300) || (gazemin<-150 && gazemin>-300))
+		{
+			if (angleh > 130 || angleh < -130) count1++;
+			else count1 = 0;
+		}
+		else if (gazemax > 300 || gazemin < -300)
+		{
+			if (angleh > 250 || angleh < -250) count1++;
+			else count1 = 0;
+		}
 	}
-	else if ((gazemax > 150 && gazemax < 300) || (gazemin<-150 && gazemin>-300))
+
+	if (gazecnt == 0) {
+		preangle = angleh;
+	}
+	
+	if (gazecnt == 30 && ( (preangle - angleh)>40 || (angleh - preangle)>40 )) 
 	{
-		if (angleh > 150 || angleh < -150) count1++;
-		else count1 = 0;
+		count1 = 0;
+		gazecnt = 0;
 	}
-	else if (gazemax > 300 || gazemin<-300)
-	{
-		if (angleh > 300 || angleh < -300) count1++;
-		else count1 = 0;
-	}
+
+	gazecnt++;
 
 	if(count1 >120) GAZE_FLAG = TRUE;
 
 	if ((angles.yaw> 5 && angles.yaw <-5))
 	{
 		GAZE_FLAG = FALSE;
+		gazemax = 0;
+		gazemin = 0;
 	}
 
 }

@@ -374,6 +374,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			PopulateProfile(dialogWindow);
 			SaveLayout(dialogWindow);
 			ShowWindow(dialogWindow, SW_MAXIMIZE);
+
 			//감정측정시간간격
 			SetTimer(dialogWindow, EXP_TIMER, 200, NULL);//0.2s
 
