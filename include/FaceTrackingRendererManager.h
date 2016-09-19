@@ -54,10 +54,9 @@ public:
 	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
 	void CaptureSubtleExpression();
 	
-	void GetFreqBasedOnEmo();
+	void CheckNoise(int currState);
 	
 	void ContinueExpression(int win);
-	void MicroExpression(int win);
 
 	double GetDuration(int frame);
 	int GetFrameSize(double second);
@@ -66,6 +65,7 @@ public:
 	void CircularQueue300();
 
 	void Recording();
+	int IsChanged(int arg1, int arg2);
 	int IsChanged_r();
 	int IsChanged_f();
 
@@ -100,7 +100,6 @@ public:
 	int currentEmo;
 
 	int sizeOfWindow;
-	int sizeOfWindow_d;
 	int sizeOfWindow_s;
 	int sizeOfWindow_R;
 	int sizeOfWindow_M;
@@ -110,10 +109,10 @@ public:
 	int cursor_s;
 	int cursor_m;
 
-	int numOfFrame;
 	int candidEmo[7];	// for voting
 	int mayor;
 	int rear, front, record;
+	int thres;
 
 	int rear_Range, record_Range;
 	BOOL prev_r, curr_r, curr_f, next_f;
@@ -125,7 +124,6 @@ public:
 
 	int frequency[2] = {0,};
 	int frequencyRange[2] = { 0, };
-	int frequencyEmo[7] = { 0, };
 	int winner;
 	int winnerRange;
 
