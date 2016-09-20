@@ -363,8 +363,8 @@ void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 		eyeOpenRight_LM = 0;
 	}
 
-	//ratio = ((FacialPoint[12].y - FacialPoint[70].y)/ tBrowLowerRight);
-	ratio = ((FacialPoint[29].y - FacialPoint[70].y) / tBrowLowerRight);
+	//ratio = ((FacialPoint[12].y - FacialPoint[71].y)/ tBrowLowerRight);
+	ratio = ((FacialPoint[29].y - FacialPoint[71].y) / tBrowLowerRight);
 
 	if (ratio > 1)
 	{
@@ -824,7 +824,7 @@ void FaceTrackingRendererManager::DetermineExpression()
 	
 
 	if (((outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM >5) ||
-		BrowLowerRight_LM + BrowLowerLeft_LM > 1 ||
+		BrowLowerRight_LM + BrowLowerLeft_LM > 5 ||
 		(Intensity[BrowLoweredLeft] + Intensity[BrowLoweredRight] > 0)) &&
 		(lipCornerRightDown_LM + lipCornerLeftDown_LM > 15) &&
 		mouthOpen_LM<20)
@@ -841,7 +841,7 @@ void FaceTrackingRendererManager::DetermineExpression()
 		surpriseCnt++;
 	}
 
-	if ((BrowLowerRight_LM + BrowLowerLeft_LM > 1) &&
+	if ((BrowLowerRight_LM + BrowLowerLeft_LM > 5) &&
 		(mouthOpen_LM>25 &&
 		(lipCornerRightDown_LM + lipCornerLeftDown_LM>5)))
 	{
@@ -849,13 +849,13 @@ void FaceTrackingRendererManager::DetermineExpression()
 		disgustCnt++;
 	}
 	else if ((lipCornerRightDown_LM + lipCornerLeftDown_LM < 5) &&
-		(BrowLowerRight_LM + BrowLowerLeft_LM>10) &&
+		(BrowLowerRight_LM + BrowLowerLeft_LM > 5) &&
 		(eyeOpenLeft_LM + eyeOpenRight_LM>5))
 	{
 		FEAR = TRUE;
 		fearCnt++;
 	}
-	else if (BrowLowerLeft_LM>10 && BrowLowerRight_LM>10 &&
+	else if ((BrowLowerRight_LM + BrowLowerLeft_LM > 5) &&
 		(lipCornerRightDown_LM + lipCornerLeftDown_LM < 5))
 	{
 		ANGRY = TRUE;

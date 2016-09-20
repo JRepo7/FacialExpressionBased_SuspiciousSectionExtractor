@@ -50,7 +50,7 @@ void FaceTrackingRenderer::DrawFrameRate()
 		int fps = m_frameRateCalcuator.GetFrameRate();
 
 		pxcCHAR line[1024];
-		swprintf_s<1024>(line, L"Rate (%d fps)", fps);
+		swprintf_s<1024>(line, L"Rate (30 fps)");
 		FaceTrackingUtilities::SetStatus(m_window, line, statusPart);
 	}
 }

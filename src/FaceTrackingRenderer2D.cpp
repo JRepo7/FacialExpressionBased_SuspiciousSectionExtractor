@@ -701,7 +701,7 @@ void FaceTrackingRenderer2D::DrawGaze(PXCFaceData::Face * trackedFace, const int
 {
 	PXCFaceData::GazeData *gazed = trackedFace->QueryGaze();
 
-	pxcF64 angle = gazed->QueryGazeHorizontalAngle();
+	pxcF64 angleh = gazed->QueryGazeHorizontalAngle();
 
 	if ((angles.yaw< 2 && angles.yaw >-2))
 	{
@@ -716,19 +716,19 @@ void FaceTrackingRenderer2D::DrawGaze(PXCFaceData::Face * trackedFace, const int
 	str.Format(_T("시선회피:  %2.1f 초"), (float)count1 / 30);
 	SetWindowTextW(text, str);
 
-	if (systemcnt < 439) {
-		sumangleh += angle;
-		gazesumcnt++;
-	}
-	else if (systemcnt == 439) {
-		sumangleh += angle;
-		gazesumcnt++;
-		avgangleh = sumangleh / gazesumcnt;
-		systemcnt++;
-	}
-	else
-	{
-		angleh = angle - avgangleh;
+	//if (systemcnt < 439) {
+	//	sumangleh += angle;
+	//	gazesumcnt++;
+	//}
+	//else if (systemcnt == 439) {
+	//	sumangleh += angle;
+	//	gazesumcnt++;
+	//	avgangleh = sumangleh / gazesumcnt;
+	//	systemcnt++;
+	//}
+	//else
+	//{
+		//angleh = angle - avgangleh;
 
 		if (gazemax<50 || gazemin >-50) {
 			if (angleh > 40 || angleh < -40) count1++;
@@ -749,7 +749,7 @@ void FaceTrackingRenderer2D::DrawGaze(PXCFaceData::Face * trackedFace, const int
 			if (angleh > 250 || angleh < -250) count1++;
 			else count1 = 0;
 		}
-	}
+	//}
 
 	if (gazecnt == 0) {
 		preangle = angleh;
