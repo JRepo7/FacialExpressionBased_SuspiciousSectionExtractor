@@ -257,9 +257,11 @@ void FaceTrackingRendererManager::PrepValue()
 
 	pUpperLipRaiser += (FacialPoint[36].y - FacialPoint[26].y);
 
-	pBrowLowerRight += (FacialPoint[12].y - FacialPoint[71].y);
-	pBrowLowerLeft += (FacialPoint[20].y - FacialPoint[74].y);
+	//pBrowLowerRight += (FacialPoint[12].y - FacialPoint[71].y);
+	//pBrowLowerLeft += (FacialPoint[20].y - FacialPoint[74].y);
 
+	pBrowLowerRight += (FacialPoint[29].y - FacialPoint[71].y);
+	pBrowLowerLeft += (FacialPoint[29].y - FacialPoint[74].y);
 }
 
 void FaceTrackingRendererManager::SetThresValue()
@@ -361,7 +363,8 @@ void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 		eyeOpenRight_LM = 0;
 	}
 
-	ratio = ((FacialPoint[12].y - FacialPoint[70].y)/ tBrowLowerRight);
+	//ratio = ((FacialPoint[12].y - FacialPoint[70].y)/ tBrowLowerRight);
+	ratio = ((FacialPoint[29].y - FacialPoint[70].y) / tBrowLowerRight);
 
 	if (ratio > 1)
 	{
@@ -372,7 +375,8 @@ void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 		BrowLowerRight_LM = 100-(ratio * 100);
 	}
 
-	ratio = ((FacialPoint[20].y - FacialPoint[74].y)/ tBrowLowerLeft);
+	//ratio = ((FacialPoint[20].y - FacialPoint[74].y)/ tBrowLowerLeft);
+	ratio = ((FacialPoint[29].y - FacialPoint[74].y) / tBrowLowerLeft);
 	if (ratio > 1)
 	{
 		BrowLowerLeft_LM = 0;
@@ -505,6 +509,7 @@ void FaceTrackingRendererManager::CaptureSubtleExpression()
 			EXP_EMO[neutral] = FALSE;
 		}
 	}
+
 
 	if ((hCnt > 9 || sCnt > 9 || nCnt > 9 || pCnt > 9 || fCnt > 9 || aCnt > 9 || dCnt > 9) && (slidingWindow_M[cursor_m] != slidingWindow_M[cursor_f]) && initFront_M)
 	{ 
@@ -807,19 +812,22 @@ void FaceTrackingRendererManager::DetermineExpression()
 	}
 
 	if (
-		(outerBrowRaiserLeft_LM + outerBrowRaiserRight_LM > 1) &&
+		//(outerBrowRaiserLeft_LM + outerBrowRaiserRight_LM > 1) &&
 		(Intensity[Smile] > 10 ||
-		(lipCornerLeftUp_LM > 5 && lipCornerRightUp_LM > 5)))
+		(lipCornerLeftUp_LM + lipCornerRightUp_LM >= 25)) &&
+			(eyeOpenRight_LM < 10 && eyeOpenLeft_LM < 10)
+		)
 	{
 		HAPPY = TRUE;
 		happyCnt++;
 	}
 	
 
-	if (((outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM >1) ||
-		(Intensity[BrowLoweredLeft]>10 && Intensity[BrowLoweredRight] > 10)) &&
-		(lipCornerRightDown_LM + lipCornerLeftDown_LM > 3) &&
-		mouthOpen_LM<25)
+	if (((outerBrowDepressorLeft_LM + outerBrowDepressorRight_LM >5) ||
+		BrowLowerRight_LM + BrowLowerLeft_LM > 1 ||
+		(Intensity[BrowLoweredLeft] + Intensity[BrowLoweredRight] > 0)) &&
+		(lipCornerRightDown_LM + lipCornerLeftDown_LM > 15) &&
+		mouthOpen_LM<20)
 	{
 		SAD = TRUE;
 		sadCnt++;
@@ -833,7 +841,7 @@ void FaceTrackingRendererManager::DetermineExpression()
 		surpriseCnt++;
 	}
 
-	if ((BrowLowerRight_LM + BrowLowerLeft_LM > 10) &&
+	if ((BrowLowerRight_LM + BrowLowerLeft_LM > 1) &&
 		(mouthOpen_LM>25 &&
 		(lipCornerRightDown_LM + lipCornerLeftDown_LM>5)))
 	{
