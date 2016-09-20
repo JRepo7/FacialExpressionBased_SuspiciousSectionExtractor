@@ -567,6 +567,7 @@ void FaceTrackingRendererManager::GetFreqBasedOnEmo()
 					max(frequencyEmo[angry],
 						max(frequencyEmo[disgust], frequencyEmo[neutral]))))));
 	CString str;
+	HWND text = GetDlgItem(m_window, IDC_MICRO);
 
 	bool T_FLAG = (hCnt != 9 && sCnt != 9 && nCnt != 9 && pCnt != 9 && fCnt != 9 && aCnt != 9 && dCnt != 9);
 
@@ -575,27 +576,26 @@ void FaceTrackingRendererManager::GetFreqBasedOnEmo()
 		if (Win1 == 9 && initFront_M)
 		{
 			MICROEXP_FLAG = TRUE;
+
+			if (1 == frequency[happy])
+				str.Format(_T("HAPPY"));
+			else if (1 == frequency[sad])
+				str.Format(_T("SAD"));
+			else if (1 == frequency[surprise])
+				str.Format(_T("SURPRISE"));
+			else if (1 == frequency[fear])
+				str.Format(_T("FEAR"));
+			else if (1 == frequency[angry])
+				str.Format(_T("ANGRY"));
+			else if (1 == frequency[disgust])
+				str.Format(_T("DISGUST"));
+			else
+				str.Format(_T("NONE"));
+
+			SetWindowTextW(text, str);
 		}
 	}
 
-	HWND text = GetDlgItem(m_window, IDC_MICRO);
-
-	if(Win1 == frequency[happy])
-		str.Format(_T("HAPPY"));
-	else if(Win1 == frequency[sad])
-		str.Format(_T("SAD"));
-	else if (Win1 == frequency[surprise])
-		str.Format(_T("SURPRISE"));
-	else if (Win1 == frequency[fear])
-		str.Format(_T("FEAR"));
-	else if (Win1 == frequency[angry])
-		str.Format(_T("ANGRY"));
-	else if (Win1 == frequency[disgust])
-		str.Format(_T("DISGUST"));
-	else
-		str.Format(_T("NONE"));
-	
-	SetWindowTextW(text, str);
 }
 
 
@@ -885,8 +885,11 @@ void FaceTrackingRendererManager::CircularQueue1800()
 		//initFront = true;
 	}
 
+	
+
 	// update value...
-	if (mouthOpen_LM > 10 && Intensity[MouthOpen] > 5)
+	if (Intensity[Smile] > 10 ||
+		((lipCornerLeftUp_LM + lipCornerRightUp_LM >= 25) && (lipCornerLeftUp_LM + lipCornerRightUp_LM < 40)))
 	{
 		if (cursor_s % 6 == 0)
 		{
@@ -909,28 +912,6 @@ void FaceTrackingRendererManager::CircularQueue1800()
 
 		cursor_s++;
 
-	}
-	else if (Intensity[MouthOpen]> 3 && (lipCornerLeftUp_LM + lipCornerRightUp_LM) > 1)
-	{
-		if (cursor_s % 6 == 0)
-		{
-			if (frequency[smile] > frequency[notsmile])
-			{
-				winner = 1;
-			}
-			else
-			{
-				winner = 0;
-			}
-			frequency[0] = frequency[1] = 0;
-		}
-		else
-		{
-			frequency[smile]++;
-		}
-		ws_smile[cursor_s] = TRUE;
-
-		cursor_s++;
 	}
 	else
 	{

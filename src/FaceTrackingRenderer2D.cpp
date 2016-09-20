@@ -62,10 +62,10 @@ void FaceTrackingRenderer2D::DrawGraphics(PXCFaceData* faceOutput)
 		if (trackedFace->QueryLandmarks() != NULL) 
 			DrawLandmark(trackedFace);
 		//if (FaceTrackingUtilities::IsModuleSelected(m_window, IDC_POSE) || FaceTrackingUtilities::IsModuleSelected(m_window, IDC_PULSE))
-		if (systemcnt<400)
+		if (systemcnt<380)
 			DrawCount();
 		else if (trackedFace->QueryGaze() != NULL) {
-			if (systemcnt<439) DrawCount();
+			//if (systemcnt<360) DrawCount();
 			DrawGaze(trackedFace, i);
 		}
 
@@ -574,7 +574,7 @@ void FaceTrackingRenderer2D::DrawCount()
 
 	systemcnt++;
 
-	if (systemcnt == 90)
+	if (systemcnt == 60)
 	{
 		AUTOADJUST = TRUE;
 	}
@@ -605,7 +605,7 @@ void FaceTrackingRenderer2D::DrawCount()
 
 	SetTextColor(dc2, RGB(255, 255, 255));
 	CString str;
-	int temp = 10 - systemcnt / 44;
+	int temp = 10 - systemcnt / 36;
 	str.Format(_T("%d"), temp); 
 	if (temp == 10) 
 	{
@@ -755,7 +755,7 @@ void FaceTrackingRenderer2D::DrawGaze(PXCFaceData::Face * trackedFace, const int
 		preangle = angleh;
 	}
 
-	if (gazecnt == 30 && ((preangle - angleh)>40 || (angleh - preangle)>40))
+	if (gazecnt == 30 && ((preangle - angleh)>30 || (angleh - preangle)>30))
 	{
 		count1 = 0;
 		gazecnt = 0;
