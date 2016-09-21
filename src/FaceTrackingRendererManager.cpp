@@ -1142,7 +1142,7 @@ void FaceTrackingRendererManager::ShowHeartRate()
 	}
 	hrcnt5++;
 
-	str.Format(_T("기준심박수: %2.1f"), max(pre_hr1,max(pre_hr2,max(pre_hr3, pre_hr4))));
+	str.Format(_T("기준심박수: %2.1f"), max(pre_hr1, max(pre_hr2, max(pre_hr3, pre_hr4))));
 	SetWindowTextW(text, str);
 
 	if (hr != 0) {
