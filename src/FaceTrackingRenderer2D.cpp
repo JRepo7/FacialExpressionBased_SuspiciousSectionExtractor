@@ -731,22 +731,22 @@ void FaceTrackingRenderer2D::DrawGaze(PXCFaceData::Face * trackedFace, const int
 		//angleh = angle - avgangleh;
 
 		if (gazemax<50 || gazemin >-50) {
-			if (angleh > 40 || angleh < -40) count1++;
+			if (angleh > 80 || angleh < -40) count1++;
 			else count1 = 0;
 		}
 		else if ((gazemax > 50 && gazemax < 150) || (gazemin<-50 && gazemin>-150))
 		{
-			if (angleh > 80 || angleh < -80) count1++;
+			if (angleh > 160 || angleh < -80) count1++;
 			else count1 = 0;
 		}
 		else if ((gazemax > 150 && gazemax < 300) || (gazemin<-150 && gazemin>-300))
 		{
-			if (angleh > 130 || angleh < -130) count1++;
+			if (angleh > 260 || angleh < -130) count1++;
 			else count1 = 0;
 		}
 		else if (gazemax > 300 || gazemin < -300)
 		{
-			if (angleh > 250 || angleh < -250) count1++;
+			if (angleh > 350 || angleh < -250) count1++;
 			else count1 = 0;
 		}
 	//}
@@ -765,7 +765,7 @@ void FaceTrackingRenderer2D::DrawGaze(PXCFaceData::Face * trackedFace, const int
 
 	if (count1 >120) GAZE_FLAG = TRUE;
 
-	if ((angles.yaw> 5 && angles.yaw <-5))
+	if ((angles.yaw> 4 && angles.yaw <-4))
 	{
 		GAZE_FLAG = FALSE;
 		gazemax = 0;

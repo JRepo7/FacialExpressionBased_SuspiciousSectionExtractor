@@ -67,7 +67,7 @@ void FaceTrackingProcessor::CheckForDepthStream(PXCSenseManager* pp, HWND hwndDl
 
 void FaceTrackingProcessor::Process(HWND dialogWindow)
 {
-	PXCSenseManager* senseManager = session->CreateSenseManager();
+	senseManager = session->CreateSenseManager();
 	if (senseManager == NULL) 
 	{
 		FaceTrackingUtilities::SetStatus(dialogWindow, L"Failed to create an SDK SenseManager", statusPart);

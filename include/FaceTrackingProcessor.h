@@ -12,6 +12,7 @@ public:
 	void Process(HWND dialogWindow);
 	void RegisterUser();
 	void UnregisterUser();
+	PXCSenseManager* senseManager;
 
 private:
 	HWND m_window;

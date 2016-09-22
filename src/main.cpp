@@ -327,12 +327,30 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	HWND head = GetDlgItem(dialogWindow, IDC_RECORD_RANGE);
 	HWND smile = GetDlgItem(dialogWindow, IDC_TEST2);
 	HWND micro = GetDlgItem(dialogWindow, IDC_MICRO);
+	int index;
 
 	if (AUTOADJUST)
 	{
 		renderer->InitValue();
 		ADJ_FLAG = TRUE;
 		SetTimer(dialogWindow, ADJUST, 2000, NULL);
+	}
+
+	
+	if (GetKeyState(VK_SPACE)) {
+		processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
+		//processor->senseManager->QueryCaptureManager()->SetPause(FALSE);
+	}
+
+	if (GetAsyncKeyState(VK_SPACE)) {
+		index = processor->senseManager->QueryCaptureManager()->QueryFrameIndex();
+		//processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
+		processor->senseManager->QueryCaptureManager()->SetPause(FALSE);
+	}
+
+	if (GetKeyState(VK_LEFT)) {
+		
+		processor->senseManager->QueryCaptureManager()->SetFrameByIndex(index-1);
 	}
 
 	CString str;
