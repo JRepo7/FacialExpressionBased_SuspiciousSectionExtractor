@@ -31,6 +31,7 @@ bool FaceTrackingUtilities::IsModuleSelected(HWND hwndDlg, const int moduleID)
 void FaceTrackingUtilities::SetStatus(HWND dialogWindow, pxcCHAR *line, StatusWindowPart part)
 {
 	HWND hwndStatus = GetDlgItem(dialogWindow, IDC_STATUS);
+
 	SendMessage(hwndStatus, SB_SETTEXT, (WPARAM)(INT) part, (LPARAM) (LPSTR) line);
 	UpdateWindow(dialogWindow);
 }

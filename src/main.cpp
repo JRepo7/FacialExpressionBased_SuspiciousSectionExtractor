@@ -327,7 +327,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	HWND head = GetDlgItem(dialogWindow, IDC_RECORD_RANGE);
 	HWND smile = GetDlgItem(dialogWindow, IDC_TEST2);
 	HWND micro = GetDlgItem(dialogWindow, IDC_MICRO);
-	int index;
+	pxcI32 Index;
 
 	if (AUTOADJUST)
 	{
@@ -336,24 +336,27 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 		SetTimer(dialogWindow, ADJUST, 2000, NULL);
 	}
 
-	
-	if (GetKeyState(VK_SPACE)) {
+	if (GetKeyState(VK_SPACE) && isRunning == true) 
 		processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
-		//processor->senseManager->QueryCaptureManager()->SetPause(FALSE);
-	}
+	
 
-	if (GetAsyncKeyState(VK_SPACE)) {
-		index = processor->senseManager->QueryCaptureManager()->QueryFrameIndex();
-		//processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
+	if (GetAsyncKeyState(VK_SPACE) && isRunning == true) 
 		processor->senseManager->QueryCaptureManager()->SetPause(FALSE);
+	
+
+	if (GetAsyncKeyState(VK_LEFT) && isRunning == true) {
+		Index = renderer->index - 1;
+		processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
 	}
 
-	if (GetKeyState(VK_LEFT)) {
-		
-		processor->senseManager->QueryCaptureManager()->SetFrameByIndex(index-1);
+	if (GetAsyncKeyState(VK_RIGHT) && isRunning == true) {
+		Index = renderer->index + 1;
+		processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
 	}
+
 
 	CString str;
+
 
 	switch (message) 
 	{ 

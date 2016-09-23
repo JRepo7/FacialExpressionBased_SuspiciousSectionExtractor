@@ -119,6 +119,7 @@ public:
 	BOOL initFront_M;
 	BOOL initFront_Range;
 	BOOL PITCH, YAW;
+	pxcI32 index;
 
 	int frequency[2] = {0,};
 	int frequencyRange[2] = { 0, };

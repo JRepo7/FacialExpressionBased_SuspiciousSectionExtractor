@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "FaceTrackingProcessor.h"
 #include <assert.h>
 #include <string>
@@ -18,7 +19,7 @@ extern volatile bool isActiveApp;
 extern pxcCHAR fileName[1024];
 extern HANDLE ghMutex;
 
-FaceTrackingProcessor::FaceTrackingProcessor(HWND window) : m_window(window), m_registerFlag(false), m_unregisterFlag(false) { }
+FaceTrackingProcessor::FaceTrackingProcessor(HWND window) : m_window(window), m_registerFlag(false), m_unregisterFlag(false) { Framenumber = 0; }
 
 void FaceTrackingProcessor::PerformRegistration()
 {
@@ -90,6 +91,9 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
 	{
 		status = captureManager->SetFileName(fileName, false);
 		senseManager->QueryCaptureManager()->SetRealtime(false);
+		Framenumber=captureManager->QueryNumberOfFrames();
+		HWND slider = GetDlgItem(dialogWindow, IDC_SLIDER);
+		SendMessage(slider, TBM_SETRANGE, FALSE, MAKELPARAM(0, Framenumber));
 	} 
 	if (status < PXC_STATUS_NO_ERROR) 
 	{

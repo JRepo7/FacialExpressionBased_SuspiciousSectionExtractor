@@ -40,6 +40,19 @@ void FaceTrackingRenderer::Render()
 	DrawGraphics(m_currentFrameOutput);
 	RefreshUserInterface();
 	RefreshUserInterface2();
+	MoveSlider();
+}
+
+void FaceTrackingRenderer::MoveSlider()
+{
+	HWND slider = GetDlgItem(m_window, IDC_SLIDER);
+	PXCCaptureManager* captureManager = m_senseManager->QueryCaptureManager();
+	index = captureManager->QueryFrameIndex();
+	SendMessage(slider, TBM_SETPOS, TRUE, index);
+	HWND frame = GetDlgItem(m_window, IDC_SLIDER_EDIT);
+	CString str;
+	str.Format(_T("인덱스: %d"), index);
+	SetWindowTextW(frame, str);
 }
 
 void FaceTrackingRenderer::DrawFrameRate()

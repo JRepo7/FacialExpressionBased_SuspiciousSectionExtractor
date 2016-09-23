@@ -151,6 +151,8 @@ void FaceTrackingRendererManager::Render()
 
 	m_currentRenderer->Render();
 
+	index = m_currentRenderer->index;
+
 	m_callback();
 }
 
