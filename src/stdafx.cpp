@@ -8,6 +8,8 @@ int srcx=0;
 int srcy=0;
 
 
+extern bool flagSet[7] = {0,};
+
 volatile bool SMILE_FLAG = FALSE;
 volatile bool GAZE_FLAG = FALSE;
 volatile bool BLINK_FLAG = FALSE;

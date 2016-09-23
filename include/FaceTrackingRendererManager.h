@@ -77,6 +77,7 @@ public:
 	BOOL IsChangedRange_f();
 	void ShowHeadMovementRecord();
 	void FlagOnOff();
+	void InitSavedData();
 
 	static HANDLE& GetRenderingFinishedSignal();
 	static void SignalProcessor();
@@ -127,10 +128,12 @@ public:
 	int winner;
 	int winnerRange;
 	int preEmo;
+
+	FaceTrackingRenderer* m_currentRenderer;
+	bool *savedData;
 private:
 	FaceTrackingRenderer2D* m_renderer2D;
 	FaceTrackingRenderer3D* m_renderer3D;
-	FaceTrackingRenderer* m_currentRenderer;
 	HWND m_window;							// m 					
 	HANDLE m_rendererSignal;
 	OnFinishedRenderingCallback m_callback;

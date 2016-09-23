@@ -12,13 +12,17 @@ FaceTrackingRenderer::~FaceTrackingRenderer()
 }
 
 FaceTrackingRenderer::FaceTrackingRenderer(HWND window) 
-	: m_window(window)
+ :checkIdx(0),
+ m_window(window)
 {
 	m_landmarkPoints = NULL;
 	m_senseManager = NULL;
 	m_expressionMap = InitExpressionsMap();
 }
-
+void FaceTrackingRenderer::InitFlagStateFile()
+{
+	flagStateSavedFile = fopen("data.txt", "a");
+}
 void FaceTrackingRenderer::SetOutput(PXCFaceData* output)
 {
 	m_currentFrameOutput = output;
@@ -51,7 +55,7 @@ void FaceTrackingRenderer::MoveSlider()
 	SendMessage(slider, TBM_SETPOS, TRUE, index);
 	HWND frame = GetDlgItem(m_window, IDC_SLIDER_EDIT);
 	CString str;
-	str.Format(_T("인덱스: %d"), index);
+	str.Format(_T("인덱스: %d, %d"), index, checkIdx);
 	SetWindowTextW(frame, str);
 }
 

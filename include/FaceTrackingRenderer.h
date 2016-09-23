@@ -29,10 +29,13 @@ public:
 	virtual void DrawBitmap(PXCCapture::Sample* sample, bool ir) = 0;
 	virtual void DrawBitmap2(PXCCapture::Sample* sample, bool ir) = 0;
 	void Render();
+	void InitFlagStateFile();
 	//추가함 화면확대
 	RECT rc1;
 	pxcI32 index;
-
+	int checkIdx;
+	bool flagState[7] = {0,};// per second
+	FILE *flagStateSavedFile;
 protected:
 	static const int LANDMARK_ALIGNMENT = -3;
 	int m_numLandmarks;
