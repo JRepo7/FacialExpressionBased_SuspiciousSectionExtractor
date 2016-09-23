@@ -60,7 +60,7 @@ volatile bool RVS_ADJ_FLAG = false;
 
 
 static int controls[] = {ID_START, ID_STOP, ID_REGISTER, ID_UNREGISTER, IDC_DISTANCES,
-						ID_ADJUST, IDC_RECORD, IDC_TEST2,IDC_TEST6,IDC_TEST7,IDC_TEST8,
+						ID_ADJUST, IDC_TEST2,IDC_TEST6,IDC_TEST7,IDC_TEST8,
 						IDC_Z1, IDC_Z30, IDC_Z60, IDC_ZGROUP,IDC_LANDMARK, IDC_FP, IDD_GRAPH, IDC_ZGROUP, IDC_TEXT_EMO, IDC_PULSE,IDC_PANEL2,
 						IDC_LED1, IDC_LED2, IDC_LED3, IDC_LED4, IDC_LED5, IDC_LED6, IDC_LED7,
 };
@@ -321,10 +321,16 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	pDlg = dialogWindow;
 	HBITMAP hBmp;
 	HWND text = GetDlgItem(dialogWindow, IDC_TEST8);
+	HWND text1 = GetDlgItem(dialogWindow, IDC_TEST7);
 	HWND pulse1 = GetDlgItem(dialogWindow, IDC_TEST6);
 	HWND pulse2 = GetDlgItem(dialogWindow, IDC_PULSE);
 	HWND head = GetDlgItem(dialogWindow, IDC_RECORD_RANGE);
 	HWND smile = GetDlgItem(dialogWindow, IDC_TEST2);
+	HWND micro = GetDlgItem(dialogWindow, IDC_MICRO);
+	HWND text_emo = GetDlgItem(dialogWindow, IDC_TEXT_EMO);
+	HWND emo = GetDlgItem(dialogWindow, IDC_EMO);
+	pxcI32 Index;
+	pxcI32 pos;
 
 	if (AUTOADJUST)
 	{
@@ -333,7 +339,26 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 		SetTimer(dialogWindow, ADJUST, 2000, NULL);
 	}
 
+	if (GetKeyState(VK_SPACE) && isRunning == true) 
+		processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
+
+	if (GetAsyncKeyState(VK_SPACE) && isRunning == true) 
+		processor->senseManager->QueryCaptureManager()->SetPause(FALSE);
+	
+
+	if (GetAsyncKeyState(VK_LEFT) && isRunning == true) {
+		Index = renderer->index - 1;
+		processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
+	}
+
+	if (GetAsyncKeyState(VK_RIGHT) && isRunning == true) {
+		Index = renderer->index + 1;
+		processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
+	}
+
+
 	CString str;
+
 
 	switch (message) 
 	{ 
@@ -358,6 +383,15 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			str.Format(_T("분당 횟수:  0"));
 			SetWindowTextW(head, str);
 			SetWindowTextW(smile, str);
+			str.Format(_T("NONE"));
+			SetWindowTextW(micro, str);
+			str.Format(_T("지속시간 : 0.0초"));
+			SetWindowTextW(text1, str);
+
+			hBmp = (HBITMAP)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_NEUTRAL), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
+			str.Format(_T("EXPRESSION: neutral"));
+			SetWindowTextW(text_emo, str);
+			SendDlgItemMessage(dialogWindow, IDC_EMO, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
 
 			CheckDlgButton(dialogWindow, IDC_Z60, BST_CHECKED); 
 			CheckDlgButton(dialogWindow, IDC_LANDMARK, BST_CHECKED);
@@ -390,6 +424,14 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				renderer->CaptureSubtleExpression();
 				//renderer->DisplayExpressionUsingEmoji(renderer->EXP_EMO);
 			}
+			return TRUE;
+
+		case WM_HSCROLL:
+			processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
+			pos = SendDlgItemMessageW(dialogWindow, IDC_SLIDER, TBM_GETPOS, 0, 0);
+			processor->senseManager->QueryCaptureManager()->SetFrameByIndex(pos);
+
+
 			return TRUE;
 
 		case WM_COMMAND: 
@@ -428,6 +470,18 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 
 			switch (LOWORD(wParam)) 
 			{
+			case ID_DEFRAME:
+				Index = renderer->index - 1;
+				processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
+
+				return TRUE;
+
+			case ID_INFRAME:
+				Index = renderer->index + 1;
+				processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
+
+				return TRUE;
+
 			case ID_ADJUST:
 				renderer->InitValue();
 				ADJ_FLAG = TRUE;

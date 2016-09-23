@@ -12,6 +12,8 @@ public:
 	void Process(HWND dialogWindow);
 	void RegisterUser();
 	void UnregisterUser();
+	PXCSenseManager* senseManager;
+	int Framenumber;
 
 private:
 	HWND m_window;

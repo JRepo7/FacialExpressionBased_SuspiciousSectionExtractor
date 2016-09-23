@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "FaceTrackingProcessor.h"
 #include <assert.h>
 #include <string>
@@ -18,7 +19,7 @@ extern volatile bool isActiveApp;
 extern pxcCHAR fileName[1024];
 extern HANDLE ghMutex;
 
-FaceTrackingProcessor::FaceTrackingProcessor(HWND window) : m_window(window), m_registerFlag(false), m_unregisterFlag(false) { }
+FaceTrackingProcessor::FaceTrackingProcessor(HWND window) : m_window(window), m_registerFlag(false), m_unregisterFlag(false) { Framenumber = 0; }
 
 void FaceTrackingProcessor::PerformRegistration()
 {
@@ -67,7 +68,10 @@ void FaceTrackingProcessor::CheckForDepthStream(PXCSenseManager* pp, HWND hwndDl
 
 void FaceTrackingProcessor::Process(HWND dialogWindow)
 {
-	PXCSenseManager* senseManager = session->CreateSenseManager();
+	int min, sec;
+	CString str;
+
+	senseManager = session->CreateSenseManager();
 	if (senseManager == NULL) 
 	{
 		FaceTrackingUtilities::SetStatus(dialogWindow, L"Failed to create an SDK SenseManager", statusPart);
@@ -90,6 +94,14 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
 	{
 		status = captureManager->SetFileName(fileName, false);
 		senseManager->QueryCaptureManager()->SetRealtime(false);
+		Framenumber=captureManager->QueryNumberOfFrames();
+		HWND slider = GetDlgItem(dialogWindow, IDC_SLIDER);
+		SendMessage(slider, TBM_SETRANGE, FALSE, MAKELPARAM(0, Framenumber));
+		HWND total = GetDlgItem(dialogWindow, IDC_TTIME);
+		min =(int)Framenumber / 1800;
+		sec =(int)(Framenumber / 30) - (60 * min);
+		str.Format(_T(" %dm %ds"), min, sec);
+		SetWindowTextW(total, str);
 	} 
 	if (status < PXC_STATUS_NO_ERROR) 
 	{

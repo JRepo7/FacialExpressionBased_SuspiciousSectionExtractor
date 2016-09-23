@@ -54,7 +54,7 @@ public:
 	void DisplayExpressionUsingEmoji(BOOL EXP_EMO[]);
 	void CaptureSubtleExpression();
 	
-	void microCount(int Win);
+	void CalcMicroCount(int Win);
 	void GetFreqBasedOnEmo();
 	
 	void ContinueExpression(int win);
@@ -69,7 +69,6 @@ public:
 	int IsChanged_r();
 	int IsChanged_f();
 
-	void SubFunc();
 	void ShowHeartRate();
 
 	void DetermineFlagOutOfHeadPos();
@@ -90,11 +89,9 @@ public:
 
 	int happyCnt, sadCnt, surpriseCnt, fearCnt, angryCnt, disgustCnt, neutralCnt;
 
-	BOOL slidingWindow[1800] = { TRUE, };
 	BOOL ws_smile[1800] = { FALSE, };
-	BOOL slidingWindow_d[180] = { 0, };
-	BOOL ws_subtleSmile[30] = {FALSE,};
-	BOOL slidingWindow_Range[180] = { FALSE, };
+	BOOL ws_subtleSmile[300] = {FALSE,};
+	BOOL slidingWindow_Range[1800] = { FALSE, };
 	int slidingWindow_M[10] = { 0, }; // 0.2frame * 10 = 2s ... 
 	int amountOfHappy, amountOfSad, amountOfSurprise, amountOfFear, amountOfAngry, amountOfDisgust, amountOfNeutral;
 	int currentEmo;
@@ -122,6 +119,7 @@ public:
 	BOOL initFront_M;
 	BOOL initFront_Range;
 	BOOL PITCH, YAW;
+	pxcI32 index;
 
 	int frequency[2] = {0,};
 	int frequencyRange[2] = { 0, };

@@ -31,6 +31,7 @@ public:
 	void Render();
 	//추가함 화면확대
 	RECT rc1;
+	pxcI32 index;
 
 protected:
 	static const int LANDMARK_ALIGNMENT = -3;
@@ -50,6 +51,7 @@ protected:
 	void DrawFrameRate();
 	void RefreshUserInterface();
 	void RefreshUserInterface2();
+	void MoveSlider();
 	RECT GetResizeRect(RECT rectangle, BITMAP bitmap);
 	std::map<PXCFaceData::ExpressionsData::FaceExpression, std::wstring> InitExpressionsMap();
 };
