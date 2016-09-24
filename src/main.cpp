@@ -306,7 +306,6 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 			renderer->DetermineExpression();
 			renderer->cursor++;
 			renderer->CircularQueue300();
-			//renderer->Avoidgaze();
 			renderer->ShowHeartRate();
 			renderer->RecordingOutOfRange();
 			renderer->FlagOnOff();
@@ -503,8 +502,6 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				isStopped = false;
 				isRunning = true;
 
-				renderer->m_currentRenderer->InitFlagStateFile();
-
 				if (processor)
 					delete processor;
 
@@ -688,96 +685,144 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 			AUTOADJUST
 			//*/
 
-			fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->checkIdx++);
+			if (FaceTrackingUtilities::GetRecordState(pDlg))
+			{
+
+				if (EXPRESSION_FLAG == TRUE)
+				{
+					fprintf(fp, "%d", 1);
+				}
+				else
+				{
+					fprintf(fp, "%d", 0);
+				}
+
+				if (MICROEXP_FLAG == TRUE)
+				{
+					fprintf(fp, "%d", 1);
+				}
+				else
+				{
+					fprintf(fp, "%d", 0);
+				}
+				if (SMILE_FLAG == TRUE)
+				{
+					fprintf(fp, "%d", 1);
+				}
+				else
+				{
+					fprintf(fp, "%d", 0);
+				}
+				if (GAZE_FLAG == TRUE)
+				{
+					fprintf(fp, "%d", 1);
+				}
+				else
+				{
+					fprintf(fp, "%d", 0);
+				}
+
+				if (BLINK_FLAG == TRUE)
+				{
+					fprintf(fp, "%d", 1);
+				}
+				else
+				{
+					fprintf(fp, "%d", 0);
+				}
+				if (HEADMOTION_FLAG == TRUE)
+				{
+					fprintf(fp, "%d", 1);
+				}
+				else
+				{
+					fprintf(fp, "%d", 0);
+				}
+				if (PULSE_FLAG == TRUE)
+				{
+					fprintf(fp, "%d", 1);
+				}
+				else
+				{
+					fprintf(fp, "%d", 0);
+				}
+				fprintf(fp, "\n");
+			}
+
 
 			if (EXPRESSION_FLAG == TRUE)
 			{
 				SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-				renderer->m_currentRenderer->flagState[0] = true;
-				fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->flagState[0]);
+				fprintf(fp, "%d",1);
 			}
 			else
 			{
 				SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-				renderer->m_currentRenderer->flagState[0] = false;
-				fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->flagState[0]);
+				fprintf(fp, "%d", 0);
 			}
 
 			if (MICROEXP_FLAG == TRUE)
 			{
 				SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-				renderer->m_currentRenderer->flagState[1] = true;
-				fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->flagState[1]);
+				fprintf(fp, "%d", 1);
 			}
 			else
 			{
 				SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-				renderer->m_currentRenderer->flagState[1] = false;
-				fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->flagState[1]);
+				fprintf(fp, "%d", 0);
 			}
 			if (SMILE_FLAG == TRUE)
 			{
 				SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-				renderer->m_currentRenderer->flagState[2] = true;
-				fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->flagState[2]);
+				fprintf(fp, "%d", 1);
 			}
 			else
 			{
 				SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-				renderer->m_currentRenderer->flagState[2] = false;
-				fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->flagState[2]);
+				fprintf(fp, "%d", 0);
 			}
 			if (GAZE_FLAG == TRUE)
 			{
 				SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-				renderer->m_currentRenderer->flagState[3] = true;
-				fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->flagState[3]);
+				fprintf(fp, "%d", 1);
 			}
 			else
 			{
 				SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-				renderer->m_currentRenderer->flagState[3] = false;
-				fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->flagState[3]);
+				fprintf(fp, "%d", 0);
 			}
 
 			if (BLINK_FLAG == TRUE)
 			{
 				SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-				renderer->m_currentRenderer->flagState[4] = true;
-				fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->flagState[4]);
+				fprintf(fp, "%d", 1);
 			}
 			else
 			{
 				SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-				renderer->m_currentRenderer->flagState[4] = false;
-				fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->flagState[4]);
+				fprintf(fp, "%d", 0);
 			}
 			if (HEADMOTION_FLAG == TRUE)
 			{
 				SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-				renderer->m_currentRenderer->flagState[5] = true;
-				fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->flagState[5]);
+				fprintf(fp, "%d", 1);
 			}
 			else
 			{
 				SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-				renderer->m_currentRenderer->flagState[5] = false;
-				fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->flagState[5]);
+				fprintf(fp, "%d", 0);
 			}
 			if (PULSE_FLAG == TRUE)
 			{
 				SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-				renderer->m_currentRenderer->flagState[6] = true;
-				fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->flagState[6]);
+				fprintf(fp, "%d", 1);
 			}
 			else
 			{
 				SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-				renderer->m_currentRenderer->flagState[6] = false;
-				fprintf(renderer->m_currentRenderer->flagStateSavedFile, "%d ", renderer->m_currentRenderer->flagState[6]);
+				fprintf(fp, "%d", 0);
 			}
-			fprintf(renderer->m_currentRenderer->flagStateSavedFile, "\n");
-
+			fprintf(fp, "\n");
 
 			SMILE_FLAG = FALSE;
 			GAZE_FLAG = FALSE;

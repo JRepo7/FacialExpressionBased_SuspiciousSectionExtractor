@@ -7,6 +7,7 @@
 int srcx=0;
 int srcy=0;
 
+extern FILE *fp = fopen("data.txt","a");
 
 extern bool flagSet[7] = {0,};
 

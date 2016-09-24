@@ -19,10 +19,7 @@ FaceTrackingRenderer::FaceTrackingRenderer(HWND window)
 	m_senseManager = NULL;
 	m_expressionMap = InitExpressionsMap();
 }
-void FaceTrackingRenderer::InitFlagStateFile()
-{
-	flagStateSavedFile = fopen("data.txt", "a");
-}
+
 void FaceTrackingRenderer::SetOutput(PXCFaceData* output)
 {
 	m_currentFrameOutput = output;
