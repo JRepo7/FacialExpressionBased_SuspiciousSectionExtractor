@@ -7,6 +7,7 @@
 #include <afx.h>
 #include <afxwin.h>         // MFC 핵심 및 표준 구성 요소입니다.
 
+#include "pxcfacedata.h"
 #include <windows.h>
 
 struct fData
@@ -19,7 +20,7 @@ extern int srcy;
 
 extern fData *DataSet;
 extern FILE *fp;
-
+extern pxcI32 gIndex;
 
 //거짓말 단서 플래그 7개
 extern volatile bool SMILE_FLAG;

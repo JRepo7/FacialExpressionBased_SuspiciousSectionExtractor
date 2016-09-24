@@ -113,7 +113,6 @@ void GetPlaybackFile(void)
 	filename.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_EXPLORER;
 	if (!GetOpenFileName(&filename)) 
 		fileName[0] = 0;
-	
 }
 
 void GetTextFile(void)
@@ -225,8 +224,6 @@ void PopulateModule(HMENU menu)
 	InsertMenu(menu, 1, MF_BYPOSITION | MF_POPUP, (UINT_PTR)menu1, L"Module");
 }
 
-//winApi  
-//dialog Management 
 void PopulateProfile(HWND dialogWindow)
 {
 	HMENU menu = GetMenu(dialogWindow);
@@ -388,12 +385,12 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	}
 
 	if (GetAsyncKeyState(VK_LEFT) && isRunning == true) {
-		Index = renderer->index - 1;
+		Index = gIndex - 1;
 		processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
 	}
 
 	if (GetAsyncKeyState(VK_RIGHT) && isRunning == true) {
-		Index = renderer->index + 1;
+		Index = gIndex + 1;
 		processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
 	}
 
@@ -513,13 +510,13 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			switch (LOWORD(wParam)) 
 			{
 			case ID_DEFRAME:
-				Index = renderer->index - 1;
+				Index = gIndex - 1;
 				processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
 
 				return TRUE;
 
 			case ID_INFRAME:
-				Index = renderer->index + 1;
+				Index = gIndex + 1;
 				processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
 
 				return TRUE;
@@ -606,10 +603,6 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 					//}
 				}
 				renderer->Reset();
-				if (DataSet)
-					delete(DataSet);
-				fclose(fp);
-
 				return TRUE;
 
 			case ID_MODE_LIVE:
@@ -706,7 +699,8 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 	child = dialogWindow;
 	HBITMAP RED = (HBITMAP)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_RED), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
 	HBITMAP GREEN = (HBITMAP)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_GREEN), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
-
+	pxcI32 Index;
+	
 	int degree = 0;
 
 	if (SMILE_FLAG == true)degree++;
@@ -716,6 +710,7 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 	if (PULSE_FLAG == true)degree++;
 	if (MICROEXP_FLAG == true)degree++;
 	if (EXPRESSION_FLAG == true)degree++;
+
 
 
 	switch (message)
@@ -737,19 +732,27 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 			//m_LineChartCtrl.m_ChartData.Add(7, rand() % 7 + 7);
 			m_LineChartCtrl.DrawChart(dc);
 			UpdateWindow(dialogWindow);
-
+			
 			if (FaceTrackingUtilities::GetPlaybackState(pDlg))
 			{
-				
-				/*
-				SMILE_FLAG = DataSet[sec] &		 0x10000000;
-				GAZE_FLAG = DataSet[sec] &		 0x01000000;
-				BLINK_FLAG = DataSet[sec] &		 0x00100000;
-				HEADMOTION_FLAG = DataSet[sec] & 0x00010000;
-				PULSE_FLAG = DataSet[sec] &		 0x00001000;
-				MICROEXP_FLAG = DataSet[sec] &	 0x00000100;
-				EXPRESSION_FLAG = DataSet[sec] & 0x00000010;
-				//*/
+				if (INIT_FLAG == TRUE)
+				{
+					fp = _wfopen((const wchar_t*)TextfileName, L"r");
+					DataSet = new fData[(processor->Framenumber / 30)];
+					for (int i = 0; i < (processor->Framenumber / 30); i++)
+					{
+						DataSet[i].time = i + 1;
+						fscanf(fp, "%d", &DataSet[i].DataSet);
+					}
+					INIT_FLAG = FALSE;
+				}
+				(DataSet[Index].DataSet & 0x989680) == 10000000 ? SMILE_FLAG = TRUE: SMILE_FLAG = FALSE;
+				(DataSet[Index].DataSet & 0xf4240) == 1000000 ? GAZE_FLAG = TRUE : GAZE_FLAG = FALSE;
+				(DataSet[Index].DataSet & 0x186a0) == 100000 ? BLINK_FLAG = TRUE : BLINK_FLAG = FALSE;
+				(DataSet[Index].DataSet & 0x2710) == 10000 ? HEADMOTION_FLAG = TRUE : HEADMOTION_FLAG = FALSE;
+				(DataSet[Index].DataSet & 0x3e8) == 1000 ? PULSE_FLAG = TRUE : PULSE_FLAG = FALSE;
+				(DataSet[Index].DataSet & 0x64) == 100 ? MICROEXP_FLAG = TRUE : MICROEXP_FLAG = FALSE;
+				(DataSet[Index].DataSet & 0xa) == 10 ? EXPRESSION_FLAG = TRUE : EXPRESSION_FLAG = FALSE;
 
 				if (SMILE_FLAG == TRUE)
 				{
@@ -883,6 +886,7 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 				MICROEXP_FLAG = FALSE;
 				EXPRESSION_FLAG = FALSE;
 			}
+			
 			if (FaceTrackingUtilities::GetRecordState(pDlg))
 			{
 				if (EXPRESSION_FLAG == TRUE)
@@ -949,6 +953,7 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 				}
 
 				fprintf(fp, "\n");
+				
 			}
 			
 
@@ -960,6 +965,7 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 		return TRUE;
 
 	case WM_COMMAND:
+
 
 		return TRUE;
 	case WM_ERASEBKGND:

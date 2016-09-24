@@ -105,17 +105,6 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
 		sec =(int)(Framenumber / 30) - (60 * min);
 		str.Format(_T(" %dm %ds"), min, sec);
 		SetWindowTextW(total, str);
-		if (INIT_FLAG == TRUE)
-		{
-			fp = _wfopen((const wchar_t*)TextfileName, L"r");
-			DataSet = new fData[(Framenumber / 30)];
-			for (int i = 0; i < (Framenumber / 30); i++)
-			{
-				DataSet[i].time = i+1;
-				fscanf(fp, "%d", &DataSet[i].DataSet);
-			}
-			INIT_FLAG = FALSE;
-		}
 
 	} 
 	if (status < PXC_STATUS_NO_ERROR) 
