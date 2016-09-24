@@ -23,4 +23,4 @@ volatile bool STOPRENDERING = FALSE;
 
 volatile bool INIT_FLAG = TRUE;
 
-pxcI32 gIndex=0;
+pxcI32 gIndex = 0;

@@ -51,6 +51,7 @@ void FaceTrackingRenderer::MoveSlider()
 	int min, sec;
 	HWND slider = GetDlgItem(m_window, IDC_SLIDER);
 	PXCCaptureManager* captureManager = m_senseManager->QueryCaptureManager();
+	
 	gIndex = captureManager->QueryFrameIndex();
 	SendMessage(slider, TBM_SETPOS, TRUE, gIndex);
 	HWND frame = GetDlgItem(m_window, IDC_SLIDER_EDIT);

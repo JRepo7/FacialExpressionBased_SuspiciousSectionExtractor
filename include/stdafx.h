@@ -13,20 +13,21 @@
 struct fData
 {
 	int time;
-	bool SMILE_FLAG;
-	bool GAZE_FLAG;
-	bool BLINK_FLAG;
-	bool HEADMOTION_FLAG;
-	bool PULSE_FLAG;
-	bool EXPRESSION_FLAG;
-	bool MICROEXP_FLAG;
-	bool EXPRESSION_FLAG;
+	bool exp;
+	bool micro;
+	bool smile;
+	bool gaze;
+	bool blink;
+	bool head;
+	bool pulse;
 };
+
 extern int srcx;
 extern int srcy;
 
 extern fData *DataSet;
 extern FILE *fp;
+
 extern pxcI32 gIndex;
 
 //거짓말 단서 플래그 7개
