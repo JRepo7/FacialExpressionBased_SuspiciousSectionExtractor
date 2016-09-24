@@ -653,7 +653,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			case IDC_DISTANCES:
 				renderer->DrawDistances();
 				return TRUE;
-			} 
+			}
 			break;
 		case WM_SIZE:
 			RedoLayout(dialogWindow);
@@ -661,7 +661,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 		case WM_ACTIVATEAPP:
 			isActiveApp = wParam != 0;
 			break;
-	
+
 		case WM_NOTIFY:
 
 			//switch (((LPNMHDR)lParam)->code)
@@ -686,8 +686,8 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			//}
 
 			break;
-	} 
-	return FALSE; 
+	}
+	return FALSE;
 }
 
 INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam, LPARAM lParam)
@@ -700,7 +700,7 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 	HBITMAP RED = (HBITMAP)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_RED), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
 	HBITMAP GREEN = (HBITMAP)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_GREEN), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
 	pxcI32 Index;
-	
+
 	int degree = 0;
 
 	if (SMILE_FLAG == true)degree++;
@@ -728,11 +728,11 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 	case WM_TIMER:
 		switch (wParam) {
 		case 1234:
-			m_LineChartCtrl.m_ChartData.Add(7, degree% 7 + 7);
+			m_LineChartCtrl.m_ChartData.Add(7, degree % 7 + 7);
 			//m_LineChartCtrl.m_ChartData.Add(7, rand() % 7 + 7);
 			m_LineChartCtrl.DrawChart(dc);
 			UpdateWindow(dialogWindow);
-			
+
 			if (FaceTrackingUtilities::GetPlaybackState(pDlg))
 			{
 				if (INIT_FLAG == TRUE)
@@ -746,6 +746,7 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 					}
 					INIT_FLAG = FALSE;
 				}
+				
 				(DataSet[Index].DataSet & 0x989680) == 10000000 ? SMILE_FLAG = TRUE: SMILE_FLAG = FALSE;
 				(DataSet[Index].DataSet & 0xf4240) == 1000000 ? GAZE_FLAG = TRUE : GAZE_FLAG = FALSE;
 				(DataSet[Index].DataSet & 0x186a0) == 100000 ? BLINK_FLAG = TRUE : BLINK_FLAG = FALSE;

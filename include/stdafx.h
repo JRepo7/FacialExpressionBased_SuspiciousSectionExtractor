@@ -13,7 +13,14 @@
 struct fData
 {
 	int time;
-	int DataSet;
+	bool GAZE_FLAG;
+	bool BLINK_FLAG;
+	bool HEADMOTION_FLAG;
+	bool PULSE_FLAG;
+	bool MICROEXP_FLAG;
+	bool EXPRESSION_FLAG;
+	bool AUTOADJUST;
+	bool STOPRENDERING;
 };
 extern int srcx;
 extern int srcy;
