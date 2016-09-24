@@ -36,23 +36,33 @@ PXCSenseManager* FaceTrackingRenderer::GetSenseManager()
 
 void FaceTrackingRenderer::Render()
 {
+	if(STOPRENDERING == FALSE)
+	{
 	DrawFrameRate();
 	DrawGraphics(m_currentFrameOutput);
 	RefreshUserInterface();
 	RefreshUserInterface2();
 	MoveSlider();
+	}
 }
 
 void FaceTrackingRenderer::MoveSlider()
 {
+	int min, sec;
 	HWND slider = GetDlgItem(m_window, IDC_SLIDER);
 	PXCCaptureManager* captureManager = m_senseManager->QueryCaptureManager();
 	index = captureManager->QueryFrameIndex();
 	SendMessage(slider, TBM_SETPOS, TRUE, index);
 	HWND frame = GetDlgItem(m_window, IDC_SLIDER_EDIT);
+	HWND time = GetDlgItem(m_window, IDC_CTIME);
 	CString str;
-	str.Format(_T("인덱스: %d"), index);
+	str.Format(_T("Frame Number:  %d"), index);
 	SetWindowTextW(frame, str);
+
+	min = index / 1800;
+	sec = index / 30 - 60*min;
+	str.Format(_T(" %dm  %ds  /"), min, sec);
+	SetWindowTextW(time, str);
 }
 
 void FaceTrackingRenderer::DrawFrameRate()

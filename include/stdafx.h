@@ -12,6 +12,8 @@
 
 extern int srcx;
 extern int srcy;
+extern bool flagSet[7];
+extern FILE *fp;
 
 //거짓말 단서 플래그 7개
 extern volatile bool SMILE_FLAG;
@@ -22,3 +24,4 @@ extern volatile bool PULSE_FLAG;
 extern volatile bool MICROEXP_FLAG;
 extern volatile bool EXPRESSION_FLAG;
 extern volatile bool AUTOADJUST;
+extern volatile bool STOPRENDERING;

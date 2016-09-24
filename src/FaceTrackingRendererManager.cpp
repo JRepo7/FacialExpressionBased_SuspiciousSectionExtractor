@@ -51,6 +51,7 @@ FaceTrackingRendererManager::FaceTrackingRendererManager(FaceTrackingRenderer2D*
 	nCnt = hCnt = sCnt = pCnt = fCnt = aCnt = dCnt = 0;
 	preEmo = 0;
 	F_FLAG = FALSE;
+	savedData = NULL;
 }
 
 FaceTrackingRendererManager::~FaceTrackingRendererManager(void)
@@ -108,6 +109,12 @@ void FaceTrackingRendererManager::InitValue()
 	pre_hr1, pre_hr2, pre_hr3, pre_hr4 = 0;
 }
 
+void FaceTrackingRendererManager::InitSavedData()
+{
+	//memset(m_currentRenderer->flagStateSavedFile, 0, sizeof(m_currentRenderer->flagState));
+
+}
+
 void FaceTrackingRendererManager::InitStop()
 {
 	m_renderer2D->systemcnt = 0;
@@ -155,6 +162,9 @@ void FaceTrackingRendererManager::Render()
 
 	m_callback();
 }
+
+
+//void FaceTrackingRendererManager::
 
 void FaceTrackingRendererManager::SetSenseManager(PXCSenseManager* senseManager)
 {
