@@ -711,27 +711,130 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 			m_LineChartCtrl.DrawChart(dc);
 			UpdateWindow(dialogWindow);
 
-			if(EXPRESSION_FLAG==TRUE)SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			else SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+			if (FaceTrackingUtilities::GetRecordState(pDlg))
+			{
+				if (EXPRESSION_FLAG == TRUE)
+				{
+					fprintf(fp, "%d", 1);
+				}
+				else
+				{
+					fprintf(fp, "%d", 0);
+				}
 
-			if (MICROEXP_FLAG == TRUE)SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			else SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				if (MICROEXP_FLAG == TRUE)
+				{
+					fprintf(fp, "%d", 1);
+				}
+				else
+				{
+					fprintf(fp, "%d", 0);
+				}
 
-			if (SMILE_FLAG == TRUE)SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			else SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				if (SMILE_FLAG == TRUE)
+				{
+					fprintf(fp, "%d", 1);
+				}
+				else
+				{
+					fprintf(fp, "%d", 0);
+				}
 
-			if (GAZE_FLAG == TRUE)SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			else SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				if (GAZE_FLAG == TRUE)
+				{
+					fprintf(fp, "%d", 1);
+				}
+				else
+				{
+					fprintf(fp, "%d", 0);
+				}
+	
+				if (BLINK_FLAG == TRUE)
+				{
+					fprintf(fp, "%d", 1);
+				}
+				else
+				{
+					fprintf(fp, "%d", 0);
+				}
+		
+				if (HEADMOTION_FLAG == TRUE)
+				{
+					fprintf(fp, "%d", 1);
+				}
+				else
+				{
+					fprintf(fp, "%d", 0);
+				}
 
-			if (BLINK_FLAG == TRUE)SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			else SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				if (PULSE_FLAG == TRUE)
+				{
+					fprintf(fp, "%d", 1);
+				}
+				else
+				{
+					fprintf(fp, "%d", 0);
+				}
 
-			if (HEADMOTION_FLAG == TRUE)SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			else SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				fprintf(fp, "\n");
+			}
 
-			if (PULSE_FLAG == TRUE)SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			else SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-
+			if (EXPRESSION_FLAG == TRUE)
+			{
+				SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+			}
+			else
+			{
+				SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+			}
+			if (MICROEXP_FLAG == TRUE)
+			{
+				SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+			}
+			else
+			{
+				SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+			}
+			if (SMILE_FLAG == TRUE)
+			{
+				SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+			}
+			else
+			{
+				SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+			}
+			if (GAZE_FLAG == TRUE)
+			{
+				SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+			}
+			else
+			{
+				SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+			}
+			if (BLINK_FLAG == TRUE)
+			{
+				SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+			}
+			else
+			{
+				SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+			}
+			if (HEADMOTION_FLAG == TRUE)
+			{
+				SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+			}
+			else
+			{
+				SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+			}
+			if (PULSE_FLAG == TRUE)
+			{
+				SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+			}
+			else
+			{
+				SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+			}
 
 			SMILE_FLAG = FALSE;
 			GAZE_FLAG = FALSE;
