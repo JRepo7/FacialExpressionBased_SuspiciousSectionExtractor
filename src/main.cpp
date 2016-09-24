@@ -113,6 +113,7 @@ void GetPlaybackFile(void)
 	filename.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_EXPLORER;
 	if (!GetOpenFileName(&filename)) 
 		fileName[0] = 0;
+	
 }
 
 void GetTextFile(void)
@@ -147,6 +148,27 @@ void GetRecordFile(void)
 			}
 		}
 	} else fileName[0] = 0;
+}
+
+void GetRecordTextFile(void)
+{
+	OPENFILENAME filename;
+	memset(&filename, 0, sizeof(filename));
+	filename.lStructSize = sizeof(filename);
+	filename.lpstrFilter = L"Text File\0*.txt;*.doc\0";
+	filename.lpstrFile = TextfileName;
+	TextfileName[0] = 0;
+	filename.nMaxFile = sizeof(TextfileName) / sizeof(pxcCHAR);
+	filename.Flags = OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST | OFN_EXPLORER;
+	if (GetSaveFileName(&filename)) {
+		if (filename.nFilterIndex == 1 && filename.nFileExtension == 0) {
+			size_t len = std::char_traits<wchar_t>::length(TextfileName);
+			if (len>1 && len<sizeof(TextfileName) / sizeof(pxcCHAR) - 7) {
+				wcscpy_s(&TextfileName[len], rsize_t(7), L".txt\0");
+			}
+		}
+	}
+	else TextfileName[0] = 0;
 }
 
 void PopulateDevice(HMENU menu)
@@ -346,7 +368,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	HWND emo = GetDlgItem(dialogWindow, IDC_EMO);
 	pxcI32 Index;
 	pxcI32 pos;
-
+	
 	if (AUTOADJUST)
 	{
 		renderer->InitValue();
@@ -584,6 +606,10 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 					//}
 				}
 				renderer->Reset();
+				if (DataSet)
+					delete(DataSet);
+				fclose(fp);
+
 				return TRUE;
 
 			case ID_MODE_LIVE:
@@ -605,6 +631,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				CheckMenuItem(menu1, ID_MODE_PLAYBACK, MF_UNCHECKED);
 				CheckMenuItem(menu1, ID_MODE_RECORD, MF_CHECKED);
 				GetRecordFile();
+				GetRecordTextFile();
 				return TRUE;
 
 			case ID_VIEW_EYEWEAR:
@@ -711,6 +738,151 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 			m_LineChartCtrl.DrawChart(dc);
 			UpdateWindow(dialogWindow);
 
+			if (FaceTrackingUtilities::GetPlaybackState(pDlg))
+			{
+				
+				/*
+				SMILE_FLAG = DataSet[sec] &		 0x10000000;
+				GAZE_FLAG = DataSet[sec] &		 0x01000000;
+				BLINK_FLAG = DataSet[sec] &		 0x00100000;
+				HEADMOTION_FLAG = DataSet[sec] & 0x00010000;
+				PULSE_FLAG = DataSet[sec] &		 0x00001000;
+				MICROEXP_FLAG = DataSet[sec] &	 0x00000100;
+				EXPRESSION_FLAG = DataSet[sec] & 0x00000010;
+				//*/
+
+				if (SMILE_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (GAZE_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (BLINK_FLAG == TRUE )
+				{
+					SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (HEADMOTION_FLAG == TRUE )
+				{
+					SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (PULSE_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (MICROEXP_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (EXPRESSION_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+
+				SMILE_FLAG = FALSE;
+				GAZE_FLAG = FALSE;
+				BLINK_FLAG = FALSE;
+				HEADMOTION_FLAG = FALSE;
+				PULSE_FLAG = FALSE;
+				MICROEXP_FLAG = FALSE;
+				EXPRESSION_FLAG = FALSE;
+			}
+			else
+			{
+				if (EXPRESSION_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (MICROEXP_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (SMILE_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (GAZE_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (BLINK_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (HEADMOTION_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (PULSE_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+
+				SMILE_FLAG = FALSE;
+				GAZE_FLAG = FALSE;
+				BLINK_FLAG = FALSE;
+				HEADMOTION_FLAG = FALSE;
+				PULSE_FLAG = FALSE;
+				MICROEXP_FLAG = FALSE;
+				EXPRESSION_FLAG = FALSE;
+			}
 			if (FaceTrackingUtilities::GetRecordState(pDlg))
 			{
 				if (EXPRESSION_FLAG == TRUE)
@@ -778,71 +950,8 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 
 				fprintf(fp, "\n");
 			}
+			
 
-			if (EXPRESSION_FLAG == TRUE)
-			{
-				SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			}
-			else
-			{
-				SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-			}
-			if (MICROEXP_FLAG == TRUE)
-			{
-				SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			}
-			else
-			{
-				SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-			}
-			if (SMILE_FLAG == TRUE)
-			{
-				SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			}
-			else
-			{
-				SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-			}
-			if (GAZE_FLAG == TRUE)
-			{
-				SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			}
-			else
-			{
-				SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-			}
-			if (BLINK_FLAG == TRUE)
-			{
-				SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			}
-			else
-			{
-				SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-			}
-			if (HEADMOTION_FLAG == TRUE)
-			{
-				SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			}
-			else
-			{
-				SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-			}
-			if (PULSE_FLAG == TRUE)
-			{
-				SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			}
-			else
-			{
-				SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-			}
-
-			SMILE_FLAG = FALSE;
-			GAZE_FLAG = FALSE;
-			BLINK_FLAG = FALSE;
-			HEADMOTION_FLAG = FALSE;
-			PULSE_FLAG = FALSE;
-			MICROEXP_FLAG = FALSE;
-			EXPRESSION_FLAG = FALSE;
 
 			if (m_LineChartCtrl.m_ChartData.lstData.GetSize() > 100)
 				m_LineChartCtrl.m_ChartData.Clear();

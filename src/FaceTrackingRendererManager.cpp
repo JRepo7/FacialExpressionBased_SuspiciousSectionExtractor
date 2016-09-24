@@ -253,7 +253,6 @@ void FaceTrackingRendererManager::GetHeadandPulse()
 	hr = m_renderer2D->hr;
 }
 
-
 void FaceTrackingRendererManager::PrepValue()
 {
 	adj_frameCount++;

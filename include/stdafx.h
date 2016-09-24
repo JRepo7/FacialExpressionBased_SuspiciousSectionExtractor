@@ -9,11 +9,17 @@
 
 #include <windows.h>
 
-
+struct fData
+{
+	int time;
+	int DataSet;
+};
 extern int srcx;
 extern int srcy;
-extern bool flagSet[7];
+
+extern fData *DataSet;
 extern FILE *fp;
+
 
 //거짓말 단서 플래그 7개
 extern volatile bool SMILE_FLAG;
@@ -25,3 +31,6 @@ extern volatile bool MICROEXP_FLAG;
 extern volatile bool EXPRESSION_FLAG;
 extern volatile bool AUTOADJUST;
 extern volatile bool STOPRENDERING;
+
+// Prep Val GetPlayBack 
+extern volatile bool INIT_FLAG;

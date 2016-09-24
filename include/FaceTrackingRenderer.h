@@ -32,7 +32,6 @@ public:
 	//추가함 화면확대
 	RECT rc1;
 	pxcI32 index;
-
 protected:
 	static const int LANDMARK_ALIGNMENT = -3;
 	int m_numLandmarks;
