@@ -134,6 +134,27 @@ void GetRecordFile(void)
 	} else fileName[0] = 0;
 }
 
+void GetRecordTextFile(void)
+{
+	OPENFILENAME filename;
+	memset(&filename, 0, sizeof(filename));
+	filename.lStructSize = sizeof(filename);
+	filename.lpstrFilter = L"RSSDK clip (*.rssdk)\0*.rssdk\0All Files (*.*)\0*.*\0\0";
+	filename.lpstrFile = fileName;
+	fileName[0] = 0;
+	filename.nMaxFile = sizeof(fileName) / sizeof(pxcCHAR);
+	filename.Flags = OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST | OFN_EXPLORER;
+	if (GetSaveFileName(&filename)) {
+		if (filename.nFilterIndex == 1 && filename.nFileExtension == 0) {
+			size_t len = std::char_traits<wchar_t>::length(fileName);
+			if (len>1 && len<sizeof(fileName) / sizeof(pxcCHAR) - 7) {
+				wcscpy_s(&fileName[len], rsize_t(7), L".rssdk\0");
+			}
+		}
+	}
+	else fileName[0] = 0;
+}
+
 void PopulateDevice(HMENU menu)
 {
 	DeleteMenu(menu, 0, MF_BYPOSITION);
