@@ -742,18 +742,24 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 					for (int i = 0; i < (processor->Framenumber / 30); i++)
 					{
 						DataSet[i].time = i + 1;
-						fscanf(fp, "%d", &DataSet[i].DataSet);
+						fscanf(fp, "%d", &DataSet[i].SMILE_FLAG);
+						fscanf(fp, "%d", &DataSet[i].GAZE_FLAG);
+						fscanf(fp, "%d", &DataSet[i].BLINK_FLAG);
+						fscanf(fp, "%d", &DataSet[i].HEADMOTION_FLAG);
+						fscanf(fp, "%d", &DataSet[i].PULSE_FLAG);
+						fscanf(fp, "%d", &DataSet[i].MICROEXP_FLAG);
+						fscanf(fp, "%d", &DataSet[i].EXPRESSION_FLAG);
 					}
 					INIT_FLAG = FALSE;
 				}
 				
-				(DataSet[Index].DataSet & 0x989680) == 10000000 ? SMILE_FLAG = TRUE: SMILE_FLAG = FALSE;
-				(DataSet[Index].DataSet & 0xf4240) == 1000000 ? GAZE_FLAG = TRUE : GAZE_FLAG = FALSE;
-				(DataSet[Index].DataSet & 0x186a0) == 100000 ? BLINK_FLAG = TRUE : BLINK_FLAG = FALSE;
-				(DataSet[Index].DataSet & 0x2710) == 10000 ? HEADMOTION_FLAG = TRUE : HEADMOTION_FLAG = FALSE;
-				(DataSet[Index].DataSet & 0x3e8) == 1000 ? PULSE_FLAG = TRUE : PULSE_FLAG = FALSE;
-				(DataSet[Index].DataSet & 0x64) == 100 ? MICROEXP_FLAG = TRUE : MICROEXP_FLAG = FALSE;
-				(DataSet[Index].DataSet & 0xa) == 10 ? EXPRESSION_FLAG = TRUE : EXPRESSION_FLAG = FALSE;
+				(DataSet[Index].SMILE_FLAG & 0x989680) == 10000000 ? SMILE_FLAG = TRUE: SMILE_FLAG = FALSE;
+				(DataSet[Index].GAZE_FLAG & 0xf4240) == 1000000 ? GAZE_FLAG = TRUE : GAZE_FLAG = FALSE;
+				(DataSet[Index].BLINK_FLAG & 0x186a0) == 100000 ? BLINK_FLAG = TRUE : BLINK_FLAG = FALSE;
+				(DataSet[Index].HEADMOTION_FLAG & 0x2710) == 10000 ? HEADMOTION_FLAG = TRUE : HEADMOTION_FLAG = FALSE;
+				(DataSet[Index].PULSE_FLAG & 0x3e8) == 1000 ? PULSE_FLAG = TRUE : PULSE_FLAG = FALSE;
+				(DataSet[Index].MICROEXP_FLAG & 0x64) == 100 ? MICROEXP_FLAG = TRUE : MICROEXP_FLAG = FALSE;
+				(DataSet[Index].EXPRESSION_FLAG & 0xa) == 10 ? EXPRESSION_FLAG = TRUE : EXPRESSION_FLAG = FALSE;
 
 				if (SMILE_FLAG == TRUE)
 				{

@@ -106,6 +106,8 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
 		str.Format(_T(" %dm %ds"), min, sec);
 		SetWindowTextW(total, str);
 
+
+
 	} 
 	if (status < PXC_STATUS_NO_ERROR) 
 	{
