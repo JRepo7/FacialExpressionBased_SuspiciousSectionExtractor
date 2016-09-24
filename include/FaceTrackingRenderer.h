@@ -32,8 +32,7 @@ public:
 	//추가함 화면확대
 	RECT rc1;
 	pxcI32 index;
-	int checkIdx;
-	bool flagState[7] = {0,};// per second
+
 protected:
 	static const int LANDMARK_ALIGNMENT = -3;
 	int m_numLandmarks;
