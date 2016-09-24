@@ -46,6 +46,7 @@ void FaceTrackingRenderer::Render()
 	MoveSlider();
 }
 
+
 void FaceTrackingRenderer::MoveSlider()
 {
 	int min, sec;

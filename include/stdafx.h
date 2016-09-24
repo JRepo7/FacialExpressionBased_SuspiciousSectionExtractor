@@ -29,6 +29,7 @@ extern fData *DataSet;
 extern FILE *fp;
 
 extern pxcI32 gIndex;
+extern int gFrame;
 
 //거짓말 단서 플래그 7개
 extern volatile bool SMILE_FLAG;
