@@ -149,6 +149,27 @@ void GetRecordFile(void)
 	} else fileName[0] = 0;
 }
 
+void GetRecordTextFile(void)
+{
+	OPENFILENAME filename;
+	memset(&filename, 0, sizeof(filename));
+	filename.lStructSize = sizeof(filename);
+	filename.lpstrFilter = L"Text File\0*.txt;*.doc\0";
+	filename.lpstrFile = TextfileName;
+	TextfileName[0] = 0;
+	filename.nMaxFile = sizeof(TextfileName) / sizeof(pxcCHAR);
+	filename.Flags = OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST | OFN_EXPLORER;
+	if (GetSaveFileName(&filename)) {
+		if (filename.nFilterIndex == 1 && filename.nFileExtension == 0) {
+			size_t len = std::char_traits<wchar_t>::length(TextfileName);
+			if (len>1 && len<sizeof(TextfileName) / sizeof(pxcCHAR) - 7) {
+				wcscpy_s(&fileName[len], rsize_t(7), L".txt\0");
+			}
+		}
+	}
+	else fileName[0] = 0;
+}
+
 void PopulateDevice(HMENU menu)
 {
 	DeleteMenu(menu, 0, MF_BYPOSITION);
@@ -605,6 +626,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				CheckMenuItem(menu1, ID_MODE_PLAYBACK, MF_UNCHECKED);
 				CheckMenuItem(menu1, ID_MODE_RECORD, MF_CHECKED);
 				GetRecordFile();
+				GetRecordTextFile();
 				return TRUE;
 
 			case ID_VIEW_EYEWEAR:

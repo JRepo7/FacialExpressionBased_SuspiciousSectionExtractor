@@ -90,6 +90,7 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
 	if (FaceTrackingUtilities::GetRecordState(dialogWindow)) 
 	{
 		status = captureManager->SetFileName(fileName, true);
+
 	} 
 	else if (FaceTrackingUtilities::GetPlaybackState(dialogWindow)) 
 	{
