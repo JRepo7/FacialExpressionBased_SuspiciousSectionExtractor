@@ -158,8 +158,6 @@ void FaceTrackingRendererManager::Render()
 
 	m_currentRenderer->Render();
 
-	index = m_currentRenderer->index;
-
 	m_callback();
 }
 
@@ -253,7 +251,6 @@ void FaceTrackingRendererManager::GetHeadandPulse()
 	hr = m_renderer2D->hr;
 }
 
-
 void FaceTrackingRendererManager::PrepValue()
 {
 	adj_frameCount++;
@@ -319,7 +316,7 @@ void FaceTrackingRendererManager::CvtLandmarkToIntensity()
 	}
 
 	//fp36(윗입술)의 위치가 올라가면 기준점 fp31(인중)과 fp36(윗입술) 간의 높이차는 줄어듬 즉 if(ratio < 1) 가 적절
-	//**혐오감을 나타내는데
+	//**혐오감을 나타내는데 굳이 필요한가
 	ratio = ((FacialPoint[36].y - FacialPoint[26].y) / tUpperLipRaiser);
 	if (ratio < 1)
 	{

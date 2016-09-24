@@ -6,8 +6,8 @@
 
 int srcx=0;
 int srcy=0;
-
-extern FILE *fp = fopen("data.txt","a");
+extern fData *DataSet = NULL;
+extern FILE *fp = NULL;
 
 extern bool flagSet[7] = {0,};
 
@@ -20,3 +20,7 @@ volatile bool MICROEXP_FLAG = FALSE;
 volatile bool EXPRESSION_FLAG = FALSE;
 volatile bool AUTOADJUST = FALSE;
 volatile bool STOPRENDERING = FALSE;
+
+volatile bool INIT_FLAG = TRUE;
+
+pxcI32 gIndex = 0;

@@ -42,8 +42,8 @@ void FaceTrackingRenderer::Render()
 	DrawGraphics(m_currentFrameOutput);
 	RefreshUserInterface();
 	RefreshUserInterface2();
-	MoveSlider();
 	}
+	MoveSlider();
 }
 
 void FaceTrackingRenderer::MoveSlider()
@@ -51,16 +51,17 @@ void FaceTrackingRenderer::MoveSlider()
 	int min, sec;
 	HWND slider = GetDlgItem(m_window, IDC_SLIDER);
 	PXCCaptureManager* captureManager = m_senseManager->QueryCaptureManager();
-	index = captureManager->QueryFrameIndex();
-	SendMessage(slider, TBM_SETPOS, TRUE, index);
+	
+	gIndex = captureManager->QueryFrameIndex();
+	SendMessage(slider, TBM_SETPOS, TRUE, gIndex);
 	HWND frame = GetDlgItem(m_window, IDC_SLIDER_EDIT);
 	HWND time = GetDlgItem(m_window, IDC_CTIME);
 	CString str;
-	str.Format(_T("Frame Number:  %d"), index);
+	str.Format(_T("Frame Number:  %d"), gIndex);
 	SetWindowTextW(frame, str);
 
-	min = index / 1800;
-	sec = index / 30 - 60*min;
+	min = gIndex / 1800;
+	sec = gIndex / 30 - 60*min;
 	str.Format(_T(" %dm  %ds  /"), min, sec);
 	SetWindowTextW(time, str);
 }

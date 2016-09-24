@@ -52,6 +52,9 @@ HWND child;
 /*전역 인스턴스 선언*/
 HINSTANCE g_inst;
 
+HBITMAP RED = (HBITMAP)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_RED), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
+HBITMAP GREEN = (HBITMAP)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_GREEN), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
+
 volatile bool isRunning = false;
 volatile bool isStopped = false;
 volatile bool isActiveApp = true;
@@ -113,6 +116,7 @@ void GetPlaybackFile(void)
 	filename.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_EXPLORER;
 	if (!GetOpenFileName(&filename)) 
 		fileName[0] = 0;
+	
 }
 
 void GetTextFile(void)
@@ -154,20 +158,20 @@ void GetRecordTextFile(void)
 	OPENFILENAME filename;
 	memset(&filename, 0, sizeof(filename));
 	filename.lStructSize = sizeof(filename);
-	filename.lpstrFilter = L"RSSDK clip (*.rssdk)\0*.rssdk\0All Files (*.*)\0*.*\0\0";
-	filename.lpstrFile = fileName;
-	fileName[0] = 0;
-	filename.nMaxFile = sizeof(fileName) / sizeof(pxcCHAR);
+	filename.lpstrFilter = L"Text File\0*.txt;*.doc\0";
+	filename.lpstrFile = TextfileName;
+	TextfileName[0] = 0;
+	filename.nMaxFile = sizeof(TextfileName) / sizeof(pxcCHAR);
 	filename.Flags = OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST | OFN_EXPLORER;
 	if (GetSaveFileName(&filename)) {
 		if (filename.nFilterIndex == 1 && filename.nFileExtension == 0) {
-			size_t len = std::char_traits<wchar_t>::length(fileName);
-			if (len>1 && len<sizeof(fileName) / sizeof(pxcCHAR) - 7) {
-				wcscpy_s(&fileName[len], rsize_t(7), L".rssdk\0");
+			size_t len = std::char_traits<wchar_t>::length(TextfileName);
+			if (len>1 && len<sizeof(TextfileName) / sizeof(pxcCHAR) - 7) {
+				wcscpy_s(&TextfileName[len], rsize_t(7), L".txt\0");
 			}
 		}
 	}
-	else fileName[0] = 0;
+	else TextfileName[0] = 0;
 }
 
 void PopulateDevice(HMENU menu)
@@ -365,8 +369,8 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	HWND micro = GetDlgItem(dialogWindow, IDC_MICRO);
 	HWND text_emo = GetDlgItem(dialogWindow, IDC_TEXT_EMO);
 	HWND emo = GetDlgItem(dialogWindow, IDC_EMO);
-	pxcI32 Index;
 	pxcI32 pos;
+	pxcI32 Index;
 
 	if (AUTOADJUST)
 	{
@@ -387,12 +391,12 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	}
 
 	if (GetAsyncKeyState(VK_LEFT) && isRunning == true) {
-		Index = renderer->index - 1;
+		Index = gIndex - 1;
 		processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
 	}
 
 	if (GetAsyncKeyState(VK_RIGHT) && isRunning == true) {
-		Index = renderer->index + 1;
+		Index = gIndex + 1;
 		processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
 	}
 
@@ -512,13 +516,13 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			switch (LOWORD(wParam)) 
 			{
 			case ID_DEFRAME:
-				Index = renderer->index - 1;
+				Index = gIndex - 1;
 				processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
 
 				return TRUE;
 
 			case ID_INFRAME:
-				Index = renderer->index + 1;
+				Index = gIndex + 1;
 				processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
 
 				return TRUE;
@@ -571,8 +575,6 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				//	Button_Enable(GetDlgItem(dialogWindow, ID_UNREGISTER), true);
 				////}
 
-
-
 				Sleep(0); //TODO: remove
 
 				return TRUE;
@@ -582,6 +584,8 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				KillTimer(child, 1234);
 
 				renderer->InitStop();
+
+				//fclose(fp);
 
 				isStopped = true;
 				if (isRunning) 
@@ -605,6 +609,8 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 					//}
 				}
 				renderer->Reset();
+
+	
 				return TRUE;
 
 			case ID_MODE_LIVE:
@@ -626,6 +632,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				CheckMenuItem(menu1, ID_MODE_PLAYBACK, MF_UNCHECKED);
 				CheckMenuItem(menu1, ID_MODE_RECORD, MF_CHECKED);
 				GetRecordFile();
+				GetRecordTextFile();
 				return TRUE;
 
 			case ID_VIEW_EYEWEAR:
@@ -691,6 +698,100 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	return FALSE; 
 }
 
+/*
+SMILE_FLAG = DataSet[sec] &		 0x1000000;
+GAZE_FLAG = DataSet[sec] &		 0x0100000;
+BLINK_FLAG = DataSet[sec] &		 0x0010000;
+HEADMOTION_FLAG = DataSet[sec] & 0x0001000;
+PULSE_FLAG = DataSet[sec] &		 0x0000100;
+MICROEXP_FLAG = DataSet[sec] &	 0x0000010;
+EXPRESSION_FLAG = DataSet[sec] & 0x0000001;
+//*/
+
+void playbackflag(void) {
+
+	int sec = gIndex /30;
+	if (DataSet[sec].exp)EXPRESSION_FLAG = true;
+	else EXPRESSION_FLAG = false;
+
+	if (DataSet[sec].micro)MICROEXP_FLAG = true;
+	else MICROEXP_FLAG = false;
+
+	if (DataSet[sec].smile)SMILE_FLAG = true;
+	else SMILE_FLAG = false;
+
+	if (DataSet[sec].gaze)GAZE_FLAG = true;
+	else GAZE_FLAG = false;
+
+	if (DataSet[sec].blink)BLINK_FLAG = true;
+	else BLINK_FLAG = false;
+
+	if (DataSet[sec].head)HEADMOTION_FLAG = true;
+	else HEADMOTION_FLAG = false;
+
+	if (DataSet[sec].pulse)PULSE_FLAG = true;
+	else PULSE_FLAG = false;
+
+		if (SMILE_FLAG == TRUE)
+		{
+			SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+		}
+		else
+		{
+			SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+		}
+		if (GAZE_FLAG == TRUE)
+		{
+			SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+		}
+		else
+		{
+			SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+		}
+		if (BLINK_FLAG == TRUE)
+		{
+			SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+		}
+		else
+		{
+			SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+		}
+		if (HEADMOTION_FLAG == TRUE)
+		{
+			SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+		}
+		else
+		{
+			SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+		}
+		if (PULSE_FLAG == TRUE)
+		{
+			SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+		}
+		else
+		{
+			SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+		}
+		if (MICROEXP_FLAG == TRUE)
+		{
+			SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+		}
+		else
+		{
+			SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+		}
+		if (EXPRESSION_FLAG == TRUE)
+		{
+			SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+		}
+		else
+		{
+			SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+		}
+
+}
+
+
 INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	CRect rcWindow;
@@ -698,8 +799,10 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 	GetClientRect(pDlg, &rcWindow);
 	HDC dc = GetDC(dialogWindow);
 	child = dialogWindow;
-	HBITMAP RED = (HBITMAP)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_RED), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
-	HBITMAP GREEN = (HBITMAP)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_GREEN), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
+
+
+	if (FaceTrackingUtilities::GetPlaybackState(pDlg)&& gIndex>0)
+		playbackflag();
 
 	int degree = 0;
 
@@ -732,6 +835,71 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 			m_LineChartCtrl.DrawChart(dc);
 			UpdateWindow(dialogWindow);
 
+				if (EXPRESSION_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (MICROEXP_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (SMILE_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (GAZE_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (BLINK_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (HEADMOTION_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+				if (PULSE_FLAG == TRUE)
+				{
+					SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+				}
+				else
+				{
+					SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+				}
+
+				SMILE_FLAG = FALSE;
+				GAZE_FLAG = FALSE;
+				BLINK_FLAG = FALSE;
+				HEADMOTION_FLAG = FALSE;
+				PULSE_FLAG = FALSE;
+				MICROEXP_FLAG = FALSE;
+				EXPRESSION_FLAG = FALSE;
+			
 			if (FaceTrackingUtilities::GetRecordState(pDlg))
 			{
 				if (EXPRESSION_FLAG == TRUE)
@@ -745,125 +913,62 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 
 				if (MICROEXP_FLAG == TRUE)
 				{
-					fprintf(fp, "%d", 1);
+					fprintf(fp, " %d", 1);
 				}
 				else
 				{
-					fprintf(fp, "%d", 0);
+					fprintf(fp, " %d", 0);
 				}
 
 				if (SMILE_FLAG == TRUE)
 				{
-					fprintf(fp, "%d", 1);
+					fprintf(fp, " %d", 1);
 				}
 				else
 				{
-					fprintf(fp, "%d", 0);
+					fprintf(fp, " %d", 0);
 				}
 
 				if (GAZE_FLAG == TRUE)
 				{
-					fprintf(fp, "%d", 1);
+					fprintf(fp, " %d", 1);
 				}
 				else
 				{
-					fprintf(fp, "%d", 0);
+					fprintf(fp, " %d", 0);
 				}
 	
 				if (BLINK_FLAG == TRUE)
 				{
-					fprintf(fp, "%d", 1);
+					fprintf(fp, " %d", 1);
 				}
 				else
 				{
-					fprintf(fp, "%d", 0);
+					fprintf(fp, " %d", 0);
 				}
 		
 				if (HEADMOTION_FLAG == TRUE)
 				{
-					fprintf(fp, "%d", 1);
+					fprintf(fp, " %d", 1);
 				}
 				else
 				{
-					fprintf(fp, "%d", 0);
+					fprintf(fp, " %d", 0);
 				}
 
 				if (PULSE_FLAG == TRUE)
 				{
-					fprintf(fp, "%d", 1);
+					fprintf(fp, " %d", 1);
 				}
 				else
 				{
-					fprintf(fp, "%d", 0);
+					fprintf(fp, " %d", 0);
 				}
 
 				fprintf(fp, "\n");
 			}
+			
 
-			if (EXPRESSION_FLAG == TRUE)
-			{
-				SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			}
-			else
-			{
-				SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-			}
-			if (MICROEXP_FLAG == TRUE)
-			{
-				SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			}
-			else
-			{
-				SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-			}
-			if (SMILE_FLAG == TRUE)
-			{
-				SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			}
-			else
-			{
-				SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-			}
-			if (GAZE_FLAG == TRUE)
-			{
-				SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			}
-			else
-			{
-				SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-			}
-			if (BLINK_FLAG == TRUE)
-			{
-				SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			}
-			else
-			{
-				SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-			}
-			if (HEADMOTION_FLAG == TRUE)
-			{
-				SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			}
-			else
-			{
-				SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-			}
-			if (PULSE_FLAG == TRUE)
-			{
-				SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-			}
-			else
-			{
-				SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-			}
-
-			SMILE_FLAG = FALSE;
-			GAZE_FLAG = FALSE;
-			BLINK_FLAG = FALSE;
-			HEADMOTION_FLAG = FALSE;
-			PULSE_FLAG = FALSE;
-			MICROEXP_FLAG = FALSE;
-			EXPRESSION_FLAG = FALSE;
 
 			if (m_LineChartCtrl.m_ChartData.lstData.GetSize() > 100)
 				m_LineChartCtrl.m_ChartData.Clear();
@@ -972,6 +1077,9 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR, int) {
 
 	if (renderer)
 		delete renderer;
+
+	if(fp) fclose(fp);
+	if (DataSet) delete(DataSet);
 
 	session->Release();
     return (int)msg.wParam;
