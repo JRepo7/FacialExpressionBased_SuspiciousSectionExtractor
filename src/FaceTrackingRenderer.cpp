@@ -36,11 +36,14 @@ PXCSenseManager* FaceTrackingRenderer::GetSenseManager()
 
 void FaceTrackingRenderer::Render()
 {
+	if(STOPRENDERING == FALSE)
+	{
 	DrawFrameRate();
 	DrawGraphics(m_currentFrameOutput);
 	RefreshUserInterface();
 	RefreshUserInterface2();
 	MoveSlider();
+	}
 }
 
 void FaceTrackingRenderer::MoveSlider()

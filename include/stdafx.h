@@ -22,3 +22,4 @@ extern volatile bool PULSE_FLAG;
 extern volatile bool MICROEXP_FLAG;
 extern volatile bool EXPRESSION_FLAG;
 extern volatile bool AUTOADJUST;
+extern volatile bool STOPRENDERING;

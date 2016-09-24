@@ -17,6 +17,7 @@ extern FaceTrackingRendererManager* renderer;
 extern volatile bool isStopped;
 extern volatile bool isActiveApp;
 extern pxcCHAR fileName[1024];
+extern pxcCHAR TextfileName[1024];
 extern HANDLE ghMutex;
 
 FaceTrackingProcessor::FaceTrackingProcessor(HWND window) : m_window(window), m_registerFlag(false), m_unregisterFlag(false) { Framenumber = 0; }

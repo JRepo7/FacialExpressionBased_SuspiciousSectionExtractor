@@ -37,6 +37,7 @@ Copyright(c) 2012-2013 Intel Corporation. All Rights Reserved.
 #define EXP_TIMER 9292
 
 pxcCHAR fileName[1024] = { 0 };
+pxcCHAR TextfileName[1024] = { 0 };
 PXCSession* session = NULL;
 FaceTrackingRendererManager* renderer = NULL;
 FaceTrackingProcessor* processor = NULL;
@@ -112,6 +113,20 @@ void GetPlaybackFile(void)
 	filename.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_EXPLORER;
 	if (!GetOpenFileName(&filename)) 
 		fileName[0] = 0;
+}
+
+void GetTextFile(void)
+{
+	OPENFILENAME filename;
+	memset(&filename, 0, sizeof(filename));
+	filename.lStructSize = sizeof(filename);
+	filename.lpstrFilter = L"Text File\0*.txt;*.doc\0";
+	filename.lpstrFile = TextfileName;
+	TextfileName[0] = 0;
+	filename.nMaxFile = sizeof(TextfileName) / sizeof(pxcCHAR);
+	filename.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_EXPLORER;
+	if (!GetOpenFileName(&filename))
+		TextfileName[0] = 0;
 }
 
 void GetRecordFile(void) 
@@ -339,12 +354,16 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 		SetTimer(dialogWindow, ADJUST, 2000, NULL);
 	}
 
-	if (GetKeyState(VK_SPACE) && isRunning == true) 
+	if (GetKeyState(VK_SPACE) && isRunning == true)
+	{
 		processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
-
-	if (GetAsyncKeyState(VK_SPACE) && isRunning == true) 
+		STOPRENDERING = FALSE;
+	}
+	if (GetAsyncKeyState(VK_SPACE) && isRunning == true)
+	{
 		processor->senseManager->QueryCaptureManager()->SetPause(FALSE);
-	
+		STOPRENDERING = FALSE;
+	}
 
 	if (GetAsyncKeyState(VK_LEFT) && isRunning == true) {
 		Index = renderer->index - 1;
@@ -430,6 +449,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
 			pos = SendDlgItemMessageW(dialogWindow, IDC_SLIDER, TBM_GETPOS, 0, 0);
 			processor->senseManager->QueryCaptureManager()->SetFrameByIndex(pos);
+			STOPRENDERING = TRUE;
 
 
 			return TRUE;
@@ -577,6 +597,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				CheckMenuItem(menu1, ID_MODE_PLAYBACK, MF_CHECKED);
 				CheckMenuItem(menu1, ID_MODE_RECORD, MF_UNCHECKED);
 				GetPlaybackFile();
+				GetTextFile();
 				return TRUE;
 
 			case ID_MODE_RECORD:
