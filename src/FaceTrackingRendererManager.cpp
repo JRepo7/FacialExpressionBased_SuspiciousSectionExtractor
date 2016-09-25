@@ -1275,14 +1275,14 @@ void FaceTrackingRendererManager::ShowHeadMovementRecord()
 	SetWindowTextW(text, str);
 
 
-	if (angles.yaw<5 && angles.yaw>-5) {
-		str.Format(_T("정  면"));
+	if (angles.yaw<10 && angles.yaw>-10) {
+		str.Format(_T("정  면  %2.1f도"), angles.yaw);
 	}
-	else if (angles.yaw < -5) {
-		str.Format(_T("좌  측"));
+	else if (angles.yaw < -10) {
+		str.Format(_T("좌  측  %2.1f도"), angles.yaw);
 	}
-	else if (angles.yaw > 5) {
-		str.Format(_T("우  측"));
+	else if (angles.yaw > 10) {
+		str.Format(_T("우  측  %2.1f도"), angles.yaw);
 	}
 
 	SetWindowTextW(text1, str);

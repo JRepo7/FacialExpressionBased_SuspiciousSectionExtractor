@@ -43,6 +43,7 @@ void FaceTrackingRenderer::Render()
 	DrawGraphics(m_currentFrameOutput);
 	RefreshUserInterface();
 	RefreshUserInterface2();
+	if(FaceTrackingUtilities::GetPlaybackState(m_window))
 	MoveSlider();
 	}
 	gIndex = captureManager->QueryFrameIndex();
