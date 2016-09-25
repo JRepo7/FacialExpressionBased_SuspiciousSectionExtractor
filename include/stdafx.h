@@ -42,6 +42,5 @@ extern volatile bool MICROEXP_FLAG;
 extern volatile bool EXPRESSION_FLAG;
 extern volatile bool AUTOADJUST;
 extern volatile bool STOPRENDERING;
-extern volatile bool REDERERSTOP;
 // Prep Val GetPlayBack 
 extern volatile bool INIT_FLAG;

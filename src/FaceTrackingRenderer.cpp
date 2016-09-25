@@ -97,7 +97,6 @@ void FaceTrackingRenderer::RefreshUserInterface()
 
 	if(!bitmap)
 	{
-
 		ReleaseDC(panel, dc);
 		return;
 	}

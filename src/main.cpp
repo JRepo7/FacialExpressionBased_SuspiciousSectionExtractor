@@ -416,7 +416,8 @@ void playbackflag(void) {
 	if (DataSet[sec].pulse == true) PULSE_FLAG = true;
 	else PULSE_FLAG = false;
 
-	if (Framenumber/30 <= sec) {
+	if (Framenumber/30 <= sec) 
+	{
 		SMILE_FLAG = FALSE;
 		GAZE_FLAG = FALSE;
 		BLINK_FLAG = FALSE;
@@ -503,6 +504,7 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 		if (FaceTrackingUtilities::GetPlaybackState(pDlg))
 			playbackflag();
 	}
+
 }
 
 
@@ -534,6 +536,8 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	HWND micro = GetDlgItem(dialogWindow, IDC_MICRO);
 	HWND text_emo = GetDlgItem(dialogWindow, IDC_TEXT_EMO);
 	HWND emo = GetDlgItem(dialogWindow, IDC_EMO);
+	HWND slider = GetDlgItem(dialogWindow, IDC_SLIDER);
+
 	pxcI32 pos;
 	pxcI32 Index;
 
@@ -636,13 +640,15 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			return TRUE;
 
 		case WM_HSCROLL:
-			if (FaceTrackingUtilities::GetPlaybackState(pDlg)&& !REDERERSTOP)
+			if (FaceTrackingUtilities::GetPlaybackState(pDlg)&& !isStopped)
 			{
-				processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
 				pos = SendDlgItemMessageW(dialogWindow, IDC_SLIDER, TBM_GETPOS, 0, 0);
-				if (pos < Framenumber && (pos % 1 == 0)) processor->senseManager->QueryCaptureManager()->SetFrameByIndex(pos);
+				if (pos < Framenumber) processor->senseManager->QueryCaptureManager()->SetFrameByIndex(pos);
 				STOPRENDERING = TRUE;
+				processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
 			}
+			if(isStopped) SendMessage(slider, TBM_SETPOS, TRUE, 0);
+			
 
 			return TRUE;
 
@@ -714,6 +720,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				}  
 				return TRUE;
 			case ID_START:
+
 				SetTimer(dialogWindow, EXP_TIMER, 200, NULL);//0.2s
 				SetTimer(child, 1234, 1000, NULL);
 				m_LineChartCtrl.m_ChartData.Clear();
@@ -752,10 +759,16 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 
 				KillTimer(child, 1234);
 
+				Framenumber = 0;
 				renderer->InitStop();
 
-				if (fp) fclose(fp);
-				if (DataSet) {
+				SendMessage(slider, TBM_SETPOS, TRUE, 0);
+
+				if (fp) 
+					fclose(fp);
+
+				if (DataSet) 
+				{
 					delete[] DataSet;
 					DataSet = NULL;
 				}

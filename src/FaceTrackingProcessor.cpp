@@ -108,14 +108,15 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
 		str.Format(_T(" %dm %ds"), min, sec);
 		SetWindowTextW(total, str);
 
-		int i;
-		if (INIT_FLAG == TRUE)
+		
+		if (FaceTrackingUtilities::GetPlaybackState(dialogWindow))
 		{
+			int i;
 			fp = _wfopen((const wchar_t*)TextfileName, L"r");
-			DataSet = new fData[(Framenumber / 30)+1];//int *p = new int[3] 선언후 p[3] 접근해 작업한뒤 delete하면 메모리 넘어서의 작업이 안지워져 leak현상 발생
-			for (i= 0; i < (Framenumber / 30); i++)
+			DataSet = new fData[(Framenumber / 30) + 1];//int *p = new int[3] 선언후 p[3] 접근해 작업한뒤 delete하면 메모리 넘어서의 작업이 안지워져 leak현상 발생
+			for (i = 0; i < (Framenumber / 30); i++)
 			{
-				fscanf(fp, "%d %d %d %d %d %d %d %d %d", &DataSet[i].exp, &DataSet[i].micro ,&DataSet[i].smile, 
+				fscanf(fp, "%d %d %d %d %d %d %d %d %d", &DataSet[i].exp, &DataSet[i].micro, &DataSet[i].smile,
 					&DataSet[i].gaze, &DataSet[i].blink, &DataSet[i].head, &DataSet[i].pulse, &DataSet[i].count, &DataSet[i].frame);
 				if (DataSet[i].count >= 2)
 				{
@@ -125,8 +126,6 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
 					}
 				}
 			}
-
-			INIT_FLAG = FALSE;
 		}
 
 		if (fp) fclose(fp);

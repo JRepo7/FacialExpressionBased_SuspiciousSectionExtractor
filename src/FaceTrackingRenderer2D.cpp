@@ -49,10 +49,7 @@ FaceTrackingRenderer2D::FaceTrackingRenderer2D(HWND window) : FaceTrackingRender
 void FaceTrackingRenderer2D::DrawGraphics(PXCFaceData* faceOutput)
 {
 	assert(faceOutput != NULL);
-	if (!m_bitmap) {
-		REDERERSTOP = TRUE;
-		return;
-	}
+	if (!m_bitmap) return;
 
 	const int numFaces = faceOutput->QueryNumberOfDetectedFaces();
 	for (int i = 0; i < numFaces; ++i) 
