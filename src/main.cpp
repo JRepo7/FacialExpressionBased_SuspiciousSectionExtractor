@@ -495,7 +495,7 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 			renderer->cursor++;
 			renderer->CircularQueue300();
 			renderer->ShowHeartRate();
-			if (renderer->cursor % 30 == 0)
+			if (renderer->cursor % 15 == 0)
 			{
 				renderer->RecordingOutOfRange();
 			}

@@ -71,12 +71,7 @@ void FaceTrackingRenderer2D::DrawGraphics(PXCFaceData* faceOutput)
 
 			DrawPoseAndPulse(trackedFace, i);
 		if (trackedFace->QueryExpressions() != NULL)
-			DrawExpressions(trackedFace, i);
-		//if (trackedFace->QueryGaze() != NULL)
-		//	DrawGaze(trackedFace, i);
-		//if (trackedFace->QueryRecognition() != NULL)
-		//    DrawRecognition(trackedFace, i);
-			
+			DrawExpressions(trackedFace, i);	
 	}
 }
 
