@@ -504,7 +504,7 @@ static DWORD WINAPI RenderingThread(LPVOID arg)
 		if (FaceTrackingUtilities::GetRecordState(pDlg) && framecount % 30 == 0)
 			Writefile();
 
-		if (FaceTrackingUtilities::GetPlaybackState(pDlg))
+		if (FaceTrackingUtilities::GetPlaybackState(pDlg)&& !isStopped)
 			playbackflag();
 	}
 
