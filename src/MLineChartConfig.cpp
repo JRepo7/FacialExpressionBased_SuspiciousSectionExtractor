@@ -27,7 +27,7 @@ MLineChartConfig::MLineChartConfig(void)
 	nMarginRight = 20;
 
 	szAxisXNM = "시간(1초)";
-	szAxisYNM = "거짓말정도";
+	szAxisYNM = "의심정도";
 }
 
 MLineChartConfig::~MLineChartConfig(void)

@@ -49,7 +49,10 @@ FaceTrackingRenderer2D::FaceTrackingRenderer2D(HWND window) : FaceTrackingRender
 void FaceTrackingRenderer2D::DrawGraphics(PXCFaceData* faceOutput)
 {
 	assert(faceOutput != NULL);
-	if (!m_bitmap) return;
+	if (!m_bitmap) {
+		REDERERSTOP = TRUE;
+		return;
+	}
 
 	const int numFaces = faceOutput->QueryNumberOfDetectedFaces();
 	for (int i = 0; i < numFaces; ++i) 
@@ -62,18 +65,18 @@ void FaceTrackingRenderer2D::DrawGraphics(PXCFaceData* faceOutput)
 		if (trackedFace->QueryLandmarks() != NULL) 
 			DrawLandmark(trackedFace);
 		//if (FaceTrackingUtilities::IsModuleSelected(m_window, IDC_POSE) || FaceTrackingUtilities::IsModuleSelected(m_window, IDC_PULSE))
-		if (systemcnt<380)
+		if (systemcnt<380 && !FaceTrackingUtilities::GetPlaybackState(m_window))
 			DrawCount();
-		else if (trackedFace->QueryGaze() != NULL) {
-			//if (systemcnt<360) DrawCount();
+		else if (trackedFace->QueryGaze() != NULL&& !FaceTrackingUtilities::GetPlaybackState(m_window))
+		{
 			DrawGaze(trackedFace, i);
 		}
 
 			DrawPoseAndPulse(trackedFace, i);
 		if (trackedFace->QueryExpressions() != NULL)
 			DrawExpressions(trackedFace, i);
-		if (trackedFace->QueryGaze() != NULL)
-			DrawGaze(trackedFace, i);
+		//if (trackedFace->QueryGaze() != NULL)
+		//	DrawGaze(trackedFace, i);
 		//if (trackedFace->QueryRecognition() != NULL)
 		//    DrawRecognition(trackedFace, i);
 			

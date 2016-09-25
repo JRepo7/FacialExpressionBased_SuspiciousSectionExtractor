@@ -6,6 +6,7 @@
 
 int srcx=0;
 int srcy=0;
+int Framenumber = 0;
 extern fData *DataSet = NULL;
 extern FILE *fp = NULL;
 
@@ -20,7 +21,7 @@ volatile bool MICROEXP_FLAG = FALSE;
 volatile bool EXPRESSION_FLAG = FALSE;
 volatile bool AUTOADJUST = FALSE;
 volatile bool STOPRENDERING = FALSE;
-
+volatile bool REDERERSTOP = FALSE;
 volatile bool INIT_FLAG = TRUE;
 
 pxcI32 gIndex = 0;

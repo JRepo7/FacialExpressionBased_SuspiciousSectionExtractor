@@ -26,11 +26,13 @@ public:
 	void SetOutput(PXCFaceData* output);
 	void SetSenseManager(PXCSenseManager* senseManager);
 	PXCSenseManager* GetSenseManager();
+	PXCCaptureManager* captureManager;
 	virtual void DrawBitmap(PXCCapture::Sample* sample, bool ir) = 0;
 	virtual void DrawBitmap2(PXCCapture::Sample* sample, bool ir) = 0;
 	void Render();
 	//추가함 화면확대
 	RECT rc1;
+
 
 protected:
 	static const int LANDMARK_ALIGNMENT = -3;

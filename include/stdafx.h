@@ -12,7 +12,8 @@
 
 struct fData
 {
-	int time;
+	int count;
+	int frame;
 	bool exp;
 	bool micro;
 	bool smile;
@@ -24,6 +25,7 @@ struct fData
 
 extern int srcx;
 extern int srcy;
+extern int Framenumber;
 
 extern fData *DataSet;
 extern FILE *fp;
@@ -40,6 +42,6 @@ extern volatile bool MICROEXP_FLAG;
 extern volatile bool EXPRESSION_FLAG;
 extern volatile bool AUTOADJUST;
 extern volatile bool STOPRENDERING;
-
+extern volatile bool REDERERSTOP;
 // Prep Val GetPlayBack 
 extern volatile bool INIT_FLAG;

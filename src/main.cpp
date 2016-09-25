@@ -61,12 +61,15 @@ volatile bool isActiveApp = true;
 //추가한 플래그
 volatile bool ADJ_FLAG = false;
 volatile bool RVS_ADJ_FLAG = false;
-
+//프레임 카운터
+int framecount=0;
 
 static int controls[] = {ID_START, ID_STOP, ID_REGISTER, ID_UNREGISTER, IDC_DISTANCES,
 						ID_ADJUST, IDC_TEST2,IDC_TEST6,IDC_TEST7,IDC_TEST8,
 						IDC_Z1, IDC_Z30, IDC_Z60, IDC_ZGROUP,IDC_LANDMARK, IDC_FP, IDD_GRAPH, IDC_ZGROUP, IDC_TEXT_EMO, IDC_PULSE,IDC_PANEL2,
-						IDC_LED1, IDC_LED2, IDC_LED3, IDC_LED4, IDC_LED5, IDC_LED6, IDC_LED7,
+						IDC_LED1, IDC_LED2, IDC_LED3, IDC_LED4, IDC_LED5, IDC_LED6, IDC_LED7, IDC_PANEL, IDC_PANEL2,ID_LOADDB,ID_ADJUST,IDC_PULSE,
+						IDC_LANDMARK,IDC_FP,IDC_SLIDER,IDC_SLIDER_EDIT,ID_INFRAME,IDC_TTIME,ID_DEFRAME,IDC_CTIME,IDC_TTIME2,IDC_EMO,IDC_MICRO,
+						IDC_RECORD_RANGE,IDC_POSE1,IDC_ZGROUP
 };
 static RECT layout[3 + sizeof(controls) / sizeof(controls[0])];
 
@@ -308,39 +311,201 @@ void RedoLayout(HWND dialogWindow)
 
 }
 
+void Writefile()
+{
+	int count = 0;
+	if (FaceTrackingUtilities::GetRecordState(pDlg))
+	{
+		if (EXPRESSION_FLAG == TRUE)
+		{
+			fprintf(fp, "%d", 1);
+			count++;
+		}
+		else
+		{
+			fprintf(fp, "%d", 0);
+		}
+
+		if (MICROEXP_FLAG == TRUE)
+		{
+			fprintf(fp, " %d", 1);
+			count++;
+		}
+		else
+		{
+			fprintf(fp, " %d", 0);
+		}
+
+		if (SMILE_FLAG == TRUE)
+		{
+			fprintf(fp, " %d", 1);
+			count++;
+		}
+		else
+		{
+			fprintf(fp, " %d", 0);
+
+		}
+
+		if (GAZE_FLAG == TRUE)
+		{
+			fprintf(fp, " %d", 1);
+			count++;
+		}
+		else
+		{
+			fprintf(fp, " %d", 0);
+		}
+
+		if (BLINK_FLAG == TRUE)
+		{
+			fprintf(fp, " %d", 1);
+			count++;
+		}
+		else
+		{
+			fprintf(fp, " %d", 0);
+		}
+
+		if (HEADMOTION_FLAG == TRUE)
+		{
+			fprintf(fp, " %d", 1);
+			count++;
+		}
+		else
+		{
+			fprintf(fp, " %d", 0);
+		}
+
+		if (PULSE_FLAG == TRUE)
+		{
+			fprintf(fp, " %d", 1);
+			count++;
+		}
+		else
+		{
+			fprintf(fp, " %d", 0);
+		}
+
+		fprintf(fp, " %d %d\n", count, framecount);
+	}
+}
+
+void playbackflag(void) {
+
+	int sec = (gIndex / 30);
+
+	if (DataSet[sec].exp == true) EXPRESSION_FLAG = true;
+	else EXPRESSION_FLAG = false;
+
+	if (DataSet[sec].micro == true) MICROEXP_FLAG = true;
+	else MICROEXP_FLAG = false;
+
+	if (DataSet[sec].smile == true) SMILE_FLAG = true;
+	else SMILE_FLAG = false;
+
+	if (DataSet[sec].gaze == true) GAZE_FLAG = true;
+	else GAZE_FLAG = false;
+
+	if (DataSet[sec].blink == true) BLINK_FLAG = true;
+	else BLINK_FLAG = false;
+
+	if (DataSet[sec].head == true) HEADMOTION_FLAG = true;
+	else HEADMOTION_FLAG = false;
+
+	if (DataSet[sec].pulse == true) PULSE_FLAG = true;
+	else PULSE_FLAG = false;
+
+	if (Framenumber/30 <= sec) {
+		SMILE_FLAG = FALSE;
+		GAZE_FLAG = FALSE;
+		BLINK_FLAG = FALSE;
+		HEADMOTION_FLAG = FALSE;
+		PULSE_FLAG = FALSE;
+		MICROEXP_FLAG = FALSE;
+		EXPRESSION_FLAG = FALSE;
+	}
+
+	if (EXPRESSION_FLAG == TRUE)
+		SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+	else
+		SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+
+	if (MICROEXP_FLAG == TRUE)
+		SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+	else
+		SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+
+	if (SMILE_FLAG == TRUE)
+		SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+	else
+		SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+
+	if (GAZE_FLAG == TRUE)
+		SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+	else
+		SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+
+	if (BLINK_FLAG == TRUE)
+		SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+	else
+		SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+
+	if (HEADMOTION_FLAG == TRUE)
+		SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+	else
+		SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+
+	if (PULSE_FLAG == TRUE)
+		SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
+	else
+		SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
+}
+
 static DWORD WINAPI RenderingThread(LPVOID arg)
 {
 	while (true)
 	{
+		framecount++;
 		renderer->Render();
-		renderer->GetExpIntensity();
-		renderer->GetLandmarkPoint();
-		renderer->GetHeadandPulse();
+		if (!FaceTrackingUtilities::GetPlaybackState(pDlg))
+		{
+			renderer->GetExpIntensity();
+			renderer->GetLandmarkPoint();
+			renderer->GetHeadandPulse();
+		}
 
-		if (ADJ_FLAG == TRUE)
+		if (ADJ_FLAG == TRUE && !FaceTrackingUtilities::GetPlaybackState(pDlg))
 		{
 			renderer->PrepValue();
 		}
 		
-		if(ADJ_FLAG == FALSE && renderer->adj_frameCount != 0)
+		if(ADJ_FLAG == FALSE && renderer->adj_frameCount != 0 && !FaceTrackingUtilities::GetPlaybackState(pDlg))
 		{
 			renderer->SetThresValue();
 			renderer->InitValue();
 		}
 
-		if (ADJ_FLAG == FALSE)
+		if (ADJ_FLAG == FALSE && !FaceTrackingUtilities::GetPlaybackState(pDlg))
 		{
 			renderer->CvtLandmarkToIntensity();
 			renderer->DetermineExpression();
 			renderer->cursor++;
 			renderer->CircularQueue300();
-			//renderer->Avoidgaze();
 			renderer->ShowHeartRate();
 			renderer->RecordingOutOfRange();
 			renderer->FlagOnOff();
 		}
+
+		if (FaceTrackingUtilities::GetRecordState(pDlg) && framecount % 30 == 0)
+			Writefile();
+
+		if (FaceTrackingUtilities::GetPlaybackState(pDlg))
+			playbackflag();
 	}
 }
+
+
 
 static DWORD WINAPI ProcessingThread(LPVOID arg)
 {
@@ -392,17 +557,16 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 
 	if (GetAsyncKeyState(VK_LEFT) && isRunning == true) {
 		Index = gIndex - 1;
-		processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
+		if (Index<Framenumber) processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
 	}
 
 	if (GetAsyncKeyState(VK_RIGHT) && isRunning == true) {
 		Index = gIndex + 1;
-		processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
+		if(Index<Framenumber) processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
 	}
 
 
 	CString str;
-
 
 	switch (message) 
 	{ 
@@ -465,17 +629,20 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				break;
 
 			case EXP_TIMER:
+				if(!FaceTrackingUtilities::GetPlaybackState(pDlg))
 				renderer->CaptureSubtleExpression();
 				//renderer->DisplayExpressionUsingEmoji(renderer->EXP_EMO);
 			}
 			return TRUE;
 
 		case WM_HSCROLL:
-			processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
-			pos = SendDlgItemMessageW(dialogWindow, IDC_SLIDER, TBM_GETPOS, 0, 0);
-			processor->senseManager->QueryCaptureManager()->SetFrameByIndex(pos);
-			STOPRENDERING = TRUE;
-
+			if (FaceTrackingUtilities::GetPlaybackState(pDlg)&& !REDERERSTOP)
+			{
+				processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
+				pos = SendDlgItemMessageW(dialogWindow, IDC_SLIDER, TBM_GETPOS, 0, 0);
+				if (pos < Framenumber && (pos % 1 == 0)) processor->senseManager->QueryCaptureManager()->SetFrameByIndex(pos);
+				STOPRENDERING = TRUE;
+			}
 
 			return TRUE;
 
@@ -551,6 +718,8 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				SetTimer(child, 1234, 1000, NULL);
 				m_LineChartCtrl.m_ChartData.Clear();
 
+				framecount = 0;
+
 				Button_Enable(GetDlgItem(dialogWindow, ID_START), false);
 				Button_Enable(GetDlgItem(dialogWindow, ID_STOP), true);
 				//영상설정 2D 3D
@@ -585,7 +754,11 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 
 				renderer->InitStop();
 
-				//fclose(fp);
+				if (fp) fclose(fp);
+				if (DataSet) {
+					delete[] DataSet;
+					DataSet = NULL;
+				}
 
 				isStopped = true;
 				if (isRunning) 
@@ -698,99 +871,6 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	return FALSE; 
 }
 
-/*
-SMILE_FLAG = DataSet[sec] &		 0x1000000;
-GAZE_FLAG = DataSet[sec] &		 0x0100000;
-BLINK_FLAG = DataSet[sec] &		 0x0010000;
-HEADMOTION_FLAG = DataSet[sec] & 0x0001000;
-PULSE_FLAG = DataSet[sec] &		 0x0000100;
-MICROEXP_FLAG = DataSet[sec] &	 0x0000010;
-EXPRESSION_FLAG = DataSet[sec] & 0x0000001;
-//*/
-
-void playbackflag(void) {
-
-	int sec = gIndex /30;
-	if (DataSet[sec].exp)EXPRESSION_FLAG = true;
-	else EXPRESSION_FLAG = false;
-
-	if (DataSet[sec].micro)MICROEXP_FLAG = true;
-	else MICROEXP_FLAG = false;
-
-	if (DataSet[sec].smile)SMILE_FLAG = true;
-	else SMILE_FLAG = false;
-
-	if (DataSet[sec].gaze)GAZE_FLAG = true;
-	else GAZE_FLAG = false;
-
-	if (DataSet[sec].blink)BLINK_FLAG = true;
-	else BLINK_FLAG = false;
-
-	if (DataSet[sec].head)HEADMOTION_FLAG = true;
-	else HEADMOTION_FLAG = false;
-
-	if (DataSet[sec].pulse)PULSE_FLAG = true;
-	else PULSE_FLAG = false;
-
-		if (SMILE_FLAG == TRUE)
-		{
-			SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-		}
-		else
-		{
-			SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-		}
-		if (GAZE_FLAG == TRUE)
-		{
-			SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-		}
-		else
-		{
-			SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-		}
-		if (BLINK_FLAG == TRUE)
-		{
-			SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-		}
-		else
-		{
-			SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-		}
-		if (HEADMOTION_FLAG == TRUE)
-		{
-			SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-		}
-		else
-		{
-			SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-		}
-		if (PULSE_FLAG == TRUE)
-		{
-			SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-		}
-		else
-		{
-			SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-		}
-		if (MICROEXP_FLAG == TRUE)
-		{
-			SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-		}
-		else
-		{
-			SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-		}
-		if (EXPRESSION_FLAG == TRUE)
-		{
-			SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-		}
-		else
-		{
-			SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-		}
-
-}
-
 
 INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -799,10 +879,6 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 	GetClientRect(pDlg, &rcWindow);
 	HDC dc = GetDC(dialogWindow);
 	child = dialogWindow;
-
-
-	if (FaceTrackingUtilities::GetPlaybackState(pDlg)&& gIndex>0)
-		playbackflag();
 
 	int degree = 0;
 
@@ -830,67 +906,47 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 	case WM_TIMER:
 		switch (wParam) {
 		case 1234:
-			m_LineChartCtrl.m_ChartData.Add(7, degree% 7 + 7);
-			//m_LineChartCtrl.m_ChartData.Add(7, rand() % 7 + 7);
+			m_LineChartCtrl.m_ChartData.Add(7, degree % 7 + 7);
 			m_LineChartCtrl.DrawChart(dc);
 			UpdateWindow(dialogWindow);
 
+
+			if (!FaceTrackingUtilities::GetPlaybackState(pDlg)) {
+
 				if (EXPRESSION_FLAG == TRUE)
-				{
 					SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-				}
 				else
-				{
 					SendDlgItemMessage(pDlg, IDC_LED1, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-				}
+
 				if (MICROEXP_FLAG == TRUE)
-				{
 					SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-				}
 				else
-				{
 					SendDlgItemMessage(pDlg, IDC_LED2, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-				}
+
 				if (SMILE_FLAG == TRUE)
-				{
 					SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-				}
 				else
-				{
 					SendDlgItemMessage(pDlg, IDC_LED3, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-				}
+
 				if (GAZE_FLAG == TRUE)
-				{
 					SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-				}
 				else
-				{
 					SendDlgItemMessage(pDlg, IDC_LED4, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-				}
+
 				if (BLINK_FLAG == TRUE)
-				{
 					SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-				}
 				else
-				{
 					SendDlgItemMessage(pDlg, IDC_LED5, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-				}
+
 				if (HEADMOTION_FLAG == TRUE)
-				{
 					SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-				}
 				else
-				{
 					SendDlgItemMessage(pDlg, IDC_LED6, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-				}
+
 				if (PULSE_FLAG == TRUE)
-				{
 					SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GREEN);
-				}
 				else
-				{
 					SendDlgItemMessage(pDlg, IDC_LED7, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)RED);
-				}
 
 				SMILE_FLAG = FALSE;
 				GAZE_FLAG = FALSE;
@@ -899,76 +955,7 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 				PULSE_FLAG = FALSE;
 				MICROEXP_FLAG = FALSE;
 				EXPRESSION_FLAG = FALSE;
-			
-			if (FaceTrackingUtilities::GetRecordState(pDlg))
-			{
-				if (EXPRESSION_FLAG == TRUE)
-				{
-					fprintf(fp, "%d", 1);
-				}
-				else
-				{
-					fprintf(fp, "%d", 0);
-				}
-
-				if (MICROEXP_FLAG == TRUE)
-				{
-					fprintf(fp, " %d", 1);
-				}
-				else
-				{
-					fprintf(fp, " %d", 0);
-				}
-
-				if (SMILE_FLAG == TRUE)
-				{
-					fprintf(fp, " %d", 1);
-				}
-				else
-				{
-					fprintf(fp, " %d", 0);
-				}
-
-				if (GAZE_FLAG == TRUE)
-				{
-					fprintf(fp, " %d", 1);
-				}
-				else
-				{
-					fprintf(fp, " %d", 0);
-				}
-	
-				if (BLINK_FLAG == TRUE)
-				{
-					fprintf(fp, " %d", 1);
-				}
-				else
-				{
-					fprintf(fp, " %d", 0);
-				}
-		
-				if (HEADMOTION_FLAG == TRUE)
-				{
-					fprintf(fp, " %d", 1);
-				}
-				else
-				{
-					fprintf(fp, " %d", 0);
-				}
-
-				if (PULSE_FLAG == TRUE)
-				{
-					fprintf(fp, " %d", 1);
-				}
-				else
-				{
-					fprintf(fp, " %d", 0);
-				}
-
-				fprintf(fp, "\n");
 			}
-			
-
 
 			if (m_LineChartCtrl.m_ChartData.lstData.GetSize() > 100)
 				m_LineChartCtrl.m_ChartData.Clear();
@@ -976,9 +963,9 @@ INT_PTR CALLBACK ChildLoopThread(HWND dialogWindow, UINT message, WPARAM wParam,
 		}
 		return TRUE;
 
-	case WM_COMMAND:
+	//case WM_COMMAND:
 
-		return TRUE;
+	//	return TRUE;
 	case WM_ERASEBKGND:
 		m_LineChartCtrl.DrawChart(dc);
 		return FALSE;
@@ -1079,7 +1066,10 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR, int) {
 		delete renderer;
 
 	if(fp) fclose(fp);
-	if (DataSet) delete(DataSet);
+	if (DataSet) {
+		delete[] DataSet;
+		DataSet = NULL;
+	}
 
 	session->Release();
     return (int)msg.wParam;

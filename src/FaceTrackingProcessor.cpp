@@ -20,7 +20,7 @@ extern pxcCHAR fileName[1024];
 extern pxcCHAR TextfileName[1024];
 extern HANDLE ghMutex;
 
-FaceTrackingProcessor::FaceTrackingProcessor(HWND window) : m_window(window), m_registerFlag(false), m_unregisterFlag(false) { Framenumber = 0; }
+FaceTrackingProcessor::FaceTrackingProcessor(HWND window) : m_window(window), m_registerFlag(false), m_unregisterFlag(false) { }
 
 void FaceTrackingProcessor::PerformRegistration()
 {
@@ -96,27 +96,40 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
 	else if (FaceTrackingUtilities::GetPlaybackState(dialogWindow)) 
 	{
 		status = captureManager->SetFileName(fileName, false);
-		senseManager->QueryCaptureManager()->SetRealtime(false);
+		senseManager->QueryCaptureManager()->SetRealtime(true);
 		Framenumber=captureManager->QueryNumberOfFrames();
 		HWND slider = GetDlgItem(dialogWindow, IDC_SLIDER);
 		SendMessage(slider, TBM_SETRANGE, FALSE, MAKELPARAM(0, Framenumber));
+		SendMessage(slider, TBM_SETPAGESIZE, FALSE, 30);
+		SendMessage(slider, TBM_SETSEL, TRUE, MAKELPARAM(0, Framenumber));
 		HWND total = GetDlgItem(dialogWindow, IDC_TTIME);
 		min =(int)Framenumber / 1800;
 		sec =(int)(Framenumber / 30) - (60 * min);
 		str.Format(_T(" %dm %ds"), min, sec);
 		SetWindowTextW(total, str);
+
+		int i;
 		if (INIT_FLAG == TRUE)
 		{
 			fp = _wfopen((const wchar_t*)TextfileName, L"r");
-			DataSet = new fData[(Framenumber / 30)];
-			for (int i = 0; i < (Framenumber / 30); i++)
+			DataSet = new fData[(Framenumber / 30)+1];//int *p = new int[3] 선언후 p[3] 접근해 작업한뒤 delete하면 메모리 넘어서의 작업이 안지워져 leak현상 발생
+			for (i= 0; i < (Framenumber / 30); i++)
 			{
-				DataSet[i].time = i;
-				fscanf(fp, "%d %d %d %d %d %d %d", &DataSet[i].exp, &DataSet[i].micro ,&DataSet[i].smile, &DataSet[i].gaze, &DataSet[i].blink, &DataSet[i].head, &DataSet[i].pulse);
+				fscanf(fp, "%d %d %d %d %d %d %d %d %d", &DataSet[i].exp, &DataSet[i].micro ,&DataSet[i].smile, 
+					&DataSet[i].gaze, &DataSet[i].blink, &DataSet[i].head, &DataSet[i].pulse, &DataSet[i].count, &DataSet[i].frame);
+				if (DataSet[i].count >= 2)
+				{
+					for (int j = 0; j < 30; j++)
+					{
+						SendMessage(slider, TBM_SETTIC, TRUE, DataSet[i].frame + j);
+					}
+				}
 			}
+
 			INIT_FLAG = FALSE;
 		}
 
+		if (fp) fclose(fp);
 	} 
 	if (status < PXC_STATUS_NO_ERROR) 
 	{
