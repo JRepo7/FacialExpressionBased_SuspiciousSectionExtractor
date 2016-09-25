@@ -100,7 +100,7 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
 		Framenumber=captureManager->QueryNumberOfFrames();
 		HWND slider = GetDlgItem(dialogWindow, IDC_SLIDER);
 		SendMessage(slider, TBM_SETRANGE, FALSE, MAKELPARAM(0, Framenumber));
-		SendMessage(slider, TBM_SETPAGESIZE, FALSE, 300);
+		SendMessage(slider, TBM_SETPAGESIZE, FALSE, 150);
 		SendMessage(slider, TBM_SETSEL, TRUE, MAKELPARAM(0, Framenumber));
 		HWND total = GetDlgItem(dialogWindow, IDC_TTIME);
 		min =(int)Framenumber / 1800;
@@ -118,7 +118,7 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
 			{
 				fscanf(fp, "%d %d %d %d %d %d %d %d %d", &DataSet[i].exp, &DataSet[i].micro, &DataSet[i].smile,
 					&DataSet[i].gaze, &DataSet[i].blink, &DataSet[i].head, &DataSet[i].pulse, &DataSet[i].count, &DataSet[i].frame);
-				if (DataSet[i].count >= 2)
+				if (DataSet[i].count >= 3)
 				{
 					for (int j = 0; j < 30; j++)
 					{
