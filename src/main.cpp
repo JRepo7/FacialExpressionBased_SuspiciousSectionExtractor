@@ -61,6 +61,7 @@ volatile bool isActiveApp = true;
 //추가한 플래그
 volatile bool ADJ_FLAG = false;
 volatile bool RVS_ADJ_FLAG = false;
+volatile bool HSCROLLFLAG = false;
 //프레임 카운터
 int framecount=0;
 
@@ -553,6 +554,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 
 	if (GetKeyState(VK_SPACE) && isRunning == true && !isStopped)
 	{
+		HSCROLLFLAG = TRUE;
 		processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
 		STOPRENDERING = FALSE;
 	}
@@ -560,6 +562,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 	if (GetAsyncKeyState(VK_SPACE) && isRunning == true && !isStopped)
 	{
 		processor->senseManager->QueryCaptureManager()->SetPause(FALSE);
+		HSCROLLFLAG = FALSE;
 		STOPRENDERING = FALSE;
 	}
 
@@ -644,7 +647,7 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 			return TRUE;
 
 		case WM_HSCROLL:
-			if (FaceTrackingUtilities::GetPlaybackState(pDlg)&& !isStopped)
+			if (FaceTrackingUtilities::GetPlaybackState(pDlg)&& !isStopped && HSCROLLFLAG)
 			{
 				pos = SendDlgItemMessageW(dialogWindow, IDC_SLIDER, TBM_GETPOS, 0, 0);
 				if (pos < Framenumber) processor->senseManager->QueryCaptureManager()->SetFrameByIndex(pos);
