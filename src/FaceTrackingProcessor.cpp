@@ -100,7 +100,7 @@ void FaceTrackingProcessor::Process(HWND dialogWindow)
 		Framenumber=captureManager->QueryNumberOfFrames();
 		HWND slider = GetDlgItem(dialogWindow, IDC_SLIDER);
 		SendMessage(slider, TBM_SETRANGE, FALSE, MAKELPARAM(0, Framenumber));
-		SendMessage(slider, TBM_SETPAGESIZE, FALSE, 30);
+		SendMessage(slider, TBM_SETPAGESIZE, FALSE, 300);
 		SendMessage(slider, TBM_SETSEL, TRUE, MAKELPARAM(0, Framenumber));
 		HWND total = GetDlgItem(dialogWindow, IDC_TTIME);
 		min =(int)Framenumber / 1800;

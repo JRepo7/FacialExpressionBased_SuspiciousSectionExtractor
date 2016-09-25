@@ -548,23 +548,24 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 		SetTimer(dialogWindow, ADJUST, 2000, NULL);
 	}
 
-	if (GetKeyState(VK_SPACE) && isRunning == true)
+	if (GetKeyState(VK_SPACE) && isRunning == true && !isStopped)
 	{
 		processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
 		STOPRENDERING = FALSE;
 	}
-	if (GetAsyncKeyState(VK_SPACE) && isRunning == true)
+
+	if (GetAsyncKeyState(VK_SPACE) && isRunning == true && !isStopped)
 	{
 		processor->senseManager->QueryCaptureManager()->SetPause(FALSE);
 		STOPRENDERING = FALSE;
 	}
 
-	if (GetAsyncKeyState(VK_LEFT) && isRunning == true) {
+	if (GetAsyncKeyState(VK_LEFT) && isRunning == true && !isStopped) {
 		Index = gIndex - 1;
 		if (Index<Framenumber) processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
 	}
 
-	if (GetAsyncKeyState(VK_RIGHT) && isRunning == true) {
+	if (GetAsyncKeyState(VK_RIGHT) && isRunning == true && !isStopped) {
 		Index = gIndex + 1;
 		if(Index<Framenumber) processor->senseManager->QueryCaptureManager()->SetFrameByIndex(Index);
 	}
@@ -645,7 +646,6 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 				pos = SendDlgItemMessageW(dialogWindow, IDC_SLIDER, TBM_GETPOS, 0, 0);
 				if (pos < Framenumber) processor->senseManager->QueryCaptureManager()->SetFrameByIndex(pos);
 				STOPRENDERING = TRUE;
-				processor->senseManager->QueryCaptureManager()->SetPause(TRUE);
 			}
 			if(isStopped) SendMessage(slider, TBM_SETPOS, TRUE, 0);
 			
