@@ -430,6 +430,9 @@ void FaceTrackingRendererManager::CaptureSubtleExpression()
 							max(fearCnt, 
 								max(angryCnt, 
 									max(disgustCnt,neutralCnt))))));
+	
+	if (angles.yaw > 3 || angles.yaw < -3)
+		Win = neutralCnt;
 
 	ContinueExpression(Win);
 
@@ -1174,7 +1177,7 @@ void FaceTrackingRendererManager::DetermineFlagOutOfHeadPos()
 		pitch,
 		yaw
 	};
-	if ((10 <= angles.pitch && angles.pitch <= 15) || (-15 <= angles.pitch && angles.pitch< -10))
+	if ((10-5 <= angles.pitch && angles.pitch <= 15-5) || (-15-5 <= angles.pitch && angles.pitch< -10-5))
 	{
 		PITCH = TRUE;
 	}
@@ -1268,25 +1271,26 @@ void FaceTrackingRendererManager::RecordingOutOfRange()
 
 void FaceTrackingRendererManager::ShowHeadMovementRecord()
 {
-	HWND text = GetDlgItem(m_window, IDC_RECORD_RANGE);
-	HWND text1 = GetDlgItem(m_window, IDC_POSE1);
-	CString str;
-	str.Format(_T("분당횟수:  %d"), record_Range);
-	SetWindowTextW(text, str);
+	//HWND text = GetDlgItem(m_window, IDC_RECORD_RANGE);
+	//HWND text1 = GetDlgItem(m_window, IDC_POSE1);
+	//CString str;
+	//str.Format(_T("분당횟수:  %d"), record_Range);
+	//SetWindowTextW(text, str);
 
 
-	if (angles.yaw<10 && angles.yaw>-10) {
-		str.Format(_T("정  면  %2.1f도"), angles.yaw);
-	}
-	else if (angles.yaw < -10) {
-		str.Format(_T("좌  측  %2.1f도"), angles.yaw);
-	}
-	else if (angles.yaw > 10) {
-		str.Format(_T("우  측  %2.1f도"), angles.yaw);
-	}
+	//if (angles.yaw<10 && angles.yaw>-10) {
+	//	str.Format(_T("정  면  %2.1f도"), angles.pitch);
+	//}
+	//else if (angles.yaw < -10) {
+	//	str.Format(_T("좌  측  %2.1f도"), angles.pitch);
+	//}
+	//else if (angles.yaw > 10) {
+	//	str.Format(_T("우  측  %2.1f도"), angles.pitch);
+	//}
 
-	SetWindowTextW(text1, str);
+	//SetWindowTextW(text1, str);
 }
+
 int FaceTrackingRendererManager::IsChangedRange_r()
 {
 	if (slidingWindow_Range[rear_Range] == slidingWindow_Range[rear_Range - 1])
